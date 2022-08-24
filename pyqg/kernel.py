@@ -69,15 +69,15 @@ class PseudoSpectralKernelState:
 
 
 def _update_state(old_state, **kwargs):
-    for k, v in kwargs.items():
-        old_val = getattr(old_state, k)
-        if hasattr(old_val, "shape"):
-            assert old_val.shape == v.shape, f"Shape mismatch on {k}: {old_val.shape} vs {v.shape}"
+    assert all(
+        (not hasattr(getattr(old_state, k), "shape") and not hasattr(v, "shape"))
+        or getattr(old_state, k).shape == v.shape
+        for k, v in kwargs.items()
+    )
     return dataclasses.replace(old_state, **kwargs)
 
 
 class PseudoSpectralKernel:
-
     def __init__(self, nz, ny, nx, dt, filtr, rek=0):
         self.nz = nz
         self.ny = ny
