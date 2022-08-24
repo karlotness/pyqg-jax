@@ -23,15 +23,13 @@ def register_dataclass_pytree(cls):
         return [getattr(obj, name) for name in fields], None
 
     def unflatten(aux_data, flat_contents):
-        args = {name: value for name, value in zip(fields, flat_contents)}
-        return cls(**args)
+        return cls(**dict(zip(fields, flat_contents)))
 
     jax.tree_util.register_pytree_node(cls, flatten, unflatten)
     return cls
 
 
 def add_fft_properties(fields):
-
     def add_properties(cls):
         for field in fields:
             setattr(
