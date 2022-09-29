@@ -98,12 +98,6 @@ class Model(kernel.PseudoSpectralKernel):
         # initialize diagnostics
         # SKIPPED
 
-    def _spec_var(self, ph):
-        var_dens = 2 * jnp.abs(ph)**2 / self.M**2
-        var_dens = jnp.at[..., 0].set(var_dens[..., 0] / 2)
-        var_dens = jnp.at[..., -1].set(var_dens[..., -1] / 2)
-        return var_dens.sum()
-
     def do_external_forcing(self, state):
         return state
 

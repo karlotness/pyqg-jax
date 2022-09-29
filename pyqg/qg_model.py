@@ -73,22 +73,6 @@ class QGModel(model.Model):
 
         # INITIALIZE FORCING (nothing to do)
 
-    # calc cfl
-    def _calc_cfl(self, state):
-        return jnp.abs(
-            jnp.hstack([state.u + jnp.expand_dims(self.Ubg, axis=(1, 2)), state.v])
-        ).max() * self.dt / self.dx
-
-    # calc ke
-    def _calc_ke(self, state):
-        ke1 = 0.5 * self.Hi[0] * self.spec_var(self.wv * state.ph[0])
-        ke2 = 0.5 * self.Hi[1] * self.spec_var(self.wv * state.ph[1])
-        return (ke1.sum() + ke2.sum()) / self.H
-
-    def _calc_eddy_time(self, state):
-        ens = 0.5 * self.Hi[0] * self.spec_var(self.wv2 * self.ph1) + 0.5 * self.Hi[1] * self.spec_var(self.wv2 * self.ph2)
-        return 2 * jnp.pi * jnp.sqrt(self.H / ens) / 86400
-
     def _set_q1q2(self, state, q1, q2):
         return self.set_q(state, jnp.vstack([jnp.expand_dims(q1, axis=0), jnp.expand_dims(q2, axis=0)]))
 
