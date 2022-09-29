@@ -1,5 +1,6 @@
 import jax
 import jax.numpy as jnp
+import numpy as np
 import dataclasses
 import json
 import operator
@@ -245,9 +246,7 @@ class PseudoSpectralKernel:
                 "ny": self.ny,
                 "nx": self.nx,
                 "dt": self.dt,
-                "filtr": self.filtr.to_py().tolist()
-                if self.filter is not None
-                else None,
+                "filtr": np.asarray(self.filtr).tolist() if self.filter is not None else None,
                 "rek": self.rek,
             }
         )
