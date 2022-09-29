@@ -2,6 +2,7 @@ import jax
 import jax.numpy as jnp
 import dataclasses
 import json
+import operator
 
 
 def _generic_rfftn(a):
@@ -172,10 +173,15 @@ class PseudoSpectralKernel:
 
     def do_friction(self, state):
         # Apply Beckman friction to lower layer tendency
-        k = self.nz - 1
         if self.rek:
-            dqhdt = state.dqhdt.at[k].set(
-                state.dqhdt[k] + (self.rek * self._k2l2 * state.ph[k])
+            k = operator.index(self.nz - 1)
+            dqhdt = jnp.concatenate(
+                [
+                    state.dqhdt[:k],
+                    jnp.expand_dims(state.dqhdt[k] + (self.rek * self._k2l2 * state.ph[k]), 0),
+                    state.dqhdt[(k+1):],
+                ],
+                axis=0,
             )
             return _update_state(state, dqhdt=dqhdt)
         else:
