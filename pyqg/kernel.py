@@ -31,15 +31,18 @@ def register_dataclass_pytree(cls):
 
 
 def add_fft_properties(fields):
+    def make_getter_setter(field):
+        getter = lambda self: _generic_rfftn(getattr(self, field))
+        setter = lambda self, val: setattr(self, field, _generic_irfftn(val))
+        return getter, setter
+
     def add_properties(cls):
         for field in fields:
+            getter, setter = make_getter_setter(field)
             setattr(
                 cls,
                 f"{field}h",
-                property(
-                    fget=lambda self: _generic_rfftn(getattr(self, field)),
-                    fset=lambda self, val: setattr(self, field, _generic_irfftn(val)),
-                ),
+                property(fget=getter, fset=setter),
             )
         return cls
 
