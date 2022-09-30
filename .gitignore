@@ -1,0 +1,7 @@
+# Editor files
+*~
+
+# Python scratch files
+__pycache__/
+*.pyc
+*.pyo
