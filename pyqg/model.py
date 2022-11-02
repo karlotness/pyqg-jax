@@ -1,4 +1,5 @@
 import json
+import math
 import jax
 import jax.numpy as jnp
 from . import kernel
@@ -91,7 +92,7 @@ class Model(kernel.PseudoSpectralKernel):
         self.filtr = jnp.where(wvx <= cphi, 1, filtr)
 
         # initialize time
-        self.taveints = jnp.ceil(self.taveint / self.dt)
+        self.taveints = math.ceil(self.taveint / self.dt)
 
         # initialize inversion matrix
         # NOT IMPLEMENTED
