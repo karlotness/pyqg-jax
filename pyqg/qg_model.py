@@ -22,7 +22,7 @@ class QGModel(model.Model):
         self.beta = beta
         self.rd = rd
         self.delta = delta
-        self.Hi = jnp.array([H1, H1/delta])
+        self.Hi = jnp.array([H1, H1/delta], dtype=DTYPE_REAL)
         self.U1 = U1
         self.U2 = U2
         self.H1 = H1
@@ -31,7 +31,7 @@ class QGModel(model.Model):
 
         # INITIALIZE BACKGROUND
         self.H = self.Hi.sum()
-        self.Ubg = jnp.array([self.U1, self.U2])
+        self.Ubg = jnp.array([self.U1, self.U2], dtype=DTYPE_REAL)
         self.U = self.U1 - self.U2
         # The F parameters
         self.F1 = self.rd**-2 / (1 + self.delta)
@@ -39,7 +39,7 @@ class QGModel(model.Model):
         # The meridional PV gradients in each layer
         self.Qy1 = self.beta + self.F1 * (self.U1 - self.U2)
         self.Qy2 = self.beta - self.F2 * (self.U1 - self.U2)
-        self.Qy = jnp.array([self.Qy1, self.Qy2])
+        self.Qy = jnp.array([self.Qy1, self.Qy2], dtype=DTYPE_REAL)
         self._ikQy = 1j * (jnp.expand_dims(self.kk, 0) * jnp.expand_dims(self.Qy, -1))
         # complex versions, multiplied by k, speeds up computations to precompute
         self.ikQy1 = self.Qy1 * 1j * self.k
@@ -60,8 +60,8 @@ class QGModel(model.Model):
         state = super().create_initial_state()
         # initial conditions (pv anomalies)
         rng_a, rng_b = jax.random.split(rng, num=2)
-        q1 = 1e-7 * jax.random.uniform(rng_a, shape=(self.ny, self.nx)) + 1e-6 * (jnp.ones((self.ny, 1)) * jax.random.uniform(rng_b, shape=(1, self.nx)))
-        q2 = jnp.zeros_like(self.x)
+        q1 = 1e-7 * jax.random.uniform(rng_a, shape=(self.ny, self.nx), dtype=DTYPE_REAL) + 1e-6 * (jnp.ones((self.ny, 1), dtype=DTYPE_REAL) * jax.random.uniform(rng_b, shape=(1, self.nx), dtype=DTYPE_REAL))
+        q2 = jnp.zeros_like(self.x, dtype=DTYPE_REAL)
         state = self._set_q1q2(state, q1, q2)
         return state
 

@@ -16,7 +16,7 @@ def _generic_irfftn(a):
 
 DTYPE_COMPLEX = jnp.complex64
 DTYPE_REAL = jnp.float32
-
+DTYPE_INT = jnp.int32
 
 def register_dataclass_pytree(cls):
     fields = tuple(f.name for f in dataclasses.fields(cls))
@@ -115,9 +115,9 @@ class PseudoSpectralKernel:
             uq=_empty_real(),
             vq=_empty_real(),
             # Time stuff
-            t=0.0,
-            tc=0,
-            ablevel=0,
+            t=DTYPE_REAL(0),
+            tc=DTYPE_INT(0),
+            ablevel=jnp.uint8(0),
             # The tendency
             dqhdt=_empty_com(),
             dqhdt_p=_empty_com(),
@@ -195,15 +195,10 @@ class PseudoSpectralKernel:
         ablevel, dt1, dt2, dt3 = jax.lax.switch(
             state.ablevel,
             [
-                lambda: (1, self.dt, 0.0, 0.0),
-                lambda: (2, 1.5 * self.dt, -0.5 * self.dt, 0.0),
-                lambda: (
-                    2,
-                    (23 / 12) * self.dt,
-                    (-16 / 12) * self.dt,
-                    (5 / 12) * self.dt,
-                ),
-            ],
+                lambda: (jnp.uint8(1), self.dt, 0.0, 0.0),
+                lambda: (jnp.uint8(2), 1.5 * self.dt, -0.5 * self.dt, 0.0),
+                lambda: (jnp.uint8(2), (23 / 12) * self.dt, (-16 / 12) * self.dt, (5 / 12) * self.dt),
+            ]
         )
 
         qh_new = jnp.expand_dims(self.filtr, 0) * (

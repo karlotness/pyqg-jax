@@ -2,6 +2,7 @@ import json
 import jax
 import jax.numpy as jnp
 from . import kernel
+from .kernel import DTYPE_REAL, DTYPE_COMPLEX
 
 
 class Model(kernel.PseudoSpectralKernel):
@@ -52,17 +53,17 @@ class Model(kernel.PseudoSpectralKernel):
 
         # Initialize grid
         self.x, self.y = jnp.meshgrid(
-            (jnp.arange(0.5, self.nx, 1.0) / self.nx) * self.L,
-            (jnp.arange(0.5, self.ny, 1.0) / self.ny) * self.W
+            (jnp.arange(0.5, self.nx, 1.0, dtype=DTYPE_REAL) / self.nx) * self.L,
+            (jnp.arange(0.5, self.ny, 1.0, dtype=DTYPE_REAL) / self.ny) * self.W
         )
         self.dk = 2 * jnp.pi / self.L
         self.dl = 2 * jnp.pi / self.W
 
-        self.ll = self.dl * jnp.append(jnp.arange(0.0, self.nx / 2), jnp.arange(-self.nx / 2, 0.0))
+        self.ll = self.dl * jnp.append(jnp.arange(0.0, self.nx / 2), jnp.arange(-self.nx / 2, 0.0)).astype(DTYPE_REAL)
         self._il = 1j * self.ll
         self._k2l2 = (jnp.expand_dims(self.kk, 0)**2) + (jnp.expand_dims(self.ll, -1)**2)
 
-        self.kk = self.dk * jnp.arange(0.0, self.nk)
+        self.kk = self.dk * jnp.arange(0.0, self.nk).astype(DTYPE_REAL)
         self._ik = 1j * self.kk
         self._k2l2 = (jnp.expand_dims(self.kk, 0)**2) + (jnp.expand_dims(self.ll, -1)**2)
 
