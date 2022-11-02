@@ -140,17 +140,15 @@ class PseudoSpectralKernel:
 
     def do_advection(self, state):
         # multiply to get advective flux in space
-        uq = (state.u + jnp.expand_dims(self.Ubg[: self.nz], (-1, -2))) * state.q
-        vq = state.v * state.q
+        uq = (state.u + jnp.expand_dims(self.Ubg[:self.nz], (-1, -2))) * state.q
+        vq = state.v  * state.q
         # transform to get spectral advective flux
         uqh = _generic_rfftn(uq)
         vqh = _generic_rfftn(vq)
         # spectral divergence
-        dqhdt = -1 * (
-            jnp.expand_dims(self._ik, (0, 1)) * uqh
-            + jnp.expand_dims(self._il, (0, -1)) * vqh
-            + jnp.expand_dims(self._ikQy[: self.nz], 1) * state.ph
-        )
+        dqhdt = -1 * (jnp.expand_dims(self._ik, (0, 1)) * uqh +
+                      jnp.expand_dims(self._il, (0, -1)) * vqh +
+                      jnp.expand_dims(self._ikQy[:self.nz], 1) * state.ph)
         return _update_state(state, uq=uq, vq=vq, dqhdt=dqhdt)
 
     def do_uv_subgrid_parameterization(self, state, uv_param_func=None):
@@ -161,9 +159,9 @@ class PseudoSpectralKernel:
         duh = _generic_rfftn(du)
         dvh = _generic_rfftn(dv)
         dqhdt = (
-            state.dqhdt
-            + ((-1 * jnp.expand_dims(self._il, (0, -1))) * duh)
-            + (jnp.expand_dims(self._ik, (0, 1)) * dvh)
+            state.dqhdt +
+            ((-1 * jnp.expand_dims(self._il, (0, -1))) * duh) +
+            (jnp.expand_dims(self._ik, (0, 1)) * dvh)
         )
         return _update_state(state, dqhdt=dqhdt)
 
@@ -202,7 +200,10 @@ class PseudoSpectralKernel:
         )
 
         qh_new = jnp.expand_dims(self.filtr, 0) * (
-            state.qh + dt1 * state.dqhdt + dt2 * state.dqhdt_p + dt3 * state.dqhdt_pp
+            state.qh +
+            dt1 * state.dqhdt +
+            dt2 * state.dqhdt_p +
+            dt3 * state.dqhdt_pp
         )
         qh = qh_new
         dqhdt_pp = state.dqhdt_p
@@ -215,9 +216,7 @@ class PseudoSpectralKernel:
         tc = state.tc + 1
         t = state.t + self.dt
 
-        return _update_state(
-            state, ablevel=ablevel, dqhdt_pp=dqhdt_pp, dqhdt_p=dqhdt_p, q=q, tc=tc, t=t
-        )
+        return _update_state(state, ablevel=ablevel, dqhdt_pp=dqhdt_pp, dqhdt_p=dqhdt_p, q=q, tc=tc, t=t)
 
     def set_dt(self, state, new_dt):
         return _update_state(state, dt=new_dt, ablevel=0)

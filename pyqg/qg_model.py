@@ -13,7 +13,7 @@ class QGModel(model.Model):
             beta=1.5e-11,
             rd=15000.0,
             delta=0.25,
-            H1 = 500,
+            H1=500,
             U1=0.025,
             U2=0.0,
             **kwargs,
