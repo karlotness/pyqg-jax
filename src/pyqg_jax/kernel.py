@@ -5,7 +5,6 @@
 import jax
 import jax.numpy as jnp
 import dataclasses
-import json
 import operator
 
 
@@ -266,15 +265,6 @@ class PseudoSpectralKernel:
         a = jnp.zeros((self.nz, self.nz, self.nl, self.nk), dtype=DTYPE_COMPLEX)
         ph = jnp.sum(a * jnp.expand_dims(state.qh, 0), axis=1)
         return ph
-
-    def param_json(self):
-        children, attributes = self.tree_flatten()
-        return json.dumps(dict(zip(attributes, children)))
-
-    @classmethod
-    def from_param_json(cls, param_str):
-        params = json.loads(param_str)
-        return cls(**params)
 
     def tree_flatten(self):
         attributes = ("nz", "ny", "nx", "dt", "rek")
