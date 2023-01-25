@@ -83,24 +83,55 @@ def _update_state(old_state, **kwargs):
     return dataclasses.replace(old_state, **kwargs)
 
 
+def _zeros_property(shape, dtype):
+    def _shape_map(self, v):
+        if isinstance(v, str):
+            return getattr(self, v)
+        else:
+            return v
+
+    def get_zeros(self):
+        if isinstance(shape, tuple):
+            new_shape = tuple(map(_shape_map, shape))
+        else:
+            new_shape = _shape_map(shape)
+        return jnp.zeros(new_shape, dtype=dtype)
+
+    return property(fget=get_zeros)
+
+
+@jax.tree_util.register_pytree_node_class
 class PseudoSpectralKernel:
-    def __init__(self, nz, ny, nx, dt, filtr, rek=0):
+
+    def __init__(self, nz, ny, nx, dt, rek=0):
+        assert nx == ny, "currently only square spaces are supported"
+        # Store small, fundamental properties (others will be computed on demand)
         self.nz = nz
         self.ny = ny
         self.nx = nx
-        self.nl = ny
-        self.nk = (nx // 2) + 1
-        self.kk = jnp.zeros((self.nk), dtype=DTYPE_REAL)
-        self._ik = jnp.zeros((self.nk), dtype=DTYPE_COMPLEX)
-        self.ll = jnp.zeros((self.nl), dtype=DTYPE_REAL)
-        self._il = jnp.zeros((self.nl), dtype=DTYPE_COMPLEX)
-        self._k2l2 = jnp.zeros((self.nl, self.nk), dtype=DTYPE_REAL)
-        assert nx == ny
-        # Friction
-        self.rek = rek
         self.dt = float(dt)
-        self.filtr = filtr
-        self.Ubg = jnp.zeros((self.nk,), dtype=DTYPE_REAL)
+        self.rek = rek
+
+    @property
+    def nl(self):
+        return self.ny
+
+    @property
+    def nk(self):
+        return (self.nx // 2) + 1
+
+    kk = _zeros_property(("nk"), dtype=DTYPE_REAL)
+    _ik = _zeros_property(("nk"), dtype=DTYPE_COMPLEX)
+    ll = _zeros_property(("nl"), dtype=DTYPE_REAL)
+    _il = _zeros_property(("nl"), dtype=DTYPE_COMPLEX)
+    _k2l2 = _zeros_property(("nl", "nk"), dtype=DTYPE_REAL)
+
+    # Friction
+    Ubg = _zeros_property(("nk",), dtype=DTYPE_REAL)
+
+    @property
+    def filtr(self):
+        raise NotImplementedError("define filtr property in subclass")
 
     def create_initial_state(self):
         def _empty_real():
@@ -237,20 +268,20 @@ class PseudoSpectralKernel:
         return ph
 
     def param_json(self):
-        return json.dumps(
-            {
-                "nz": self.nz,
-                "ny": self.ny,
-                "nx": self.nx,
-                "dt": self.dt,
-                "filtr": np.asarray(self.filtr).tolist() if self.filter is not None else None,
-                "rek": self.rek,
-            }
-        )
+        children, attributes = self.tree_flatten()
+        return json.dumps(dict(zip(attributes, children)))
 
     @classmethod
     def from_param_json(cls, param_str):
         params = json.loads(param_str)
-        if params["filtr"] is not None:
-            params["filtr"] = jnp.asarray(params["filtr"])
         return cls(**params)
+
+    def tree_flatten(self):
+        attributes = ("nz", "ny", "nx", "dt", "rek")
+        children = [getattr(self, attr) for attr in attributes]
+        return children, attributes
+
+    @classmethod
+    def tree_unflatten(cls, aux_data, children):
+        # Merge together into dictionary of arguments to construct new object
+        return cls(**dict(zip(aux_data, children)))

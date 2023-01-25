@@ -11,6 +11,8 @@ import jax.random
 from . import model
 from .kernel import DTYPE_COMPLEX, DTYPE_REAL
 
+
+@jax.tree_util.register_pytree_node_class
 class QGModel(model.Model):
     def __init__(
             self,
@@ -26,34 +28,73 @@ class QGModel(model.Model):
         self.beta = beta
         self.rd = rd
         self.delta = delta
-        self.Hi = jnp.array([H1, H1/delta], dtype=DTYPE_REAL)
         self.U1 = U1
         self.U2 = U2
         self.H1 = H1
 
-        # initialize background, inversion matrix, forcing
+    @property
+    def U(self):
+        return self.U1 - self.U2
 
-        # INITIALIZE BACKGROUND
-        self.H = self.Hi.sum()
-        self.Ubg = jnp.array([self.U1, self.U2], dtype=DTYPE_REAL)
-        self.U = self.U1 - self.U2
-        # The F parameters
-        self.F1 = self.rd**-2 / (1 + self.delta)
-        self.F2 = self.delta * self.F1
-        # The meridional PV gradients in each layer
-        self.Qy1 = self.beta + self.F1 * (self.U1 - self.U2)
-        self.Qy2 = self.beta - self.F2 * (self.U1 - self.U2)
-        self.Qy = jnp.array([self.Qy1, self.Qy2], dtype=DTYPE_REAL)
-        self._ikQy = 1j * (jnp.expand_dims(self.kk, 0) * jnp.expand_dims(self.Qy, -1))
-        # complex versions, multiplied by k, speeds up computations to precompute
-        self.ikQy1 = self.Qy1 * 1j * self.k
-        self.ikQy2 = self.Qy2 * 1j * self.k
-        # vector version
-        self.ikQy = jnp.vstack([jnp.expand_dims(self.ikQy1, axis=0), jnp.expand_dims(self.ikQy2, axis=0)])
-        self.ilQx = 0
-        #layer spacing
-        self.del1 = self.delta / (self.delta + 1)
-        self.del2 = (self.delta + 1) ** -1
+    @property
+    def Hi(self):
+        return jnp.array([self.H1, self.H1/self.delta], dtype=DTYPE_REAL)
+
+    @property
+    def H(self):
+        return self.Hi.sum()
+
+    @property
+    def Ubg(self):
+        return jnp.array([self.U1, self.U2], dtype=DTYPE_REAL)
+
+    @property
+    def F1(self):
+        return self.rd**-2 / (1 + self.delta)
+
+    @property
+    def F2(self):
+        return self.delta * self.F1
+
+    @property
+    def Qy1(self):
+        return self.beta + self.F1 * (self.U1 - self.U2)
+
+    @property
+    def Qy2(self):
+        return self.beta - self.F2 * (self.U1 - self.U2)
+
+    @property
+    def Qy(self):
+        return jnp.array([self.Qy1, self.Qy2], dtype=DTYPE_REAL)
+
+    @property
+    def _ikQy(self):
+        return 1j * (jnp.expand_dims(self.kk, 0) * jnp.expand_dims(self.Qy, -1))
+
+    @property
+    def ikQy1(self):
+        return self.Qy1 * 1j * self.k
+
+    @property
+    def ikQy2(self):
+        return self.Qy2 * 1j * self.k
+
+    @property
+    def ikQy(self):
+        return jnp.vstack([jnp.expand_dims(self.ikQy1, axis=0), jnp.expand_dims(self.ikQy2, axis=0)])
+
+    @property
+    def ilQx(self):
+        return 0
+
+    @property
+    def del1(self):
+        return self.delta / (self.delta + 1)
+
+    @property
+    def del2(self):
+        return (self.delta + 1) ** -1
 
         # INITIALIZE FORCING (nothing to do)
 
@@ -113,21 +154,14 @@ class QGModel(model.Model):
         ph = jnp.concatenate([ph_head, ph_tail], axis=0).reshape(qh_orig_shape)
         return jnp.moveaxis(ph, -1, 0)
 
-    def param_json(self):
-        super_params = json.loads(super().param_json())
-        del super_params["nz"]
-        super_params.update(
-            {
-                "beta": self.beta,
-                "rd": self.rd,
-                "delta": self.delta,
-                "H1": self.H1,
-                "U1": self.U1,
-                "U2": self.U2,
-            }
-        )
-        return json.dumps(super_params)
-
-    @classmethod
-    def from_param_json(cls, param_str):
-        return cls(**json.loads(param_str))
+    def tree_flatten(self):
+        attributes = ["beta", "rd", "delta", "H1", "U1", "U2"]
+        children = [getattr(self, attr) for attr in attributes]
+        super_children, super_aux = super().tree_flatten()
+        for key, val in zip(super_aux, super_children, strict=True):
+            if key == "nz":
+                # Need to remove parameter nz since QGModel sets it internally
+                continue
+            attributes.append(key)
+            children.append(val)
+        return children, tuple(attributes)
