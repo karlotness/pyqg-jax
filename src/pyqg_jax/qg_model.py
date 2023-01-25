@@ -1,3 +1,7 @@
+# Copyright Karl Otness
+# SPDX-License-Identifier: MIT
+
+
 import dataclasses
 import math
 import json
