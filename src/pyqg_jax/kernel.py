@@ -111,20 +111,20 @@ class PseudoSpectralKernel:
 
         new_state = PseudoSpectralKernelState(
             # FFT I/O
-            q=_empty_real(),
-            ph=_empty_com(),
-            u=_empty_real(),
-            v=_empty_real(),
-            uq=_empty_real(),
-            vq=_empty_real(),
+            q = _empty_real(),
+            ph = _empty_com(),
+            u = _empty_real(),
+            v = _empty_real(),
+            uq = _empty_real(),
+            vq = _empty_real(),
             # Time stuff
-            t=DTYPE_REAL(0),
-            tc=DTYPE_INT(0),
-            ablevel=jnp.uint8(0),
+            t = DTYPE_REAL(0),
+            tc = DTYPE_INT(0),
+            ablevel = jnp.uint8(0),
             # The tendency
-            dqhdt=_empty_com(),
-            dqhdt_p=_empty_com(),
-            dqhdt_pp=_empty_com(),
+            dqhdt = _empty_com(),
+            dqhdt_p = _empty_com(),
+            dqhdt_pp = _empty_com(),
         )
         return new_state
 
