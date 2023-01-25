@@ -1,7 +1,18 @@
 # Editor files
 *~
+.dir-locals-2.el
+.vscode/
 
 # Python scratch files
 __pycache__/
 *.pyc
 *.pyo
+
+# Build files and directories
+*.whl
+*.tar
+*.tar.*
+*.zip
+*.egg-info/
+build/
+dist/
