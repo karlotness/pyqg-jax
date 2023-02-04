@@ -12,3 +12,7 @@ ported.
 To run the ported code you will need a few dependencies:
 - `jax`
 - `numpy`
+
+## License
+The code in this repository is distributed under the MIT license. See
+LICENSE.txt for the license text.
