@@ -13,6 +13,7 @@ authors = [
 ]
 dependencies = [
   "jax>=0.3.21",
+  "jaxtyping",
 ]
 classifiers = [
   "Development Status :: 2 - Pre-Alpha",
