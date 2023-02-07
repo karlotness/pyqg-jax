@@ -40,8 +40,9 @@ def register_pytree_node_class_private(cls: C) -> C:
 
 
 def register_pytree_dataclass(cls: Class) -> Class:
+    fields = tuple(f.name for f in dataclasses.fields(cls))
+
     def flatten(obj):
-        fields = tuple(f.name for f in dataclasses.fields(cls))
         return [getattr(obj, name) for name in fields], fields
 
     def unflatten(aux_data, flat_contents):
