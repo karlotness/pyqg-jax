@@ -32,3 +32,8 @@ classifiers = [
   "Programming Language :: Python :: 3.11",
 ]
 dynamic = ["version"]
+
+[project.urls]
+Homepage = "https://github.com/karlotness/pyqg-jax"
+"Source Code" = "https://github.com/karlotness/pyqg-jax"
+"Bug Tracker" = "https://github.com/karlotness/pyqg-jax/issues"
