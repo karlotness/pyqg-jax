@@ -7,7 +7,7 @@ name = "pyqg_jax"
 description = "Port of PyQG to JAX"
 readme = "README.md"
 requires-python = ">=3.8"
-license = {file = "LICENSE.txt"}
+license = {text = "MIT"}
 authors = [
   {name = "Karl Otness"},
 ]
