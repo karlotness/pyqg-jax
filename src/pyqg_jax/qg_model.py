@@ -32,10 +32,10 @@ class QGModel(_model.Model):
         self.U2 = U2
         self.H1 = H1
 
-    def create_initial_state(self, rng):
+    def create_initial_state(self, key):
         state = super().create_initial_state()
         # initial conditions (pv anomalies)
-        rng_a, rng_b = jax.random.split(rng, num=2)
+        rng_a, rng_b = jax.random.split(key, num=2)
         q1 = 1e-7 * jax.random.uniform(rng_a, shape=(self.ny, self.nx), dtype=self._dtype_real) + 1e-6 * (jnp.ones((self.ny, 1), dtype=self._dtype_real) * jax.random.uniform(rng_b, shape=(1, self.nx), dtype=self._dtype_real))
         q2 = jnp.zeros_like(self.x, dtype=self._dtype_real)
         state = state.update(q=jnp.vstack([jnp.expand_dims(q1, axis=0), jnp.expand_dims(q2, axis=0)]))
