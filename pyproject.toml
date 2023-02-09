@@ -3,7 +3,7 @@ requires = ["flit_core >=3.2,<4"]
 build-backend = "flit_core.buildapi"
 
 [project]
-name = "pyqg_jax"
+name = "pyqg-jax"
 description = "Port of PyQG to JAX"
 readme = "README.md"
 requires-python = ">=3.8"
