@@ -30,23 +30,24 @@ class StepperState(typing.Generic[P]):
 
     @classmethod
     def _tree_unflatten(cls, aux_data, children):
-        return cls(**dict(zip(aux_data, children)))
+        obj = cls.__new__(cls)
+        for name, val in zip(aux_data, children):
+            setattr(obj, name, val)
+        return obj
 
 
 @_utils.register_pytree_node_class_private
 class AB3State(StepperState[P]):
     def __init__(self, state: P, t: float, tc: int, ablevel: int, updates: typing.Tuple[P, P]):
         super().__init__(state=state, t=t, tc=tc)
-        self._ablevel: int = jnp.uint8(0) if ablevel is None else ablevel
+        self._ablevel: int = jnp.uint8(ablevel)
         self._updates: typing.Tuple[P, P] = updates
 
     def _tree_flatten(self):
         super_children, super_attrs = super()._tree_flatten()
-        attr_names = ["ablevel", "updates"]
-        attr_names.extend(super_attrs)
-        children = [self._ablevel, self._updates]
-        children.extend(super_children)
-        return children, tuple(attr_names)
+        attr_names = (*super_attrs, "_ablevel", "_updates")
+        children = [*super_children, self._ablevel, self._updates]
+        return children, attr_names
 
 
 @_utils.register_pytree_node_class_private
@@ -81,7 +82,7 @@ class AB3Stepper:
             updates_p,
             updates_pp,
         )
-        new_t = stepper_state.t + self.dt
+        new_t = stepper_state.t + jnp.float32(self.dt)
         new_tc = stepper_state.tc + 1
         new_updates = (updates, updates_p)
         return AB3State(
@@ -97,4 +98,6 @@ class AB3Stepper:
 
     @classmethod
     def _tree_unflatten(cls, aux_data, children):
-        return cls(dt=children[0])
+        obj = cls.__new__(cls)
+        obj.dt = children[0]
+        return obj
