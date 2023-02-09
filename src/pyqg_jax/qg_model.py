@@ -2,17 +2,18 @@
 # SPDX-License-Identifier: MIT
 
 
-import dataclasses
+__all__ = ["QGModel"]
+
+
 import math
 import jax
 import jax.numpy as jnp
 import jax.random
-from . import model
-from .kernel import DTYPE_COMPLEX, DTYPE_REAL
+from . import _model, _utils
 
 
-@jax.tree_util.register_pytree_node_class
-class QGModel(model.Model):
+@_utils.register_pytree_node_class_private
+class QGModel(_model.Model):
     def __init__(
             self,
             beta=1.5e-11,
@@ -31,13 +32,22 @@ class QGModel(model.Model):
         self.U2 = U2
         self.H1 = H1
 
+    def create_initial_state(self, rng):
+        state = super().create_initial_state()
+        # initial conditions (pv anomalies)
+        rng_a, rng_b = jax.random.split(rng, num=2)
+        q1 = 1e-7 * jax.random.uniform(rng_a, shape=(self.ny, self.nx), dtype=self._dtype_real) + 1e-6 * (jnp.ones((self.ny, 1), dtype=self._dtype_real) * jax.random.uniform(rng_b, shape=(1, self.nx), dtype=self._dtype_real))
+        q2 = jnp.zeros_like(self.x, dtype=self._dtype_real)
+        state = state.update(q=jnp.vstack([jnp.expand_dims(q1, axis=0), jnp.expand_dims(q2, axis=0)]))
+        return state
+
     @property
     def U(self):
         return self.U1 - self.U2
 
     @property
     def Hi(self):
-        return jnp.array([self.H1, self.H1/self.delta], dtype=DTYPE_REAL)
+        return jnp.array([self.H1, self.H1/self.delta], dtype=self._dtype_real)
 
     @property
     def H(self):
@@ -45,7 +55,7 @@ class QGModel(model.Model):
 
     @property
     def Ubg(self):
-        return jnp.array([self.U1, self.U2], dtype=DTYPE_REAL)
+        return jnp.array([self.U1, self.U2], dtype=self._dtype_real)
 
     @property
     def F1(self):
@@ -65,7 +75,7 @@ class QGModel(model.Model):
 
     @property
     def Qy(self):
-        return jnp.array([self.Qy1, self.Qy2], dtype=DTYPE_REAL)
+        return jnp.array([self.Qy1, self.Qy2], dtype=self._dtype_real)
 
     @property
     def _ikQy(self):
@@ -94,20 +104,6 @@ class QGModel(model.Model):
     @property
     def del2(self):
         return (self.delta + 1) ** -1
-
-        # INITIALIZE FORCING (nothing to do)
-
-    def _set_q1q2(self, state, q1, q2):
-        return self.set_q(state, jnp.vstack([jnp.expand_dims(q1, axis=0), jnp.expand_dims(q2, axis=0)]))
-
-    def create_initial_state(self, rng):
-        state = super().create_initial_state()
-        # initial conditions (pv anomalies)
-        rng_a, rng_b = jax.random.split(rng, num=2)
-        q1 = 1e-7 * jax.random.uniform(rng_a, shape=(self.ny, self.nx), dtype=DTYPE_REAL) + 1e-6 * (jnp.ones((self.ny, 1), dtype=DTYPE_REAL) * jax.random.uniform(rng_b, shape=(1, self.nx), dtype=DTYPE_REAL))
-        q2 = jnp.zeros_like(self.x, dtype=DTYPE_REAL)
-        state = self._set_q1q2(state, q1, q2)
-        return state
 
     def _apply_a_ph(self, state):
         qh = jnp.moveaxis(state.qh, 0, -1)
@@ -146,21 +142,17 @@ class QGModel(model.Model):
             (-2, -1)
         ).reshape((-1, 2, 2))[1:]
         # Solve the system for the tail
-        ph_tail = jnp.linalg.solve(inv_mat2, qh[1:].astype(jnp.complex128)).astype(DTYPE_COMPLEX)
+        ph_tail = jnp.linalg.solve(inv_mat2, qh[1:].astype(jnp.complex128)).astype(self._dtype_complex)
         # Fill zeros for the head
         ph_head = jnp.expand_dims(jnp.zeros_like(qh[0]), 0)
         # Combine and return
         ph = jnp.concatenate([ph_head, ph_tail], axis=0).reshape(qh_orig_shape)
         return jnp.moveaxis(ph, -1, 0)
 
-    def tree_flatten(self):
-        attributes = ["beta", "rd", "delta", "H1", "U1", "U2"]
-        children = [getattr(self, attr) for attr in attributes]
-        super_children, super_aux = super().tree_flatten()
-        for key, val in zip(super_aux, super_children, strict=True):
-            if key == "nz":
-                # Need to remove parameter nz since QGModel sets it internally
-                continue
-            attributes.append(key)
-            children.append(val)
-        return children, tuple(attributes)
+    def _tree_flatten(self):
+        super_children, (super_attrs, super_static_vals, super_static_attrs) = super()._tree_flatten()
+        new_attrs = ("beta", "rd", "delta", "U1", "U2", "H1")
+        new_children = [getattr(self, name) for name in new_attrs]
+        children = [*super_children, *new_children]
+        new_attrs = (*super_attrs, *new_attrs)
+        return children, (new_attrs, super_static_vals, super_static_attrs)
