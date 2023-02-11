@@ -55,15 +55,16 @@ A short example initializing a `QGModel` and taking a single step.
 >>> import pyqg_jax
 >>> import jax
 >>> # Construct model and time-stepper
->>> model = pyqg_jax.qg_model.QGModel()
->>> stepper = steppers.AB3Stepper(dt=7200.0)
+>>> stepped_model = pyqg_jax.steppers.SteppedModel(
+...     model=pyqg_jax.qg_model.QGModel(),
+...     stepper=pyqg_jax.steppers.AB3Stepper(dt=3600.0),
+... )
 >>> # Initialize the model state, and wrap in the time-stepping state
->>> stepper_state = stepper.initialize_stepper_state(
-...     model.create_initial_state(jax.random.PRNGKey(0))
+>>> stepper_state = stepped_model.create_initial_state(
+...     jax.random.PRNGKey(0)
 ... )
 >>> # Compute next state
->>> state_updates = model.get_updates(stepper_state.state)
->>> next_stepper_state = stepper.apply_updates(stepper_state, state_updates)
+>>> next_stepper_state = stepped_model.step_model(stepper_state)
 >>> # Extract the result
 >>> final_q = next_stepper_state.state.q
 ```
@@ -76,13 +77,18 @@ A subset of methods and attributes available on common objects
   - `create_initial_state(jax.random.PRNGKey) -> PseudoSpectralState`: Randomly initializes the model
   - `get_full_state(PseudoSpectralState) -> FullPseudoSpectralState`: Expands the state, computing other attributes from `q`
   - `get_updates(PseudoSpectralState) -> PseudoSpectralState`: Computes time updates for `qh`. Combine with a time-stepper
-- For `pyqg_jax.steppers.AB3Stepper`
+- For `pyqg_jax.steppers.AB3Stepper(dt=float)`
   - `initialize_stepper_state(PseudoSpectralState) -> AB3State[PseudoSpectralState]`: Initialize a time-stepper state around a model state
-  - `apply_updates(AB3State[PseudoSpectralState], updates=PseudoSpectralState) -> AB3State[PseudoSpectralState]`: Apply model updates to a time stepper state
+  - `apply_updates(AB3State[PseudoSpectralState], updates=PseudoSpectralState, postprocess_state=model.postprocess_state) -> AB3State[PseudoSpectralState]`: Apply model updates to a time stepper state
 - For `pyqg_jax.steppers.AB3State`
   - `state`: extract the `PseudoSpectralState` at the current time
   - `t`: the current time
   - `tc`: the current step counter
+- For `pyqg_jax.steppers.SteppedModel(model, stepper)`
+  - `create_initial_state(key=jax.random.PRNGKey) -> StepperState[PseudoSpectralState]`: Create a new, random, state ready to step
+  - `initialize_stepper_state(PseudoSpectralState) -> StepperState[PseudoSpectralState]`: Wraps an existing model state to prepare it for time stepping
+  - `step_model(StepperState[PseudoSpectralState]) -> StepperState[PseudoSpectralState]`: Steps the model forward, and handles filtering
+  - `get_full_state(StepperState[PseudoSpectralState]) -> FullPseudoSpectralState`: Extracts the state and expands it, computing all attributes from `q`
 - For `pyqg_jax.state.PseudoSpectralState`
   - `q`: The potential vorticity
   - `qh`: Spectral form of potential vorticity

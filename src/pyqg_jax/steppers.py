@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MIT
 
 
-__all__ = ["AB3Stepper", "AB3State"]
+__all__ = ["SteppedModel", "AB3Stepper", "AB3State"]
 
 
 import typing
@@ -34,6 +34,55 @@ class StepperState(typing.Generic[P]):
         return obj
 
 
+S = typing.TypeVar("S", bound=StepperState)
+
+
+class Stepper:
+    def __init__(self, dt: float):
+        self.dt = float(dt)
+
+    def initialize_stepper_state(self, state):
+        raise NotImplementedError("implement in a subclass")
+
+    def apply_updates(self, stepper_state, updates, postprocess_state=None):
+        raise NotImplementedError("implement in a subclass")
+
+
+@_utils.register_pytree_node_class_private
+class SteppedModel:
+    def __init__(self, model, stepper):
+        self.model = model
+        self.stepper = stepper
+
+    def create_initial_state(self, key):
+        model_state = self.model.create_initial_state(key=key)
+        return self.initialize_stepper_state(model_state)
+
+    def initialize_stepper_state(self, state, /):
+        return self.stepper.initialize_stepper_state(state)
+
+    def step_model(self, stepper_state, /):
+        return self.stepper.apply_updates(
+            stepper_state,
+            self.model.get_updates(stepper_state.state),
+            postprocess_state=self.model.postprocess_state,
+        )
+
+    def get_full_state(self, stepper_state, /):
+        return self.model.get_full_state(stepper_state.state)
+
+    def _tree_flatten(self):
+        return (self.model, self.stepper), None
+
+    @classmethod
+    def _tree_unflatten(cls, aux_data, children):
+        model, stepper = children
+        obj = cls.__new__(cls)
+        obj.model = model
+        obj.stepper = stepper
+        return obj
+
+
 @_utils.register_pytree_node_class_private
 class AB3State(StepperState[P]):
     def __init__(
@@ -51,9 +100,9 @@ class AB3State(StepperState[P]):
 
 
 @_utils.register_pytree_node_class_private
-class AB3Stepper:
+class AB3Stepper(Stepper):
     def __init__(self, dt: float):
-        self.dt = float(dt)
+        super().__init__(dt=dt)
 
     def initialize_stepper_state(self, state: P) -> AB3State[P]:
         dummy_update: P = jax.tree_util.tree_map(jnp.zeros_like, state)
@@ -65,7 +114,12 @@ class AB3Stepper:
             updates=(dummy_update, dummy_update),
         )
 
-    def apply_updates(self, stepper_state: AB3State[P], updates: P) -> AB3State[P]:
+    def apply_updates(
+        self,
+        stepper_state: AB3State[P],
+        updates: P,
+        postprocess_state: typing.Optional[typing.Callable[[P], P]] = None,
+    ) -> AB3State[P]:
         new_ablevel, dt1, dt2, dt3 = jax.lax.switch(
             stepper_state._ablevel,
             [
@@ -87,6 +141,8 @@ class AB3Stepper:
             updates_p,
             updates_pp,
         )
+        if postprocess_state is not None:
+            new_state = postprocess_state(new_state)
         new_t = stepper_state.t + jnp.float32(self.dt)
         new_tc = stepper_state.tc + 1
         new_updates = (updates, updates_p)

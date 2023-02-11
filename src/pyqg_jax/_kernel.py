@@ -87,6 +87,11 @@ class PseudoSpectralKernel:
             qh=full_state.dqhdt,
         )
 
+    def postprocess_state(
+        self, state: _state.PseudoSpectralState
+    ) -> _state.PseudoSpectralState:
+        return state.update(qh=jnp.expand_dims(self.filtr, 0) * state.qh)
+
     def create_initial_state(self) -> _state.PseudoSpectralState:
         return _state.PseudoSpectralState(
             qh=jnp.zeros((self.nz, self.nl, self.nk), dtype=self._dtype_complex)
