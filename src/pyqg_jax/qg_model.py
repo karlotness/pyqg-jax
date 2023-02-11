@@ -8,7 +8,6 @@ __all__ = ["QGModel"]
 import math
 import jax
 import jax.numpy as jnp
-import jax.random
 from . import _model, _utils
 
 
