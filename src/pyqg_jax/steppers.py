@@ -53,7 +53,7 @@ class AB3State(StepperState[P]):
 @_utils.register_pytree_node_class_private
 class AB3Stepper:
     def __init__(self, dt: float):
-        self.dt = dt
+        self.dt = float(dt)
 
     def initialize_stepper_state(self, state: P) -> AB3State[P]:
         dummy_update: P = jax.tree_util.tree_map(jnp.zeros_like, state)
