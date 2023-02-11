@@ -3,8 +3,7 @@
 
 
 import jax.numpy as jnp
-from . import _kernel, _utils
-from . import state
+from . import _kernel, _utils, state
 
 
 def _grid_xy(nx, ny, L, W, dtype_real):
