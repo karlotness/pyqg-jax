@@ -45,3 +45,14 @@ addopts = [
   "--import-mode=importlib",
   "--capture=no",
 ]
+
+[tool.ruff]
+target-version = "py38"
+select = ["E", "F", "W", "B", "RUF", "UP", "C4", "YTT", "T10", "T20", "PL", "ICN", "SIM"]
+ignore = ["E741", "E743", "PLR2004", "PLR0913", "UP015", "SIM108"]
+exclude = ["docs/_build/"]
+src = ["src"]
+line-length = 88
+respect-gitignore = false
+fix = false
+update-check = false
