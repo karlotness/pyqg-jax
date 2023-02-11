@@ -5,9 +5,7 @@
 __all__ = ["AB3Stepper", "AB3State"]
 
 
-import dataclasses
 import typing
-import types
 import jax
 import jax.numpy as jnp
 import jaxtyping
@@ -38,7 +36,9 @@ class StepperState(typing.Generic[P]):
 
 @_utils.register_pytree_node_class_private
 class AB3State(StepperState[P]):
-    def __init__(self, state: P, t: float, tc: int, ablevel: int, updates: typing.Tuple[P, P]):
+    def __init__(
+        self, state: P, t: float, tc: int, ablevel: int, updates: typing.Tuple[P, P]
+    ):
         super().__init__(state=state, t=t, tc=tc)
         self._ablevel: int = jnp.uint8(ablevel)
         self._updates: typing.Tuple[P, P] = updates
@@ -71,7 +71,12 @@ class AB3Stepper:
             [
                 lambda: (jnp.uint8(1), self.dt, 0.0, 0.0),
                 lambda: (jnp.uint8(2), 1.5 * self.dt, -0.5 * self.dt, 0.0),
-                lambda: (jnp.uint8(2), (23 / 12) * self.dt, (-16 / 12) * self.dt, (5 / 12) * self.dt),
+                lambda: (
+                    jnp.uint8(2),
+                    (23 / 12) * self.dt,
+                    (-16 / 12) * self.dt,
+                    (5 / 12) * self.dt,
+                ),
             ],
         )
         updates_p, updates_pp = stepper_state._updates
@@ -90,11 +95,11 @@ class AB3Stepper:
             t=new_t,
             tc=new_tc,
             ablevel=new_ablevel,
-            updates=new_updates
+            updates=new_updates,
         )
 
     def _tree_flatten(self):
-        return (self.dt, ), None
+        return (self.dt,), None
 
     @classmethod
     def _tree_unflatten(cls, aux_data, children):

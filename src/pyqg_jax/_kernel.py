@@ -10,8 +10,9 @@ import jax.numpy as jnp
 from . import _utils, state as _state
 
 
-def _zeros_property(shape: typing.Tuple[typing.Union[int, str], ...], dtype) -> property:
-
+def _zeros_property(
+    shape: typing.Tuple[typing.Union[int, str], ...], dtype
+) -> property:
     def get_zeros(self):
         new_shape = []
         for shape_elem in shape:
@@ -32,8 +33,14 @@ def _zeros_property(shape: typing.Tuple[typing.Union[int, str], ...], dtype) -> 
 
 @_utils.register_pytree_node_class_private
 class PseudoSpectralKernel:
-
-    def __init__(self, nz: int, ny:int, nx: int, rek: float = 0, precision: _state.Precision = _state.Precision.SINGLE):
+    def __init__(
+        self,
+        nz: int,
+        ny: int,
+        nx: int,
+        rek: float = 0,
+        precision: _state.Precision = _state.Precision.SINGLE,
+    ):
         # Store small, fundamental properties (others will be computed on demand)
         self.nz = nz
         self.ny = ny
@@ -49,7 +56,9 @@ class PseudoSpectralKernel:
         else:
             raise ValueError("invalid choice for precision")
 
-    def get_full_state(self, state: _state.PseudoSpectralState) -> _state.FullPseudoSpectralState:
+    def get_full_state(
+        self, state: _state.PseudoSpectralState
+    ) -> _state.FullPseudoSpectralState:
         def _empty_real():
             return jnp.zeros((self.nz, self.ny, self.nx), dtype=self._dtype_real)
 
@@ -70,7 +79,9 @@ class PseudoSpectralKernel:
         full_state = self._do_friction(full_state)
         return full_state
 
-    def get_updates(self, state: _state.PseudoSpectralState) -> _state.PseudoSpectralState:
+    def get_updates(
+        self, state: _state.PseudoSpectralState
+    ) -> _state.PseudoSpectralState:
         full_state = self.get_full_state(state)
         return _state.PseudoSpectralState(
             qh=full_state.dqhdt,
@@ -106,7 +117,9 @@ class PseudoSpectralKernel:
     def _ikQy(self):
         raise NotImplementedError("define _ikQy property in subclass")
 
-    def _invert(self, state: _state.FullPseudoSpectralState) -> _state.FullPseudoSpectralState:
+    def _invert(
+        self, state: _state.FullPseudoSpectralState
+    ) -> _state.FullPseudoSpectralState:
         # Set ph to zero (skip, recompute fresh from sum below)
         # invert qh to find ph
         ph = self._apply_a_ph(state)
@@ -119,20 +132,26 @@ class PseudoSpectralKernel:
         # Update state values
         return state.update(ph=ph, u=u, v=v)
 
-    def _do_advection(self, state: _state.FullPseudoSpectralState) -> _state.FullPseudoSpectralState:
+    def _do_advection(
+        self, state: _state.FullPseudoSpectralState
+    ) -> _state.FullPseudoSpectralState:
         # multiply to get advective flux in space
-        uq = (state.u + jnp.expand_dims(self.Ubg[:self.nz], (-1, -2))) * state.q
-        vq = state.v  * state.q
+        uq = (state.u + jnp.expand_dims(self.Ubg[: self.nz], (-1, -2))) * state.q
+        vq = state.v * state.q
         # transform to get spectral advective flux
         uqh = _state._generic_rfftn(uq)
         vqh = _state._generic_rfftn(vq)
         # spectral divergence
-        dqhdt = -1 * (jnp.expand_dims(self._ik, (0, 1)) * uqh +
-                      jnp.expand_dims(self._il, (0, -1)) * vqh +
-                      jnp.expand_dims(self._ikQy[:self.nz], 1) * state.ph)
+        dqhdt = -1 * (
+            jnp.expand_dims(self._ik, (0, 1)) * uqh
+            + jnp.expand_dims(self._il, (0, -1)) * vqh
+            + jnp.expand_dims(self._ikQy[: self.nz], 1) * state.ph
+        )
         return state.update(uq=uq, vq=vq, dqhdt=dqhdt)
 
-    def _do_friction(self, state: _state.FullPseudoSpectralState) -> _state.FullPseudoSpectralState:
+    def _do_friction(
+        self, state: _state.FullPseudoSpectralState
+    ) -> _state.FullPseudoSpectralState:
         # Apply Beckman friction to lower layer tendency
 
         def compute_friction(state):
@@ -140,8 +159,10 @@ class PseudoSpectralKernel:
             dqhdt = jnp.concatenate(
                 [
                     state.dqhdt[:k],
-                    jnp.expand_dims(state.dqhdt[k] + (self.rek * self._k2l2 * state.ph[k]), 0),
-                    state.dqhdt[(k+1):],
+                    jnp.expand_dims(
+                        state.dqhdt[k] + (self.rek * self._k2l2 * state.ph[k]), 0
+                    ),
+                    state.dqhdt[(k + 1) :],
                 ],
                 axis=0,
             )
@@ -160,8 +181,15 @@ class PseudoSpectralKernel:
         return ph
 
     def _tree_flatten(self):
-        static_attributes = ("nz", "ny", "nx", "_precision", "_dtype_real", "_dtype_complex")
-        child_attributes = ("rek", )
+        static_attributes = (
+            "nz",
+            "ny",
+            "nx",
+            "_precision",
+            "_dtype_real",
+            "_dtype_complex",
+        )
+        child_attributes = ("rek",)
         child_vals = [getattr(self, attr) for attr in child_attributes]
         static_vals = [getattr(self, attr) for attr in static_attributes]
         return child_vals, (child_attributes, static_vals, static_attributes)
@@ -171,8 +199,8 @@ class PseudoSpectralKernel:
         child_attributes, static_vals, static_attributes = aux_data
         obj = cls.__new__(cls)
         for name, val in itertools.chain(
-                zip(child_attributes, children),
-                zip(static_attributes, static_vals),
+            zip(child_attributes, children),
+            zip(static_attributes, static_vals),
         ):
             setattr(obj, name, val)
         return obj

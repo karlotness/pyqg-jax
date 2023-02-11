@@ -7,6 +7,7 @@ __all__ = ["Precision", "PseudoSpectralState", "FullPseudoSpectralState"]
 
 import enum
 import dataclasses
+import typing
 import jax.numpy as jnp
 from . import _utils
 
@@ -14,7 +15,6 @@ from . import _utils
 class Precision(enum.Enum):
     SINGLE = enum.auto()
     DOUBLE = enum.auto()
-
 
 
 def _generic_rfftn(a):
@@ -26,9 +26,10 @@ def _generic_irfftn(a):
 
 
 def _add_fft_properties(fields):
-
     def make_getter(field):
-        getter = lambda self: _generic_rfftn(getattr(self, field))
+        def getter(self):
+            return _generic_rfftn(getattr(self, field))
+
         return getter
 
     def add_properties(cls):
@@ -53,16 +54,16 @@ class PseudoSpectralState:
         return _generic_irfftn(self.qh)
 
     @typing.overload
-    def update(self, *, q: jaxtyping.Array) -> "PseudoSpectralState":
+    def update(self, *, q: jnp.ndarray) -> "PseudoSpectralState":
         ...
 
     @typing.overload
-    def update(self, *, qh: jaxtyping.Array) -> "PseudoSpectralState":
+    def update(self, *, qh: jnp.ndarray) -> "PseudoSpectralState":
         ...
 
     def update(self, **kwargs) -> "PseudoSpectralState":
         if len(kwargs) > 1:
-            raise ValueError(f"duplicate updates for q (don't specify both spectral and non-spectral updates)")
+            raise ValueError("duplicate updates for q (specified q and qh)")
         if "q" in kwargs:
             new_qh = _generic_irfftn(kwargs["q"])
         else:
@@ -98,7 +99,9 @@ class FullPseudoSpectralState:
     def update(self, **kwargs) -> "FullPseudoSpectralState":
         new_values = {}
         if "state" in kwargs:
-            raise ValueError("do not update attribute 'state' directly, update individual fields")
+            raise ValueError(
+                "do not update attribute 'state' directly, update individual fields"
+            )
         for name, new_val in kwargs.items():
             if name in {"q", "qh"}:
                 # Special handling for q and qh, make spectral and assign to state
@@ -110,11 +113,15 @@ class FullPseudoSpectralState:
                 new_val = _generic_irfftn(new_val)
             # Check that we don't have duplicate destinations
             if name in new_values:
-                raise ValueError(f"duplicate updates for {name} (don't specify both spectral and non-spectral updates)")
+                raise ValueError(f"duplicate updates for {name}")
             # Check that shapes and dtypes match
-            if getattr(getattr(self, name), "shape", None) != getattr(new_val, "shape", None):
+            if getattr(getattr(self, name), "shape", None) != getattr(
+                new_val, "shape", None
+            ):
                 raise ValueError(f"found mismatched shapes for {name}")
-            if getattr(getattr(self, name), "dtype", None) != getattr(new_val, "dtype", None):
+            if getattr(getattr(self, name), "dtype", None) != getattr(
+                new_val, "dtype", None
+            ):
                 raise ValueError(f"found mismatched dtypes for {name}")
             # Set up the actual replacement
             new_values[name] = new_val

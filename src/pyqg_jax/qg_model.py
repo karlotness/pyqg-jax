@@ -14,14 +14,14 @@ from . import _model, _utils
 @_utils.register_pytree_node_class_private
 class QGModel(_model.Model):
     def __init__(
-            self,
-            beta=1.5e-11,
-            rd=15000.0,
-            delta=0.25,
-            H1=500,
-            U1=0.025,
-            U2=0.0,
-            **kwargs,
+        self,
+        beta=1.5e-11,
+        rd=15000.0,
+        delta=0.25,
+        H1=500,
+        U1=0.025,
+        U2=0.0,
+        **kwargs,
     ):
         super().__init__(nz=2, **kwargs)
         self.beta = beta
@@ -35,9 +35,16 @@ class QGModel(_model.Model):
         state = super().create_initial_state()
         # initial conditions (pv anomalies)
         rng_a, rng_b = jax.random.split(key, num=2)
-        q1 = 1e-7 * jax.random.uniform(rng_a, shape=(self.ny, self.nx), dtype=self._dtype_real) + 1e-6 * (jnp.ones((self.ny, 1), dtype=self._dtype_real) * jax.random.uniform(rng_b, shape=(1, self.nx), dtype=self._dtype_real))
+        q1 = 1e-7 * jax.random.uniform(
+            rng_a, shape=(self.ny, self.nx), dtype=self._dtype_real
+        ) + 1e-6 * (
+            jnp.ones((self.ny, 1), dtype=self._dtype_real)
+            * jax.random.uniform(rng_b, shape=(1, self.nx), dtype=self._dtype_real)
+        )
         q2 = jnp.zeros_like(self.x, dtype=self._dtype_real)
-        state = state.update(q=jnp.vstack([jnp.expand_dims(q1, axis=0), jnp.expand_dims(q2, axis=0)]))
+        state = state.update(
+            q=jnp.vstack([jnp.expand_dims(q1, axis=0), jnp.expand_dims(q2, axis=0)])
+        )
         return state
 
     @property
@@ -46,7 +53,7 @@ class QGModel(_model.Model):
 
     @property
     def Hi(self):
-        return jnp.array([self.H1, self.H1/self.delta], dtype=self._dtype_real)
+        return jnp.array([self.H1, self.H1 / self.delta], dtype=self._dtype_real)
 
     @property
     def H(self):
@@ -90,7 +97,9 @@ class QGModel(_model.Model):
 
     @property
     def ikQy(self):
-        return jnp.vstack([jnp.expand_dims(self.ikQy1, axis=0), jnp.expand_dims(self.ikQy2, axis=0)])
+        return jnp.vstack(
+            [jnp.expand_dims(self.ikQy1, axis=0), jnp.expand_dims(self.ikQy2, axis=0)]
+        )
 
     @property
     def ilQx(self):
@@ -138,10 +147,12 @@ class QGModel(_model.Model):
                 ]
             ),
             (0, 1),
-            (-2, -1)
+            (-2, -1),
         ).reshape((-1, 2, 2))[1:]
         # Solve the system for the tail
-        ph_tail = jnp.linalg.solve(inv_mat2, qh[1:].astype(jnp.complex128)).astype(self._dtype_complex)
+        ph_tail = jnp.linalg.solve(inv_mat2, qh[1:].astype(jnp.complex128)).astype(
+            self._dtype_complex
+        )
         # Fill zeros for the head
         ph_head = jnp.expand_dims(jnp.zeros_like(qh[0]), 0)
         # Combine and return
@@ -149,7 +160,11 @@ class QGModel(_model.Model):
         return jnp.moveaxis(ph, -1, 0)
 
     def _tree_flatten(self):
-        super_children, (super_attrs, super_static_vals, super_static_attrs) = super()._tree_flatten()
+        super_children, (
+            super_attrs,
+            super_static_vals,
+            super_static_attrs,
+        ) = super()._tree_flatten()
         new_attrs = ("beta", "rd", "delta", "U1", "U2", "H1")
         new_children = [getattr(self, name) for name in new_attrs]
         children = [*super_children, *new_children]

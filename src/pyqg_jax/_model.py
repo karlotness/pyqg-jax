@@ -9,9 +9,10 @@ from . import _kernel, _utils, state
 def _grid_xy(nx, ny, L, W, dtype_real):
     x, y = jnp.meshgrid(
         (jnp.arange(0.5, nx, 1.0, dtype=dtype_real) / nx) * L,
-        (jnp.arange(0.5, ny, 1.0, dtype=dtype_real) / ny) * W
+        (jnp.arange(0.5, ny, 1.0, dtype=dtype_real) / ny) * W,
     )
     return x, y
+
 
 def _grid_kl(kk, ll):
     k, l = jnp.meshgrid(kk, ll)
@@ -20,22 +21,21 @@ def _grid_kl(kk, ll):
 
 @_utils.register_pytree_node_class_private
 class Model(_kernel.PseudoSpectralKernel):
-
     def __init__(
-            self,
-            # grid size parameters
-            nz=1,
-            nx=64,
-            ny=None,
-            L=1e6,
-            W=None,
-            # friction parameters
-            rek=5.787e-7,
-            filterfac=23.6,
-            # constants
-            f=None,
-            g=9.81,
-            precision=state.Precision.SINGLE,
+        self,
+        # grid size parameters
+        nz=1,
+        nx=64,
+        ny=None,
+        L=1e6,
+        W=None,
+        # friction parameters
+        rek=5.787e-7,
+        filterfac=23.6,
+        # constants
+        f=None,
+        g=9.81,
+        precision=state.Precision.SINGLE,
     ):
         if ny is None:
             ny = nx
@@ -55,13 +55,16 @@ class Model(_kernel.PseudoSpectralKernel):
         self.g = g
         self.f = f
 
-
-    def get_full_state(self, state: state.PseudoSpectralState) -> state.FullPseudoSpectralState:
+    def get_full_state(
+        self, state: state.PseudoSpectralState
+    ) -> state.FullPseudoSpectralState:
         full_state = super().get_full_state(state)
         full_state = self._do_external_forcing(full_state)
         return full_state
 
-    def _do_external_forcing(self, state: state.FullPseudoSpectralState) -> state.FullPseudoSpectralState:
+    def _do_external_forcing(
+        self, state: state.FullPseudoSpectralState
+    ) -> state.FullPseudoSpectralState:
         return state
 
     @property
@@ -113,7 +116,9 @@ class Model(_kernel.PseudoSpectralKernel):
 
     @property
     def ll(self):
-        return self.dl * jnp.append(jnp.arange(0.0, self.nx / 2), jnp.arange(-self.nx / 2, 0.0)).astype(self._dtype_real)
+        return self.dl * jnp.append(
+            jnp.arange(0.0, self.nx / 2), jnp.arange(-self.nx / 2, 0.0)
+        ).astype(self._dtype_real)
 
     @property
     def _il(self):
@@ -121,7 +126,7 @@ class Model(_kernel.PseudoSpectralKernel):
 
     @property
     def _k2l2(self):
-        return (jnp.expand_dims(self.kk, 0)**2) + (jnp.expand_dims(self.ll, -1)**2)
+        return (jnp.expand_dims(self.kk, 0) ** 2) + (jnp.expand_dims(self.ll, -1) ** 2)
 
     @property
     def kk(self):
@@ -162,12 +167,16 @@ class Model(_kernel.PseudoSpectralKernel):
     @property
     def filtr(self):
         cphi = 0.65 * jnp.pi
-        wvx = jnp.sqrt((self.k * self.dx)**2 + (self.l * self.dy)**2)
-        filtr = jnp.exp(-self.filterfac * (wvx - cphi)**4)
+        wvx = jnp.sqrt((self.k * self.dx) ** 2 + (self.l * self.dy) ** 2)
+        filtr = jnp.exp(-self.filterfac * (wvx - cphi) ** 4)
         return jnp.where(wvx <= cphi, 1, filtr)
 
     def _tree_flatten(self):
-        super_children, (super_attrs, super_static_vals, super_static_attrs) = super()._tree_flatten()
+        super_children, (
+            super_attrs,
+            super_static_vals,
+            super_static_attrs,
+        ) = super()._tree_flatten()
         new_attrs = ("L", "W", "filterfac", "g", "f")
         new_children = [getattr(self, name) for name in new_attrs]
         children = [*super_children, *new_children]
