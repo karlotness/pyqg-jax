@@ -103,17 +103,6 @@ class FullPseudoSpectralState:
                 "do not update attribute 'state' directly, update individual fields"
             )
         for name, new_val in kwargs.items():
-            if name in {"q", "qh"}:
-                # Special handling for q and qh, make spectral and assign to state
-                name = "state"
-                new_val = self.state.update(**{name: new_val})
-            elif name in {"uh", "vh", "uqh", "vqh"}:
-                # Handle other spectral names, store as non-spectral
-                name = name[:-1]
-                new_val = _generic_irfftn(new_val)
-            # Check that we don't have duplicate destinations
-            if name in new_values:
-                raise ValueError(f"duplicate updates for {name}")
             # Check that shapes and dtypes match
             if getattr(getattr(self, name), "shape", None) != getattr(
                 new_val, "shape", None
@@ -123,6 +112,17 @@ class FullPseudoSpectralState:
                 new_val, "dtype", None
             ):
                 raise ValueError(f"found mismatched dtypes for {name}")
+            if name in {"q", "qh"}:
+                # Special handling for q and qh, make spectral and assign to state
+                new_val = self.state.update(**{name: new_val})
+                name = "state"
+            elif name in {"uh", "vh", "uqh", "vqh"}:
+                # Handle other spectral names, store as non-spectral
+                new_val = _generic_irfftn(new_val)
+                name = name[:-1]
+            # Check that we don't have duplicate destinations
+            if name in new_values:
+                raise ValueError(f"duplicate updates for {name}")
             # Set up the actual replacement
             new_values[name] = new_val
         # Produce new object with processed values
