@@ -46,6 +46,17 @@ def test_update_q():
     assert jnp.allclose(new_state.q, 1)
 
 
+def test_update_rejects_duplicate_updates():
+    state = pyqg_jax.state.PseudoSpectralState(
+        qh=jnp.zeros((2, 16, 9), dtype=jnp.complex64)
+    )
+    with pytest.raises(ValueError, match="duplicate"):
+        state.update(
+            q=jnp.ones((2, 16, 16), dtype=jnp.float32),
+            qh=jnp.zeros((2, 16, 9), dtype=jnp.complex64),
+        )
+
+
 @pytest.mark.parametrize("update_name", ["q", "qh"])
 def test_update_rejects_wrong_shape(update_name):
     state = pyqg_jax.state.PseudoSpectralState(
