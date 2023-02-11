@@ -65,7 +65,7 @@ class PseudoSpectralState:
         if len(kwargs) > 1:
             raise ValueError("duplicate updates for q (specified q and qh)")
         if "q" in kwargs:
-            new_qh = _generic_irfftn(kwargs["q"])
+            new_qh = _generic_rfftn(kwargs["q"])
         else:
             new_qh = kwargs["qh"]
         # Check that shape and dtypes match
