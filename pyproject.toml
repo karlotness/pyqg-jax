@@ -43,7 +43,6 @@ minversion = "6.0"
 testpaths = ["tests"]
 addopts = [
   "--import-mode=importlib",
-  "--capture=no",
 ]
 
 [tool.ruff]
