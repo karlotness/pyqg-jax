@@ -23,7 +23,7 @@ jobs:
           echo "Development version. Not releasing."
           exit 1
         fi
-        if [[ ${VERSION} != "v${REF_VERSION}" ]]; then
+        if [[ "v${VERSION}" != "${REF_VERSION}" ]]; then
           echo "Package and tag version do not match. Not releasing."
           exit 1
         fi
