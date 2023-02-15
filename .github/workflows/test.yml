@@ -1,0 +1,62 @@
+name: "Tests"
+on:
+  pull_request:
+  push:
+    branches:
+      - '*'
+permissions:
+  contents: read
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+        persist-credentials: false
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      id: setup-python
+      with:
+        python-version: '3.11'
+    - name: Cache pip downloads
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: pip-lint-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ github.run_id }}
+        restore-keys: pip-lint-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install --upgrade tox
+    - name: Run linters
+      run: python -m tox run -e lint
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      matrix:
+        python: ['3.8', '3.9', '3.10', '3.11']
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+        persist-credentials: false
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      id: setup-python
+      with:
+        python-version: ${{ matrix.python }}
+    - name: Cache pip downloads
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: pip-test-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ github.run_id }}
+        restore-keys: pip-test-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install --upgrade tox
+    - name: Run tests
+      run: python -m tox run -e py

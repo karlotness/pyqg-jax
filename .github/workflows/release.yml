@@ -1,0 +1,182 @@
+name: "Release"
+on:
+  push:
+    tags:
+      - 'v[0-9]*'
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+        persist-credentials: false
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      id: setup-python
+      with:
+        python-version: '3.11'
+    - name: Cache pip downloads
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: pip-releasecheck-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ github.run_id }}
+        restore-keys: |
+          pip-releasecheck-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-
+          pip-test-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install --upgrade tox
+    - name: Run tox tests
+      run: python -m tox run -e py
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: check
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+        persist-credentials: false
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install --upgrade build
+    - name: Build package
+      run: python -m build
+    - name: Store artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: build
+        path: |
+          dist/pyqg-jax-*
+          dist/pyqg_jax-*
+  check-artifacts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: build
+    steps:
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      id: setup-python
+      with:
+        python-version: '3.11'
+    - name: Cache pip downloads
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: pip-releasecheckartifacts-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ github.run_id }}
+        restore-keys: |
+          pip-releasecheckartifacts-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-
+          pip-releasecheck-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-
+          pip-test-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install --upgrade twine
+    - name: Download artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: build
+        path: dist/
+    - name: Check artifacts
+      run: python -m twine check --strict dist/*.tar.gz dist/*.whl
+  draft-release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: check-artifacts
+    permissions:
+      contents: write
+    steps:
+    - name: Download artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: build
+        path: dist/
+    - name: Draft release body
+      run: |
+        {
+          echo -e '<details><summary>SHA256 Checksums</summary>\n\n```'
+          sha256sum dist/*.tar.gz dist/*.whl | sed 's!dist/!!'
+          echo -e '```\n\n</details>\n'
+          echo -e '<details><summary>SHA512 Checksums</summary>\n\n```'
+          sha512sum dist/*.tar.gz dist/*.whl | sed 's!dist/!!'
+          echo -e '```\n\n</details>'
+        } > release_body.md
+    - name: Create release
+      run: gh release create '${{ github.ref_name }}' --title '${{ github.ref_name }}' --target '${{ github.sha }}' --draft --notes-file 'release_body.md' --repo '${{ github.repository }}' dist/*.tar.gz dist/*.whl
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Prepare step summary
+      run: echo '# Artifact Contents' > $GITHUB_STEP_SUMMARY
+    - name: Summarize checksums
+      run: |
+        {
+          echo -e '## Checksums\n'
+          echo -e '<details><summary>SHA256 Checksums</summary>\n\n```'
+          sha256sum dist/*.tar.gz dist/*.whl | sed 's!dist/!!'
+          echo -e '```\n\n</details>\n'
+          echo -e '<details><summary>SHA512 Checksums</summary>\n\n```'
+          sha512sum dist/*.tar.gz dist/*.whl | sed 's!dist/!!'
+          echo -e '```\n\n</details>\n'
+        } >> $GITHUB_STEP_SUMMARY
+    - name: Summarize contents
+      run: |
+        echo '## Contents' >> $GITHUB_STEP_SUMMARY
+        for f in dist/*.tar.gz; do
+          {
+            echo -e "<details><summary>$(basename "$f")</summary>\n\n\`\`\`"
+            tar -tzvf "$f"
+            echo -e '```\n\n</details>\n'
+          } >> $GITHUB_STEP_SUMMARY
+        done
+        for f in dist/*.whl; do
+          {
+            echo -e "<details><summary>$(basename "$f")</summary>\n\n\`\`\`"
+            zipinfo "$f"
+            echo -e '```\n\n</details>\n'
+          } >> $GITHUB_STEP_SUMMARY
+        done
+  upload:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: draft-release
+    environment: pypi
+    steps:
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install --upgrade twine
+    - name: Download artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: build
+        path: dist/
+    - name: Upload package
+      run: python -m twine upload --non-interactive --disable-progress-bar dist/*.tar.gz dist/*.whl
+      env:
+        TWINE_USERNAME: '__token__'
+        TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+  publish-release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: upload
+    permissions:
+      contents: write
+    steps:
+    - name: Publish GitHub release
+      run: gh release edit '${{ github.ref_name }}' --draft=false --repo '${{ github.repository }}'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
