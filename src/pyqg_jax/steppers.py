@@ -33,6 +33,16 @@ class StepperState(typing.Generic[P]):
             setattr(obj, name, val)
         return obj
 
+    def update(self, **kwargs):
+        # Check that only valid updates are applied
+        if not kwargs.keys() <= {"state", "t", "tc"}:
+            raise ValueError("invalid state updates, can only update state, t, and tc")
+        # Perform the update
+        children, attr_names = self._tree_flatten()
+        attr_dict = {k: v for k, v in zip(attr_names, children)}
+        attr_dict.update(kwargs)
+        return self._tree_unflatten(attr_names, [attr_dict[k] for k in attr_names])
+
 
 S = typing.TypeVar("S", bound=StepperState)
 
