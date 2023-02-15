@@ -38,6 +38,10 @@ Homepage = "https://github.com/karlotness/pyqg-jax"
 "Source Code" = "https://github.com/karlotness/pyqg-jax"
 "Bug Tracker" = "https://github.com/karlotness/pyqg-jax/issues"
 
+[tool.flit.sdist]
+include = ["tests/"]
+exclude = ["**/*~"]
+
 [tool.pytest.ini_options]
 minversion = "6.0"
 testpaths = ["tests"]
