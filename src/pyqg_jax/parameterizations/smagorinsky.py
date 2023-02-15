@@ -1,4 +1,4 @@
-# Copyright Karl Otness
+# Copyright Karl Otness, pyqg developers
 # SPDX-License-Identifier: MIT
 
 
