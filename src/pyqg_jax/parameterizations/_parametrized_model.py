@@ -40,7 +40,7 @@ class ParametrizedModel:
 
     def get_full_state(self, state):
         # Apply the parameterization
-        full_state = self.model.get_full_state(self.model_state)
+        full_state = self.model.get_full_state(state.model_state)
         full_param_state, new_param_aux = self.param_func(
             full_state, state.param_aux, self.model
         )
@@ -53,7 +53,7 @@ class ParametrizedModel:
         full_param_state = self.get_full_state(state)
         return ParametrizedModelState(
             model_state=_state.PseudoSpectralState(
-                qh=full_param_state.dqhdt,
+                qh=full_param_state.model_state.dqhdt,
             ),
             param_aux=full_param_state.param_aux,
         )
