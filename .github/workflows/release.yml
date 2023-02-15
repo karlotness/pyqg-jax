@@ -14,6 +14,19 @@ jobs:
       uses: actions/checkout@v3
       with:
         persist-credentials: false
+    - name: Check version
+      run: |
+        VERSION=$(sed -n -E 's!^__version__\s*(:\s*[^=[:space:]]+\s*)?=\s*"\s*([^[:space:]]+)\s*"\s*$!\2!p' src/pyqg_jax/__init__.py)
+        REF_VERSION="${{ github.ref_name }}"
+        echo "Detected version: ${VERSION}"
+        if [[ ${VERSION} == *"dev"* ]]; then
+          echo "Development version. Not releasing."
+          exit 1
+        fi
+        if [[ ${VERSION} != "v${REF_VERSION}" ]]; then
+          echo "Package and tag version do not match. Not releasing."
+          exit 1
+        fi
     - name: Setup Python
       uses: actions/setup-python@v4
       id: setup-python
