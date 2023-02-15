@@ -2,14 +2,18 @@
 # SPDX-License-Identifier: MIT
 
 
-__all__ = ["Precision", "PseudoSpectralState", "FullPseudoSpectralState"]
+__all__ = ["Precision", "PseudoSpectralState", "FullPseudoSpectralState", "NoStepValue"]
 
 
 import enum
 import dataclasses
 import typing
 import jax.numpy as jnp
+import jaxtyping
 from . import _utils
+
+
+P = typing.TypeVar("P", bound=jaxtyping.PyTree)
 
 
 class Precision(enum.Enum):
@@ -127,3 +131,20 @@ class FullPseudoSpectralState:
             new_values[name] = new_val
         # Produce new object with processed values
         return dataclasses.replace(self, **new_values)
+
+
+@_utils.register_pytree_node_class_private
+class NoStepValue(typing.Generic[P]):
+    # Marks contents to not be stepped by provided time-steppers
+
+    def __init__(self, value: P):
+        self.value = value
+
+    def _tree_flatten(self):
+        return [self.value], None
+
+    @classmethod
+    def _tree_unflatten(cls, aux_data, children):
+        obj = cls.__new__(cls)
+        obj.value = children[0]
+        return obj

@@ -6,10 +6,11 @@ __all__ = ["SteppedModel", "AB3Stepper", "AB3State"]
 
 
 import typing
+import functools
 import jax
 import jax.numpy as jnp
 import jaxtyping
-from . import _utils
+from . import _utils, state as _state
 
 
 P = typing.TypeVar("P", bound=jaxtyping.PyTree)
@@ -52,7 +53,11 @@ class Stepper:
         self.dt = float(dt)
 
     def initialize_stepper_state(self, state):
-        raise NotImplementedError("implement in a subclass")
+        return StepperState(
+            state=state,
+            t=jnp.float32(0),
+            tc=jnp.uint32(0),
+        )
 
     def apply_updates(self, stepper_state, updates):
         raise NotImplementedError("implement in a subclass")
@@ -94,6 +99,36 @@ class SteppedModel:
         return obj
 
 
+def _wrap_nostep_update(func):
+    @functools.wraps(func)
+    def wrapper(leaf, *args, **kwargs):
+        if isinstance(leaf, _state.NoStepValue):
+            return leaf
+        return func(leaf, *args, **kwargs)
+
+    return wrapper
+
+
+def _nostep_tree_map(func, tree, *rest):
+    return jax.tree_util.tree_map(
+        _wrap_nostep_update(func),
+        tree,
+        *rest,
+        is_leaf=(lambda l: isinstance(l, _state.NoStepValue)),
+    )
+
+
+def _dummy_step_init(state):
+    def leaf_map(leaf):
+        if isinstance(leaf, _state.NoStepValue):
+            return _state.NoStepValue(None)
+        return jnp.zeros_like(leaf)
+
+    return jax.tree_util.tree_map(
+        leaf_map, state, is_leaf=(lambda l: isinstance(l, _state.NoStepValue))
+    )
+
+
 @_utils.register_pytree_node_class_private
 class AB3State(StepperState[P]):
     def __init__(
@@ -116,11 +151,12 @@ class AB3Stepper(Stepper):
         super().__init__(dt=dt)
 
     def initialize_stepper_state(self, state: P) -> AB3State[P]:
-        dummy_update: P = jax.tree_util.tree_map(jnp.zeros_like, state)
+        base_state = super().initialize_stepper_state(state)
+        dummy_update: P = _dummy_step_init(state)
         return AB3State(
-            state=state,
-            t=jnp.float32(0),
-            tc=jnp.uint32(0),
+            state=base_state.state,
+            t=base_state.t,
+            tc=base_state.tc,
             ablevel=jnp.uint8(0),
             updates=(dummy_update, dummy_update),
         )
@@ -144,7 +180,7 @@ class AB3Stepper(Stepper):
             ],
         )
         updates_p, updates_pp = stepper_state._updates
-        new_state = jax.tree_util.tree_map(
+        new_state = _nostep_tree_map(
             (lambda v, u, u_p, u_pp: v + (dt1 * u) + (dt2 * u_p) + (dt3 * u_pp)),
             stepper_state.state,
             updates,
