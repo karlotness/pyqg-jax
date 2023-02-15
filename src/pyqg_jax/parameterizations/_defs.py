@@ -9,8 +9,8 @@ from .. import state as _state
 
 def uv_parameterization(param_func):
     @functools.wraps(param_func)
-    def wrapped_uv_param(full_state, param_aux, model):
-        (du, dv), param_aux = param_func(full_state, param_aux, model)
+    def wrapped_uv_param(full_state, param_aux, model, *args, **kwargs):
+        (du, dv), param_aux = param_func(full_state, param_aux, model, *args, **kwargs)
         duh = _state._generic_rfftn(du)
         dvh = _state._generic_rfftn(dv)
         dqhdt = (
@@ -25,8 +25,8 @@ def uv_parameterization(param_func):
 
 def q_parameterization(param_func):
     @functools.wraps(param_func)
-    def wrapped_q_param(full_state, param_aux, model):
-        dq, param_aux = param_func(full_state, param_aux, model)
+    def wrapped_q_param(full_state, param_aux, model, *args, **kwargs):
+        dq, param_aux = param_func(full_state, param_aux, model, *args, **kwargs)
         dqh = _state._generic_rfftn(dq)
         dqhdt = full_state.dqhdt + dqh
         return full_state.update(dqhdt=dqhdt)
