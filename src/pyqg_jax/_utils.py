@@ -18,9 +18,7 @@ class _PyTreePrivateProtocol(typing.Protocol[Children, AuxData]):
         ...
 
     @classmethod
-    def _tree_unflatten(
-        cls: typing.Type[typing.Self], aux_data: AuxData, children: Children
-    ) -> typing.Self:
+    def _tree_unflatten(cls, aux_data: AuxData, children: Children):
         ...
 
 
