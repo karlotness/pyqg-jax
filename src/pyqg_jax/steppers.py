@@ -54,7 +54,7 @@ class Stepper:
     def initialize_stepper_state(self, state):
         raise NotImplementedError("implement in a subclass")
 
-    def apply_updates(self, stepper_state, updates, postprocess_state=None):
+    def apply_updates(self, stepper_state, updates):
         raise NotImplementedError("implement in a subclass")
 
 
@@ -72,11 +72,12 @@ class SteppedModel:
         return self.stepper.initialize_stepper_state(state)
 
     def step_model(self, stepper_state, /):
-        return self.stepper.apply_updates(
+        new_stepper_state = self.stepper.apply_updates(
             stepper_state,
             self.model.get_updates(stepper_state.state),
-            postprocess_state=self.model.postprocess_state,
         )
+        postprocessed_state = self.model.postprocess_state(new_stepper_state.state)
+        return new_stepper_state.update(state=postprocessed_state)
 
     def get_full_state(self, stepper_state, /):
         return self.model.get_full_state(stepper_state.state)
@@ -128,7 +129,6 @@ class AB3Stepper(Stepper):
         self,
         stepper_state: AB3State[P],
         updates: P,
-        postprocess_state: typing.Optional[typing.Callable[[P], P]] = None,
     ) -> AB3State[P]:
         new_ablevel, dt1, dt2, dt3 = jax.lax.switch(
             stepper_state._ablevel,
@@ -151,8 +151,6 @@ class AB3Stepper(Stepper):
             updates_p,
             updates_pp,
         )
-        if postprocess_state is not None:
-            new_state = postprocess_state(new_state)
         new_t = stepper_state.t + jnp.float32(self.dt)
         new_tc = stepper_state.tc + 1
         new_updates = (updates, updates_p)

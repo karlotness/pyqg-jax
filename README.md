@@ -79,7 +79,7 @@ A subset of methods and attributes available on common objects
   - `get_updates(PseudoSpectralState) -> PseudoSpectralState`: Computes time updates for `qh`. Combine with a time-stepper
 - For `pyqg_jax.steppers.AB3Stepper(dt=float)`
   - `initialize_stepper_state(PseudoSpectralState) -> AB3State[PseudoSpectralState]`: Initialize a time-stepper state around a model state
-  - `apply_updates(AB3State[PseudoSpectralState], updates=PseudoSpectralState, postprocess_state=model.postprocess_state) -> AB3State[PseudoSpectralState]`: Apply model updates to a time stepper state
+  - `apply_updates(AB3State[PseudoSpectralState], updates=PseudoSpectralState) -> AB3State[PseudoSpectralState]`: Apply model updates to a time stepper state
 - For `pyqg_jax.steppers.AB3State`
   - `state`: extract the `PseudoSpectralState` at the current time
   - `t`: the current time
