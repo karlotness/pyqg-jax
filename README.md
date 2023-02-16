@@ -1,5 +1,8 @@
 # PyQG JAX Port
 
+[![PyQG-JAX on PyPI](https://img.shields.io/pypi/v/pyqg-jax)][pypi]
+[![Tests](https://github.com/karlotness/pyqg-jax/actions/workflows/test.yml/badge.svg)][tests]
+
 This is a partial port of [PyQG](https://github.com/pyqg/pyqg) to
 [JAX](https://github.com/google/jax) which enables GPU acceleration,
 batching, automatic differentiation, etc.
@@ -101,3 +104,6 @@ A subset of methods and attributes available on common objects
 ## License
 The code in this repository is distributed under the MIT license. See
 LICENSE.txt for the license text.
+
+[pypi]: https://pypi.org/project/pyqg-jax
+[tests]: https://github.com/karlotness/pyqg-jax/actions
