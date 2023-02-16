@@ -6,9 +6,9 @@
 
 
 __all__ = [
-    "apply_zannabolton2020_parameterization",
-    "zannabolton2020_param_func",
-    "zannabolton2020_init_param_aux_func",
+    "apply_parameterization",
+    "param_func",
+    "init_param_aux_func",
 ]
 
 
@@ -17,16 +17,16 @@ from . import _defs, _parametrized_model
 from .. import state as _state
 
 
-def apply_zannabolton2020_parameterization(model, kappa=-46761284):
+def apply_parameterization(model, kappa=-46761284):
     return _parametrized_model.ParametrizedModel(
         model=model,
-        param_func=functools.partial(zannabolton2020_param_func, kappa=kappa),
-        init_param_aux_func=zannabolton2020_init_param_aux_func,
+        param_func=functools.partial(param_func, kappa=kappa),
+        init_param_aux_func=init_param_aux_func,
     )
 
 
 @_defs.uv_parameterization
-def zannabolton2020_param_func(full_state, param_aux, model, kappa=-46761284):
+def param_func(full_state, param_aux, model, kappa=-46761284):
     uh = full_state.uh
     vh = full_state.vh
     vx = _state._generic_irfftn(vh * model.ik)
@@ -48,5 +48,5 @@ def zannabolton2020_param_func(full_state, param_aux, model, kappa=-46761284):
     return (du, dv), None
 
 
-def zannabolton2020_init_param_aux_func(state, model):
+def init_param_aux_func(state, model):
     return None

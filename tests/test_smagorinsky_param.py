@@ -8,11 +8,9 @@ import pyqg_jax
 
 
 def test_match_final_step():
-    jax_model = (
-        pyqg_jax.parameterizations.smagorinsky.apply_smagorinsky_parameterization(
-            pyqg_jax.qg_model.QGModel(nx=64, precision=pyqg_jax.state.Precision.DOUBLE),
-            constant=0.08,
-        )
+    jax_model = pyqg_jax.parameterizations.smagorinsky.apply_parameterization(
+        pyqg_jax.qg_model.QGModel(nx=64, precision=pyqg_jax.state.Precision.DOUBLE),
+        constant=0.08,
     )
     start_jax_state = jax_model.create_initial_state(jax.random.PRNGKey(0))
     dt = 3600

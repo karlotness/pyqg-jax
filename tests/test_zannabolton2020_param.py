@@ -8,10 +8,7 @@ import pyqg_jax
 
 
 def test_match_final_step():
-    apply_param_fn = (
-        pyqg_jax.parameterizations.zannabolton2020.apply_zannabolton2020_parameterization
-    )
-    jax_model = apply_param_fn(
+    jax_model = pyqg_jax.parameterizations.zannabolton2020.apply_parameterization(
         pyqg_jax.qg_model.QGModel(nx=64, precision=pyqg_jax.state.Precision.DOUBLE)
     )
     start_jax_state = jax_model.create_initial_state(jax.random.PRNGKey(0))

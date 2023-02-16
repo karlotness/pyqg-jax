@@ -6,9 +6,9 @@
 
 
 __all__ = [
-    "apply_smagorinsky_parameterization",
-    "smagorinsky_param_func",
-    "smagorinsky_init_param_aux_func",
+    "apply_parameterization",
+    "param_func",
+    "init_param_aux_func",
 ]
 
 
@@ -18,16 +18,16 @@ from . import _defs, _parametrized_model
 from .. import state as _state
 
 
-def apply_smagorinsky_parameterization(model, constant=0.1):
+def apply_parameterization(model, constant=0.1):
     return _parametrized_model.ParametrizedModel(
         model=model,
-        param_func=functools.partial(smagorinsky_param_func, constant=constant),
-        init_param_aux_func=smagorinsky_init_param_aux_func,
+        param_func=functools.partial(param_func, constant=constant),
+        init_param_aux_func=init_param_aux_func,
     )
 
 
 @_defs.uv_parameterization
-def smagorinsky_param_func(full_state, param_aux, model, constant=0.1):
+def param_func(full_state, param_aux, model, constant=0.1):
     uh = full_state.uh
     vh = full_state.vh
     Sxx = _state._generic_irfftn(uh * model.ik)
@@ -48,5 +48,5 @@ def smagorinsky_param_func(full_state, param_aux, model, constant=0.1):
     return (du, dv), None
 
 
-def smagorinsky_init_param_aux_func(state, model):
+def init_param_aux_func(state, model):
     return None
