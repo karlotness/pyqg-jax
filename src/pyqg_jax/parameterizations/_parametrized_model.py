@@ -42,7 +42,7 @@ class ParametrizedModel:
         # Apply the parameterization
         full_state = self.model.get_full_state(state.model_state)
         full_param_state, new_param_aux = self.param_func(
-            full_state, state.param_aux, self.model
+            full_state, state.param_aux.value, self.model
         )
         return ParametrizedModelState(
             model_state=full_param_state,
