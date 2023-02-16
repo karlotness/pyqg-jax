@@ -26,7 +26,8 @@ def apply_parameterization(model, kappa=-46761284):
 
 
 @_defs.uv_parameterization
-def param_func(full_state, param_aux, model, kappa=-46761284):
+def param_func(state, param_aux, model, kappa=-46761284):
+    full_state = model.get_full_state(state)
     uh = full_state.uh
     vh = full_state.vh
     vx = _state._generic_irfftn(vh * model.ik)

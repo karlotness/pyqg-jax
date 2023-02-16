@@ -39,23 +39,15 @@ class ParametrizedModel:
             self.init_param_aux_func = init_param_aux_func
 
     def get_full_state(self, state):
-        # Apply the parameterization
-        full_state = self.model.get_full_state(state.model_state)
-        full_param_state, new_param_aux = self.param_func(
-            full_state, state.param_aux.value, self.model
-        )
-        return ParametrizedModelState(
-            model_state=full_param_state,
-            param_aux=_steppers.NoStepValue(new_param_aux),
-        )
+        return self.model.get_full_state(state.model_state)
 
     def get_updates(self, state):
-        full_param_state = self.get_full_state(state)
+        param_updates, new_param_aux = self.param_func(
+            state.model_state, state.param_aux.value, self.model
+        )
         return ParametrizedModelState(
-            model_state=_state.PseudoSpectralState(
-                qh=full_param_state.model_state.dqhdt,
-            ),
-            param_aux=full_param_state.param_aux,
+            model_state=param_updates,
+            param_aux=_steppers.NoStepValue(new_param_aux),
         )
 
     def postprocess_state(self, state):
