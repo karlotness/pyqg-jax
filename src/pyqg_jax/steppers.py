@@ -101,10 +101,10 @@ class SteppedModel:
 
 def _wrap_nostep_update(func):
     @functools.wraps(func)
-    def wrapper(leaf, *args, **kwargs):
-        if isinstance(leaf, _state.NoStepValue):
-            return leaf
-        return func(leaf, *args, **kwargs)
+    def wrapper(leaf, update, *args, **kwargs):
+        if isinstance(update, _state.NoStepValue):
+            return update
+        return func(leaf, update, *args, **kwargs)
 
     return wrapper
 
