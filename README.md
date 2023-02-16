@@ -53,25 +53,31 @@ magic](https://ipython.readthedocs.io/en/stable/interactive/magics.html#magic-en
 in a Jupyter notebook.
 
 ### Short Example
-A short example initializing a `QGModel` and taking a single step.
+A short example initializing a `QGModel`, adding a parameterization,
+and taking a single step.
 ```pycon
 >>> import pyqg_jax
 >>> import jax
->>> # Construct model and time-stepper
+>>> # Construct model, parameterization, and time-stepper
 >>> stepped_model = pyqg_jax.steppers.SteppedModel(
-...     model=pyqg_jax.qg_model.QGModel(),
+...     model=pyqg_jax.parameterizations.smagorinsky.apply_parameterization(
+...         pyqg_jax.qg_model.QGModel(),
+...         constant=0.08,
+...     ),
 ...     stepper=pyqg_jax.steppers.AB3Stepper(dt=3600.0),
 ... )
->>> # Initialize the model state, and wrap in the time-stepping state
+>>> # Initialize the model state (wrapped in stepper and parameterization state)
 >>> stepper_state = stepped_model.create_initial_state(
 ...     jax.random.PRNGKey(0)
 ... )
 >>> # Compute next state
 >>> next_stepper_state = stepped_model.step_model(stepper_state)
->>> # Extract the result
->>> final_q = next_stepper_state.state.q
+>>> # Unwrap the result from the stepper and parameterization
+>>> next_param_state = next_stepper_state.state
+>>> next_model_state = next_param_state.model_state
+>>> final_q = next_model_state.q
 ```
-For repeated time-stepping combine `stepper.apply_updates` with
+For repeated time-stepping combine `step_model` with
 [`jax.lax.scan`](https://jax.readthedocs.io/en/latest/_autosummary/jax.lax.scan.html).
 
 ### Useful Methods and attributes
