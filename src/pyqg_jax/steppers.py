@@ -129,6 +129,17 @@ def _dummy_step_init(state):
     )
 
 
+def _map_state_remove_nostep(state):
+    def leaf_map(leaf):
+        if isinstance(leaf, _state.NoStepValue):
+            return _state.NoStepValue(None)
+        return leaf
+
+    return jax.tree_util.tree_map(
+        leaf_map, state, is_leaf=(lambda l: isinstance(l, _state.NoStepValue))
+    )
+
+
 @_utils.register_pytree_node_class_private
 class AB3State(StepperState[P]):
     def __init__(
@@ -189,7 +200,7 @@ class AB3Stepper(Stepper):
         )
         new_t = stepper_state.t + jnp.float32(self.dt)
         new_tc = stepper_state.tc + 1
-        new_updates = (updates, updates_p)
+        new_updates = (_map_state_remove_nostep(updates), updates_p)
         return AB3State(
             state=new_state,
             t=new_t,
