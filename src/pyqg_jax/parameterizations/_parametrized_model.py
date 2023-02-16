@@ -20,7 +20,7 @@ class ParametrizedModelState:
     param_aux: _steppers.NoStepValue
 
 
-def _init_none(init_state):
+def _init_none(init_state, model):
     return None
 
 
