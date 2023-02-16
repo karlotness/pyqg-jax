@@ -8,7 +8,7 @@ __all__ = ["ParametrizedModelState", "ParametrizedModel"]
 import dataclasses
 import itertools
 import typing
-from .. import state as _state, _utils
+from .. import state as _state, _utils, steppers as _steppers
 
 
 @_utils.register_pytree_dataclass
@@ -17,7 +17,7 @@ class ParametrizedModelState:
     model_state: typing.Union[
         _state.PseudoSpectralState, _state.FullPseudoSpectralState
     ]
-    param_aux: _state.NoStepValue
+    param_aux: _steppers.NoStepValue
 
 
 def _init_none(init_state):
@@ -46,7 +46,7 @@ class ParametrizedModel:
         )
         return ParametrizedModelState(
             model_state=full_param_state,
-            param_aux=_state.NoStepValue(new_param_aux),
+            param_aux=_steppers.NoStepValue(new_param_aux),
         )
 
     def get_updates(self, state):
@@ -71,7 +71,7 @@ class ParametrizedModel:
         init_param_state = self.init_param_aux_func(state, self.model)
         return ParametrizedModelState(
             model_state=state,
-            param_aux=_state.NoStepValue(init_param_state),
+            param_aux=_steppers.NoStepValue(init_param_state),
         )
 
     def _tree_flatten(self):

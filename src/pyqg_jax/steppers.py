@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MIT
 
 
-__all__ = ["SteppedModel", "AB3Stepper", "AB3State"]
+__all__ = ["SteppedModel", "AB3Stepper", "AB3State", "NoStepValue"]
 
 
 import typing
@@ -10,7 +10,7 @@ import functools
 import jax
 import jax.numpy as jnp
 import jaxtyping
-from . import _utils, state as _state
+from . import _utils
 
 
 P = typing.TypeVar("P", bound=jaxtyping.PyTree)
@@ -102,7 +102,7 @@ class SteppedModel:
 def _wrap_nostep_update(func):
     @functools.wraps(func)
     def wrapper(leaf, update, *args, **kwargs):
-        if isinstance(update, _state.NoStepValue):
+        if isinstance(update, NoStepValue):
             return update
         return func(leaf, update, *args, **kwargs)
 
@@ -114,29 +114,29 @@ def _nostep_tree_map(func, tree, *rest):
         _wrap_nostep_update(func),
         tree,
         *rest,
-        is_leaf=(lambda l: isinstance(l, _state.NoStepValue)),
+        is_leaf=(lambda l: isinstance(l, NoStepValue)),
     )
 
 
 def _dummy_step_init(state):
     def leaf_map(leaf):
-        if isinstance(leaf, _state.NoStepValue):
-            return _state.NoStepValue(None)
+        if isinstance(leaf, NoStepValue):
+            return NoStepValue(None)
         return jnp.zeros_like(leaf)
 
     return jax.tree_util.tree_map(
-        leaf_map, state, is_leaf=(lambda l: isinstance(l, _state.NoStepValue))
+        leaf_map, state, is_leaf=(lambda l: isinstance(l, NoStepValue))
     )
 
 
 def _map_state_remove_nostep(state):
     def leaf_map(leaf):
-        if isinstance(leaf, _state.NoStepValue):
-            return _state.NoStepValue(None)
+        if isinstance(leaf, NoStepValue):
+            return NoStepValue(None)
         return leaf
 
     return jax.tree_util.tree_map(
-        leaf_map, state, is_leaf=(lambda l: isinstance(l, _state.NoStepValue))
+        leaf_map, state, is_leaf=(lambda l: isinstance(l, NoStepValue))
     )
 
 
@@ -216,4 +216,21 @@ class AB3Stepper(Stepper):
     def _tree_unflatten(cls, aux_data, children):
         obj = cls.__new__(cls)
         obj.dt = children[0]
+        return obj
+
+
+@_utils.register_pytree_node_class_private
+class NoStepValue(typing.Generic[P]):
+    # Marks contents to not be stepped by provided time-steppers
+
+    def __init__(self, value: P):
+        self.value = value
+
+    def _tree_flatten(self):
+        return [self.value], None
+
+    @classmethod
+    def _tree_unflatten(cls, aux_data, children):
+        obj = cls.__new__(cls)
+        obj.value = children[0]
         return obj
