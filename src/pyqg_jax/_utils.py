@@ -36,7 +36,7 @@ def summarize_function(func):
 
 
 def summarize_partial(partial):
-    func = summarize_function(partial.func)
+    func = summarize_object(partial.func)
     args = (summarize_object(arg) for arg in partial.args)
     kwargs = (
         f"{name}={summarize_object(value)}" for name, value in partial.keywords.items()
