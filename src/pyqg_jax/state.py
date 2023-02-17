@@ -75,6 +75,10 @@ class PseudoSpectralState:
             raise ValueError("found mismatched dtypes for q")
         return dataclasses.replace(self, qh=new_qh)
 
+    def __repr__(self):
+        q_summary = _utils.summarize_object(self.q)
+        return f"PseudoSpectralState(q={q_summary})"
+
 
 @_utils.register_pytree_dataclass
 @dataclasses.dataclass(frozen=True)
@@ -127,3 +131,22 @@ class FullPseudoSpectralState:
             new_values[name] = new_val
         # Produce new object with processed values
         return dataclasses.replace(self, **new_values)
+
+    def __repr__(self):
+        q_summary = _utils.summarize_object(self.q)
+        ph_summary = _utils.summarize_object(self.ph)
+        u_summary = _utils.summarize_object(self.u)
+        v_summary = _utils.summarize_object(self.v)
+        uq_summary = _utils.summarize_object(self.uq)
+        vq_summary = _utils.summarize_object(self.vq)
+        dqhdt_summary = _utils.summarize_object(self.dqhdt)
+        return f"""\
+FullPseudoSpectralState(
+  q={q_summary},
+  ph={ph_summary},
+  u={u_summary},
+  v={v_summary},
+  uq={uq_summary},
+  vq={vq_summary},
+  dqhdt={dqhdt_summary},
+)"""

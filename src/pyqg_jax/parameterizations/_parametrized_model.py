@@ -19,6 +19,19 @@ class ParametrizedModelState:
     ]
     param_aux: _steppers.NoStepValue
 
+    def __repr__(self):
+        model_state_summary = _utils.indent_repr(
+            _utils.summarize_object(self.model_state), 2
+        )
+        param_aux_summary = _utils.indent_repr(
+            _utils.summarize_object(self.param_aux), 2
+        )
+        return f"""\
+ParametrizedModelState(
+  model_state={model_state_summary},
+  param_aux={param_aux_summary},
+)"""
+
 
 def _init_none(init_state, model):
     return None

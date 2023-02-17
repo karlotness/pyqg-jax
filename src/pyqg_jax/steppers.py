@@ -155,6 +155,17 @@ class AB3State(StepperState[P]):
         children = [*super_children, self._ablevel, self._updates]
         return children, attr_names
 
+    def __repr__(self):
+        state_summary = _utils.indent_repr(_utils.summarize_object(self.state), 2)
+        t_summary = _utils.summarize_object(self.t)
+        tc_summary = _utils.summarize_object(self.tc)
+        return f"""\
+AB3State(
+  t={t_summary},
+  tc={tc_summary},
+  state={state_summary},
+)"""
+
 
 @_utils.register_pytree_node_class_private
 class AB3Stepper(Stepper):
@@ -234,3 +245,15 @@ class NoStepValue(typing.Generic[P]):
         obj = cls.__new__(cls)
         obj.value = children[0]
         return obj
+
+    def __repr__(self):
+        value_summary = _utils.summarize_object(self.value)
+        if "\n" not in value_summary:
+            # Single line summary
+            return f"NoStepValue(value={value_summary})"
+        else:
+            value_summary = _utils.indent_repr(value_summary, 2)
+        return f"""\
+NoStepValue(
+  value={value_summary}
+)"""

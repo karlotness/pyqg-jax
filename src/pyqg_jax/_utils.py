@@ -3,10 +3,38 @@
 
 
 import typing
+import textwrap
 import operator
 import dataclasses
 import jax
 import jaxtyping
+
+
+def summarize_object(obj):
+    if hasattr(obj, "shape") and hasattr(obj, "dtype"):
+        return summarize_array(obj)
+    else:
+        return repr(obj)
+
+
+def summarize_array(arr):
+    dtype = (
+        str(arr.dtype.name)
+        .replace("float", "f")
+        .replace("uint", "u")
+        .replace("int", "i")
+        .replace("complex", "c")
+    )
+    shape = ",".join(str(d) for d in arr.shape)
+    return f"{dtype}[{shape}]"
+
+
+def indent_repr(text, spaces):
+    indent_str = " " * spaces
+    indented = textwrap.indent(text, indent_str)
+    if indented.startswith(indent_str):
+        return indented[spaces:]
+    return indented
 
 
 Children = typing.TypeVar("Children", bound=jaxtyping.PyTree)
