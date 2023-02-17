@@ -28,11 +28,11 @@ def summarize_function(func):
     try:
         func_name = str(func.__qualname__)
         func_module = str(func.__module__)
-        if func_module == "builtins":
-            return f"<function {func_name}>"
-        return f"<function {func_module}.{func_name}>"
-    except Exception:
+    except AttributeError:
         return repr(func)
+    if func_module == "builtins":
+        return f"<function {func_name}>"
+    return f"<function {func_module}.{func_name}>"
 
 
 def summarize_partial(partial):
