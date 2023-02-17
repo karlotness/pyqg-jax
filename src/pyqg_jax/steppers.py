@@ -98,6 +98,15 @@ class SteppedModel:
         obj.stepper = stepper
         return obj
 
+    def __repr__(self):
+        model_summary = _utils.indent_repr(_utils.summarize_object(self.model), 2)
+        stepper_summary = _utils.indent_repr(_utils.summarize_object(self.stepper), 2)
+        return f"""\
+SteppedModel(
+  model={model_summary},
+  stepper={stepper_summary},
+)"""
+
 
 def _wrap_nostep_update(func):
     @functools.wraps(func)
@@ -228,6 +237,10 @@ class AB3Stepper(Stepper):
         obj = cls.__new__(cls)
         obj.dt = children[0]
         return obj
+
+    def __repr__(self):
+        dt_summary = _utils.summarize_object(self.dt)
+        return f"AB3Stepper(dt={dt_summary})"
 
 
 @_utils.register_pytree_node_class_private
