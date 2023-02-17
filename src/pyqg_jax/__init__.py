@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MIT
 
 
-__version__ = "0.2.1.dev"
+__version__ = "0.3.0"
 __all__ = ["state", "qg_model", "steppers", "parameterizations"]
 
 
