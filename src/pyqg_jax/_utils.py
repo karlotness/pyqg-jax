@@ -3,8 +3,11 @@
 
 
 import typing
+import functools
 import textwrap
+import types
 import operator
+import itertools
 import dataclasses
 import jax
 import jaxtyping
@@ -13,8 +16,33 @@ import jaxtyping
 def summarize_object(obj):
     if hasattr(obj, "shape") and hasattr(obj, "dtype"):
         return summarize_array(obj)
+    elif isinstance(obj, functools.partial):
+        return summarize_partial(obj)
+    elif isinstance(obj, types.FunctionType):
+        return summarize_function(obj)
     else:
         return repr(obj)
+
+
+def summarize_function(func):
+    try:
+        func_name = str(func.__qualname__)
+        func_module = str(func.__module__)
+        if func_module == "builtins":
+            return f"<function {func_name}>"
+        return f"<function {func_module}.{func_name}>"
+    except Exception:
+        return repr(func)
+
+
+def summarize_partial(partial):
+    func = summarize_function(partial.func)
+    args = (summarize_object(arg) for arg in partial.args)
+    kwargs = (
+        f"{name}={summarize_object(value)}" for name, value in partial.keywords.items()
+    )
+    contents = ", ".join(itertools.chain([func], args, kwargs))
+    return f"functools.partial({contents})"
 
 
 def summarize_array(arr):
