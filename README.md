@@ -1,11 +1,16 @@
 # PyQG JAX Port
 
 [![PyQG-JAX on PyPI](https://img.shields.io/pypi/v/pyqg-jax)][pypi]
+[![Documentation](https://readthedocs.org/projects/pyqg-jax/badge/?version=latest)][docs]
 [![Tests](https://github.com/karlotness/pyqg-jax/actions/workflows/test.yml/badge.svg)][tests]
 
 This is a partial port of [PyQG](https://github.com/pyqg/pyqg) to
 [JAX](https://github.com/google/jax) which enables GPU acceleration,
 batching, automatic differentiation, etc.
+
+- **Documentation:** https://pyqg-jax.readthedocs.io/en/latest/
+- **Source Code:** https://github.com/karlotness/pyqg-jax
+- **Bug Reports:** https://github.com/karlotness/pyqg-jax/issues
 
 ⚠️ **Warning:** this is a partial, early stage port. There may be bugs
 and other numerical issues. Only part of the `QGModel` has been
@@ -21,7 +26,7 @@ special attention. Follow the [JAX installation
 instructions](https://github.com/google/jax#installation).
 
 ## Usage
-Documentation is a work in progress. The parameters `QGModel`
+[Documentation][docs] is a work in progress. The parameters `QGModel`
 implemented here are the same as for the model in the original PyQG,
 so consult the [pyqg
 documentation](https://pyqg.readthedocs.io/en/latest/) for details.
@@ -112,4 +117,5 @@ The code in this repository is distributed under the MIT license. See
 LICENSE.txt for the license text.
 
 [pypi]: https://pypi.org/project/pyqg-jax
+[docs]: https://pyqg-jax.readthedocs.io/en/latest/
 [tests]: https://github.com/karlotness/pyqg-jax/actions

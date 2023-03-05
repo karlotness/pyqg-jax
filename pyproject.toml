@@ -35,6 +35,7 @@ dynamic = ["version"]
 
 [project.urls]
 Homepage = "https://github.com/karlotness/pyqg-jax"
+Documentation = "https://pyqg-jax.readthedocs.io"
 "Source Code" = "https://github.com/karlotness/pyqg-jax"
 "Bug Tracker" = "https://github.com/karlotness/pyqg-jax/issues"
 

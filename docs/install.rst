@@ -33,7 +33,7 @@ Source
 ------
 
 The package can also be installed from source code, which is available
-from our `GitHub repository <https://github.com/karlotness/adrt>`__.
+from our `GitHub repository <https://github.com/karlotness/pyqg-jax>`__.
 
 To install the package from source, navigate to the directory
 containing your copy of the source code and run (note the trailing
