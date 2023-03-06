@@ -45,6 +45,7 @@ html_theme = "sphinx_rtd_theme"
 # Autodoc configuration
 autodoc_mock_imports = []
 autodoc_typehints = "none"
+autodoc_member_order = "bysource"
 
 # Napoleon configuration
 napoleon_google_docstring = False
