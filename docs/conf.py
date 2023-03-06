@@ -67,7 +67,10 @@ def linkcode_resolve(domain, info):
     fullname = info["fullname"]
     pkg_root = pathlib.Path(pyqg_jax.__file__).parent
     module = importlib.import_module(mod_name)
-    obj = getattr(module, fullname)
+    try:
+        obj = getattr(module, fullname)
+    except AttributeError:
+        return None
     try:
         source_file = str(
             pathlib.Path(inspect.getsourcefile(obj)).relative_to(pkg_root)
