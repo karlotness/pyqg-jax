@@ -3,32 +3,10 @@
 
 
 import operator
-import typing
 import itertools
 import jax
 import jax.numpy as jnp
 from . import _utils, state as _state
-
-
-def _zeros_property(
-    shape: typing.Tuple[typing.Union[int, str], ...], dtype
-) -> property:
-    def get_zeros(self):
-        new_shape = []
-        for shape_elem in shape:
-            if isinstance(shape_elem, str):
-                new_shape.append(getattr(self, shape_elem))
-            else:
-                new_shape.append(shape_elem)
-        if dtype == "real":
-            true_dtype = self._dtype_real
-        elif dtype == "complex":
-            true_dtype = self._dtype_complex
-        else:
-            raise ValueError(f"unsupported dtype lookup {dtype}")
-        return jnp.zeros(new_shape, dtype=true_dtype)
-
-    return property(fget=get_zeros)
 
 
 @_utils.register_pytree_node_class_private
@@ -105,14 +83,30 @@ class PseudoSpectralKernel:
     def nk(self):
         return (self.nx // 2) + 1
 
-    kk = _zeros_property(("nk",), dtype="real")
-    _ik = _zeros_property(("nk",), dtype="complex")
-    ll = _zeros_property(("nl",), dtype="real")
-    _il = _zeros_property(("nl",), dtype="complex")
-    _k2l2 = _zeros_property(("nl", "nk"), dtype="real")
+    @property
+    def kk(self):
+        return jnp.zeros((self.nk,), dtype=self._dtype_real)
+
+    @property
+    def _ik(self):
+        return jnp.zeros((self.nk,), dtype=self._dtype_complex)
+
+    @property
+    def ll(self):
+        return jnp.zeros((self.nl,), dtype=self._dtype_real)
+
+    @property
+    def _il(self):
+        return jnp.zeros((self.nl,), dtype=self._dtype_complex)
+
+    @property
+    def _k2l2(self):
+        return jnp.zeros((self.nl, self.nk), dtype=self._dtype_real)
 
     # Friction
-    Ubg = _zeros_property(("nk",), dtype="real")
+    @property
+    def Ubg(self):
+        return jnp.zeros((self.nk,), dtype=self._dtype_real)
 
     @property
     def filtr(self):
