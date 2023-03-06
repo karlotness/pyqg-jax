@@ -23,6 +23,7 @@ def _grid_kl(kk, ll):
 class Model(_kernel.PseudoSpectralKernel):
     def __init__(
         self,
+        *,
         # grid size parameters
         nz=1,
         nx=64,

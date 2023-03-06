@@ -13,6 +13,7 @@ from . import _utils, state as _state
 class PseudoSpectralKernel:
     def __init__(
         self,
+        *,
         nz: int,
         ny: int,
         nx: int,

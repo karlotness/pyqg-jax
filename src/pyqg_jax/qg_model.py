@@ -8,22 +8,47 @@ __all__ = ["QGModel"]
 import math
 import jax
 import jax.numpy as jnp
-from . import _model, _utils
+from . import _model, _utils, state as _state
 
 
 @_utils.register_pytree_node_class_private
 class QGModel(_model.Model):
     def __init__(
         self,
+        *,
+        # grid size parameters
+        nx=64,
+        ny=None,
+        L=1e6,
+        W=None,
+        # friction parameters
+        rek=5.787e-7,
+        filterfac=23.6,
+        # constants
+        f=None,
+        g=9.81,
+        # Additional model parameters
         beta=1.5e-11,
         rd=15000.0,
         delta=0.25,
         H1=500,
         U1=0.025,
         U2=0.0,
-        **kwargs,
+        # Precision choice
+        precision=_state.Precision.SINGLE,
     ):
-        super().__init__(nz=2, **kwargs)
+        super().__init__(
+            nz=2,
+            nx=nx,
+            ny=ny,
+            L=L,
+            W=W,
+            rek=rek,
+            filterfac=filterfac,
+            f=f,
+            g=g,
+            precision=precision,
+        )
         self.beta = beta
         self.rd = rd
         self.delta = delta
