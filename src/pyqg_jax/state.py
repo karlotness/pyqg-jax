@@ -25,25 +25,6 @@ def _generic_irfftn(a):
     return jnp.fft.irfftn(a, axes=(-2, -1))
 
 
-def _add_fft_properties(fields):
-    def make_getter(field):
-        def getter(self):
-            return _generic_rfftn(getattr(self, field))
-
-        return getter
-
-    def add_properties(cls):
-        for field in fields:
-            setattr(
-                cls,
-                f"{field}h",
-                property(fget=make_getter(field)),
-            )
-        return cls
-
-    return add_properties
-
-
 @_utils.register_pytree_dataclass
 @dataclasses.dataclass(frozen=True)
 class PseudoSpectralState:
@@ -82,7 +63,6 @@ class PseudoSpectralState:
 
 @_utils.register_pytree_dataclass
 @dataclasses.dataclass(frozen=True)
-@_add_fft_properties(["u", "v", "uq", "vq"])
 class FullPseudoSpectralState:
     state: PseudoSpectralState
     ph: jnp.ndarray
@@ -99,6 +79,26 @@ class FullPseudoSpectralState:
     @property
     def q(self) -> jnp.ndarray:
         return self.state.q
+
+    @property
+    def uh(self) -> jnp.ndarray:
+        """Spectral form of u"""
+        return _generic_rfftn(self.u)
+
+    @property
+    def vh(self) -> jnp.ndarray:
+        """Spectral form of v"""
+        return _generic_rfftn(self.v)
+
+    @property
+    def uqh(self) -> jnp.ndarray:
+        """Spectral form of uq"""
+        return _generic_rfftn(self.uq)
+
+    @property
+    def vqh(self) -> jnp.ndarray:
+        """Spectral form of vq"""
+        return _generic_rfftn(self.vq)
 
     def update(self, **kwargs) -> "FullPseudoSpectralState":
         new_values = {}
