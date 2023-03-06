@@ -1,0 +1,9 @@
+/* Workaround for https://github.com/readthedocs/sphinx_rtd_theme/issues/1301
+ *
+ * Snippet suggested by nocarryr:
+ * https://github.com/readthedocs/sphinx_rtd_theme/issues/1301#issuecomment-1219961515
+ */
+
+dl.py.property {
+    display: block !important;
+}

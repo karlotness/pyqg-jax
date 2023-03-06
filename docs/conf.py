@@ -25,6 +25,7 @@ extensions = [
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 html_static_path = ['_static']
+html_css_files = ['css/pyqg-jax-fix-theme.css']
 suppress_warnings = ["epub.unknown_project_files"]
 
 # Insert code into each rst file
