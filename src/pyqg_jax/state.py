@@ -103,7 +103,6 @@ class PseudoSpectralState:
         This is the spectral form of :attr:`q`.
     """
 
-    _: dataclasses.KW_ONLY
     qh: jnp.ndarray
 
     @property
@@ -227,7 +226,6 @@ class FullPseudoSpectralState:
         stepping.
     """
 
-    _: dataclasses.KW_ONLY
     state: PseudoSpectralState
     ph: jnp.ndarray
     u: jnp.ndarray
