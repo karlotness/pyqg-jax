@@ -28,6 +28,7 @@ def _generic_irfftn(a):
 @_utils.register_pytree_dataclass
 @dataclasses.dataclass(frozen=True)
 class PseudoSpectralState:
+    _: dataclasses.KW_ONLY
     qh: jnp.ndarray
 
     @property
@@ -64,6 +65,7 @@ class PseudoSpectralState:
 @_utils.register_pytree_dataclass
 @dataclasses.dataclass(frozen=True)
 class FullPseudoSpectralState:
+    _: dataclasses.KW_ONLY
     state: PseudoSpectralState
     ph: jnp.ndarray
     u: jnp.ndarray
