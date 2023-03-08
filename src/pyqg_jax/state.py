@@ -17,11 +17,11 @@ To access these variables, the states can be expanded into a
 .. note::
    When time-stepping in JAX (in particular with
    :func:`jax.lax.scan`), the state objects will have leading time
-   dimensions in addition the their normal spatial dimensions. In
-   particular, JAX will store these in "`structure-of-arrays
+   dimensions in addition the their normal spatial dimensions. JAX
+   will store these in "`structure-of-arrays
    <https://en.wikipedia.org/wiki/AoS_and_SoA>`__" style.
 
-   To slice into these, consider combining,
+   To slice into states, consider combining
    :func:`jax.tree_util.tree_map` with a :term:`lambda
    <python:lambda>` or a combination of :func:`operator.itemgetter
    <python:operator.itemgetter>` and :class:`slice <python:slice>`.
