@@ -69,11 +69,15 @@ class ParametrizedModel:
             param_aux=state.param_aux,
         )
 
-    def create_initial_state(self, key):
-        return self.initialize_param_state(self.model.create_initial_state(key=key))
+    def create_initial_state(self, key, *args, **kwargs):
+        return self.initialize_param_state(
+            self.model.create_initial_state(key=key),
+            *args,
+            **kwargs
+        )
 
-    def initialize_param_state(self, state):
-        init_param_state = self.init_param_aux_func(state, self.model)
+    def initialize_param_state(self, state, *args, **kwargs):
+        init_param_state = self.init_param_aux_func(state, self.model, *args, **kwargs)
         return ParametrizedModelState(
             model_state=state,
             param_aux=_steppers.NoStepValue(init_param_state),
