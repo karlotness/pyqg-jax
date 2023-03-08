@@ -54,7 +54,7 @@ class PseudoSpectralState:
         if self.qh.shape != new_qh.shape:
             raise ValueError("found mismatched shapes for q")
         if self.qh.dtype != new_qh.dtype:
-            raise ValueError("found mismatched dtypes for q")
+            raise TypeError("found mismatched dtypes for q")
         return dataclasses.replace(self, qh=new_qh)
 
     def __repr__(self):
@@ -117,7 +117,7 @@ class FullPseudoSpectralState:
             if getattr(getattr(self, name), "dtype", None) != getattr(
                 new_val, "dtype", None
             ):
-                raise ValueError(f"found mismatched dtypes for {name}")
+                raise TypeError(f"found mismatched dtypes for {name}")
             if name in {"q", "qh"}:
                 # Special handling for q and qh, make spectral and assign to state
                 new_val = self.state.update(**{name: new_val})
