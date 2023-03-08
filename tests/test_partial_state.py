@@ -82,5 +82,5 @@ def test_update_rejects_wrong_dtype(update_name):
             dtype=jnp.complex128 if "h" in update_name else jnp.float64,
         )
     }
-    with pytest.raises(ValueError, match="dtype"):
+    with pytest.raises(TypeError, match="dtype"):
         _ = state.update(**update_args)

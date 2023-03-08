@@ -68,7 +68,7 @@ def test_full_state_update_rejects_wrong_dtype(full_state, name):
     else:
         dtype = jnp.complex64
     new_val = jnp.ones_like(getattr(full_state, name), dtype=dtype)
-    with pytest.raises(ValueError, match="dtype"):
+    with pytest.raises(TypeError, match="dtype"):
         _ = full_state.update(**{name: new_val})
 
 
