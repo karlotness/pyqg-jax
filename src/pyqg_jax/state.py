@@ -126,6 +126,10 @@ class FullPseudoSpectralState:
                 # Handle other spectral names, store as non-spectral
                 new_val = _generic_irfftn(new_val)
                 name = name[:-1]
+            elif name == "state":
+                # Do the full state object replacement by updating it
+                # This is to run the internal tests for shape and dtype matching
+                new_val = self.state.update(qh=new_val.qh)
             # Check that we don't have duplicate destinations
             if name in new_values:
                 raise ValueError(f"duplicate updates for {name}")
