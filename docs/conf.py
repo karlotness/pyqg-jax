@@ -68,18 +68,22 @@ def linkcode_resolve(domain, info):
     fullname = info["fullname"]
     pkg_root = pathlib.Path(pyqg_jax.__file__).parent
     module = importlib.import_module(mod_name)
+    obj = module
     try:
-        obj = getattr(module, fullname)
+        for name in fullname.split("."):
+            obj = getattr(obj, name)
     except AttributeError:
         return None
+    if isinstance(obj, property):
+        obj = obj.fget
     try:
         source_file = str(
             pathlib.Path(inspect.getsourcefile(obj)).relative_to(pkg_root)
         )
-    except ValueError:
+        lines, line_start = inspect.getsourcelines(obj)
+        line_end = line_start + len(lines) - 1
+    except (ValueError, TypeError):
         return None
-    lines, line_start = inspect.getsourcelines(obj)
-    line_end = line_start + len(lines) - 1
     # Form the URL from the pieces
     repo_url = "https://github.com/karlotness/pyqg-jax"
     if packaging.version.Version(version).is_devrelease:
