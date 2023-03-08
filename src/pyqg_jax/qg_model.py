@@ -2,6 +2,10 @@
 # SPDX-License-Identifier: MIT
 
 
+"""An implementation of :class:`pyqg.QGModel`.
+"""
+
+
 __all__ = ["QGModel"]
 
 
@@ -13,6 +17,66 @@ from . import _model, _utils, state as _state
 
 @_utils.register_pytree_node_class_private
 class QGModel(_model.Model):
+    r"""Two-layer quasi-geostrophic model.
+
+    See also :class:`pyqg.QGModel`.
+
+    Parameters
+    ----------
+    nx : int, optional
+        Number of grid points in the `x` direction.
+
+    ny : int, optional
+        Number of grid points in the `y` direction. Defaults to `nx`.
+
+    L : float, optional
+        Domain length in the `x` direction. Units: :math:`\mathrm{m}`.
+
+    W : float, optional
+        Domain length in the `y` direction. Defaults to `L`.
+        Units: :math:`\mathrm{m}`.
+
+    rek : float, optional
+        Linear drag in lower layer. Units: :math:`\mathrm{sec}^{-1}`.
+
+    filterfac : float, optional
+        Amplitude of the spectral spherical filter.
+
+    f : float, optional
+
+    g : float, optional
+
+    beta : float, optional
+        Gradient of coriolis parameter. Units: :math:`\mathrm{sec}^{-1} \mathrm{m}^{-1}`.
+
+    rd : float, optional
+        Deformation radius. Units: :math:`\mathrm{m}`.
+
+    delta : float, optional
+        Layer thickness ratio :math:`\mathrm{H1}/\mathrm{H2}`. Unitless.
+
+    H1 : float, optional
+        Layer thickness
+
+    U1 : float, optional
+        Upper layer flow. Units: :math:`\mathrm{m}\ \mathrm{sec}^{-1}`.
+
+    U2 : float, optional
+        Lower layer flow. Units: :math:`\mathrm{m}\ \mathrm{sec}^{-1}`.
+
+    precision : Precision, optional
+        Precision of model computation. Selects dtype of state values.
+
+    Note
+    ----
+    This model internally uses 64-bit floating point values for part
+    of its computation *regardless* of the chosen :class:`precision
+    <pyqg_jax.state.Precision>`.
+
+    Make sure that JAX has `64-bit precision enabled
+    <https://jax.readthedocs.io/en/latest/notebooks/Common_Gotchas_in_JAX.html#double-64bit-precision>`__.
+    """
+
     def __init__(
         self,
         *,
@@ -57,6 +121,18 @@ class QGModel(_model.Model):
         self.H1 = H1
 
     def create_initial_state(self, key):
+        """Create a new initial state with random initialization.
+
+        Parameters
+        ----------
+        key : jax.random.PRNGKey
+            The PRNG used as the random key for initialization.
+
+        Returns
+        -------
+        PseudoSpectralState
+            The new state with random initialization.
+        """
         state = super().create_initial_state()
         # initial conditions (pv anomalies)
         rng_a, rng_b = jax.random.split(key, num=2)

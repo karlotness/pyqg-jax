@@ -61,6 +61,27 @@ class PseudoSpectralKernel:
     def get_updates(
         self, state: _state.PseudoSpectralState
     ) -> _state.PseudoSpectralState:
+        """Get updates for time-stepping `state`.
+
+        Parameters
+        ----------
+        state : PseudoSpectralState
+            The state which will be time stepped using the computed updates.
+
+        Returns
+        -------
+        PseudoSpectralState
+            A new state object where each field corresponds to a
+            time-stepping *update* to be applied.
+
+        Note
+        ----
+        The object returned by this function has the same type of
+        `state`, but contains *updates*. This is so the time-stepping
+        can be done by mapping over the states and updates as JAX
+        pytrees with the same structure.
+
+        """
         full_state = self.get_full_state(state)
         return _state.PseudoSpectralState(
             qh=full_state.dqhdt,
@@ -69,6 +90,22 @@ class PseudoSpectralKernel:
     def postprocess_state(
         self, state: _state.PseudoSpectralState
     ) -> _state.PseudoSpectralState:
+        """Apply fixed filtering to `state`.
+
+        This function should be called once on each new state after each time step.
+
+        :class:`SteppedModel` handles this internally.
+
+        Parameters
+        ----------
+        state : PseudoSpectralState
+            The state to be filtered.
+
+        Returns
+        -------
+        PseudoSpectralState
+            The filtered state.
+        """
         return state.update(qh=jnp.expand_dims(self.filtr, 0) * state.qh)
 
     def create_initial_state(self) -> _state.PseudoSpectralState:

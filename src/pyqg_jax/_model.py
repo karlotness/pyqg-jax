@@ -59,6 +59,18 @@ class Model(_kernel.PseudoSpectralKernel):
     def get_full_state(
         self, state: state.PseudoSpectralState
     ) -> state.FullPseudoSpectralState:
+        """Expand a partial state into a full state with all computed values.
+
+        Parameters
+        ----------
+        state : PseudoSpectralState
+            The partial state to be expanded.
+
+        Returns
+        -------
+        FullPseudoSpectralState
+            New state object with all computed fields derived from `state`.
+        """
         full_state = super().get_full_state(state)
         full_state = self._do_external_forcing(full_state)
         return full_state
