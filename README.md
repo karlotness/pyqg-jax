@@ -85,33 +85,6 @@ and taking a single step.
 For repeated time-stepping combine `step_model` with
 [`jax.lax.scan`](https://jax.readthedocs.io/en/latest/_autosummary/jax.lax.scan.html).
 
-### Useful Methods and attributes
-A subset of methods and attributes available on common objects
-- For `pyqg_jax.qg_model.QGModel`
-  - `create_initial_state(jax.random.PRNGKey) -> PseudoSpectralState`: Randomly initializes the model
-  - `get_full_state(PseudoSpectralState) -> FullPseudoSpectralState`: Expands the state, computing other attributes from `q`
-  - `get_updates(PseudoSpectralState) -> PseudoSpectralState`: Computes time updates for `qh`. Combine with a time-stepper
-- For `pyqg_jax.steppers.AB3Stepper(dt=float)`
-  - `initialize_stepper_state(PseudoSpectralState) -> AB3State[PseudoSpectralState]`: Initialize a time-stepper state around a model state
-  - `apply_updates(AB3State[PseudoSpectralState], updates=PseudoSpectralState) -> AB3State[PseudoSpectralState]`: Apply model updates to a time stepper state
-- For `pyqg_jax.steppers.AB3State`
-  - `state`: extract the `PseudoSpectralState` at the current time
-  - `t`: the current time
-  - `tc`: the current step counter
-- For `pyqg_jax.steppers.SteppedModel(model, stepper)`
-  - `create_initial_state(key=jax.random.PRNGKey) -> StepperState[PseudoSpectralState]`: Create a new, random, state ready to step
-  - `initialize_stepper_state(PseudoSpectralState) -> StepperState[PseudoSpectralState]`: Wraps an existing model state to prepare it for time stepping
-  - `step_model(StepperState[PseudoSpectralState]) -> StepperState[PseudoSpectralState]`: Steps the model forward, and handles filtering
-  - `get_full_state(StepperState[PseudoSpectralState]) -> FullPseudoSpectralState`: Extracts the state and expands it, computing all attributes from `q`
-- For `pyqg_jax.state.PseudoSpectralState`
-  - `q`: The potential vorticity
-  - `qh`: Spectral form of potential vorticity
-  - `update(q=, qh=) -> PseudoSpectralState`: Return a new `PseudoSpectralState` with the given value replacements
-- For `pyqg_jax.state.FullPseudoSpectralState`
-  - `dqhdt`: Spectral updates for `qh`
-  - `state`: The inner `PseudoSpectralState`
-  - `update(q=, qh=, dqhdt=, ...) -> PseudoSpectralState`: Return a new `FullPseudoSpectralState` with the given value replacements
-
 ## License
 The code in this repository is distributed under the MIT license. See
 LICENSE.txt for the license text.
