@@ -246,22 +246,18 @@ class FullPseudoSpectralState:
 
     @property
     def uh(self) -> jnp.ndarray:
-        """Spectral form of u"""
         return _generic_rfftn(self.u)
 
     @property
     def vh(self) -> jnp.ndarray:
-        """Spectral form of v"""
         return _generic_rfftn(self.v)
 
     @property
     def uqh(self) -> jnp.ndarray:
-        """Spectral form of uq"""
         return _generic_rfftn(self.uq)
 
     @property
     def vqh(self) -> jnp.ndarray:
-        """Spectral form of vq"""
         return _generic_rfftn(self.vq)
 
     def update(self, **kwargs) -> "FullPseudoSpectralState":
