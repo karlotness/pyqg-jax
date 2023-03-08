@@ -66,6 +66,6 @@ def q_parameterization(param_func):
         dqh = _state._generic_rfftn(dq)
         updates = model.get_updates(state)
         dqhdt = updates.qh + dqh
-        return updates.update(qh=dqhdt)
+        return updates.update(qh=dqhdt), param_aux
 
     return wrapped_q_param
