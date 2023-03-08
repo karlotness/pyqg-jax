@@ -48,6 +48,7 @@ class StepperState(typing.Generic[P]):
     tc : jax.numpy.uint32
         The current model timestep
     """
+
     def __init__(self, *, state: P, t: float, tc: int):
         self.state = state
         self.t = jnp.float32(t)
@@ -343,7 +344,7 @@ AB3State(
 
 @_utils.register_pytree_node_class_private
 class AB3Stepper(Stepper):
-    """Third order Adams–Bashforth stepper.
+    """Third order Adams-Bashforth stepper.
 
     This is the same time stepping scheme as used in PyQG.
 

@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MIT
 
 
-"""Parameterization as in `Smagorinsky (1963) <https://doi.org/10.1175/1520-0493(1963)091%3C0099:GCEWTP%3E2.3.CO;2>`__."""
+"""Parameterization as in `Smagorinsky (1963) <https://doi.org/10.1175/1520-0493(1963)091%3C0099:GCEWTP%3E2.3.CO;2>`__."""  # noqa: E501
 
 
 __all__ = [

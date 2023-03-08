@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MIT
 
 
-"""Parameterization as in `Zanna and Bolton (2020) <https://doi.org/10.1029/2020GL088376>`__."""
+"""Parameterization as in `Zanna and Bolton (2020) <https://doi.org/10.1029/2020GL088376>`__."""  # noqa: E501
 
 
 __all__ = [
@@ -18,7 +18,7 @@ from .. import state as _state
 
 
 def apply_parameterization(model, *, kappa=-46761284):
-    """Apply the Zanna-Bolton parameterization to `model`.
+    r"""Apply the Zanna-Bolton parameterization to `model`.
 
     See also: :class:`pyqg.parameterizations.ZannaBolton2020`
 

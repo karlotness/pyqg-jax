@@ -47,7 +47,8 @@ class QGModel(_model.Model):
     g : float, optional
 
     beta : float, optional
-        Gradient of coriolis parameter. Units: :math:`\mathrm{sec}^{-1} \mathrm{m}^{-1}`.
+        Gradient of coriolis parameter. Units:
+        :math:`\mathrm{sec}^{-1} \mathrm{m}^{-1}`.
 
     rd : float, optional
         Deformation radius. Units: :math:`\mathrm{m}`.

@@ -34,8 +34,8 @@ class ParameterizedModelState:
         It will be wrapped in a :class:`NoStepValue
         <pyqg_jax.steppers.NoStepValue>` to shield it from the time
         steppers.
-
     """
+
     model_state: _state.PseudoSpectralState
     param_aux: _steppers.NoStepValue
 
@@ -210,9 +210,7 @@ class ParameterizedModel:
             The new wrapped state with random initialization.
         """
         return self.initialize_param_state(
-            self.model.create_initial_state(key=key),
-            *args,
-            **kwargs
+            self.model.create_initial_state(key=key), *args, **kwargs
         )
 
     def initialize_param_state(self, state, *args, **kwargs):
