@@ -18,7 +18,7 @@ P = typing.TypeVar("P", bound=jaxtyping.PyTree)
 
 @_utils.register_pytree_node_class_private
 class StepperState(typing.Generic[P]):
-    def __init__(self, state: P, t: float, tc: int):
+    def __init__(self, *, state: P, t: float, tc: int):
         self.state = state
         self.t = jnp.float32(t)
         self.tc = jnp.uint32(tc)
@@ -152,7 +152,7 @@ def _map_state_remove_nostep(state):
 @_utils.register_pytree_node_class_private
 class AB3State(StepperState[P]):
     def __init__(
-        self, state: P, t: float, tc: int, ablevel: int, updates: typing.Tuple[P, P]
+        self, *, state: P, t: float, tc: int, ablevel: int, updates: typing.Tuple[P, P]
     ):
         super().__init__(state=state, t=t, tc=tc)
         self._ablevel: int = jnp.uint8(ablevel)
