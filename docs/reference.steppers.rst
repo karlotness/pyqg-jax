@@ -8,3 +8,5 @@ Time-Steppers
 .. autoclass:: StepperState
 
 .. autoclass:: SteppedModel
+
+.. autoclass:: NoStepValue
