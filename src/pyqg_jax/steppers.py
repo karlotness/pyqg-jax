@@ -247,7 +247,7 @@ class AB3Stepper(Stepper):
 class NoStepValue(typing.Generic[P]):
     # Marks contents to not be stepped by provided time-steppers
 
-    def __init__(self, value: P):
+    def __init__(self, value: P, /):
         self.value = value
 
     def _tree_flatten(self):
