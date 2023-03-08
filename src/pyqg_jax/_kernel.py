@@ -94,7 +94,8 @@ class PseudoSpectralKernel:
 
         This function should be called once on each new state after each time step.
 
-        :class:`SteppedModel` handles this internally.
+        :class:`SteppedModel <pyqg_jax.steppers.SteppedModel>` handles
+        this internally.
 
         Parameters
         ----------
