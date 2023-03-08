@@ -8,7 +8,20 @@ from .. import state as _state
 
 
 def uv_parameterization(param_func):
-    """
+    """Decorator implementing parameterizations in terms of velocity.
+
+    The target function should take as its first three arguments
+    :pycode:`(state, param_aux, model)` as with any other
+    parameterization function. Additional arguments will be passed
+    through unmodified.
+
+    This function should then return two values: :pycode:`(du, dv),
+    param_aux`. These values will then be added to the model's
+    original update value to form the parameterized update.
+
+    The wrapped function is suitable for use with
+    :class:`ParameterizedModel`.
+
     See also: :class:`pyqg.parameterizations.UVParameterization`
     """
 
@@ -29,7 +42,21 @@ def uv_parameterization(param_func):
 
 
 def q_parameterization(param_func):
-    """
+    """Decorator implementing parameterizations in terms of potential
+    vorticity.
+
+    The target function should take as its first three arguments
+    :pycode:`(state, param_aux, model)` as with any other
+    parameterization function. Additional arguments will be passed
+    through unmodified.
+
+    This function should then return two values: :pycode:`dq,
+    param_aux`. These values will then be added to the model's
+    original update value to form the parameterized update.
+
+    The wrapped function is suitable for use with
+    :class:`ParameterizedModel`.
+
     See also: :class:`pyqg.parameterizations.QParameterization`
     """
 

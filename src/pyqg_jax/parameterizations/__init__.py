@@ -2,6 +2,14 @@
 # SPDX-License-Identifier: MIT
 
 
+"""Utilities for adding parameterizations to core models.
+
+This subpackage includes some of the pre-implemented parameterizations
+from PyQG as well as utilities for defining custom parameterizations
+and applying them to a model.
+"""
+
+
 __all__ = [
     "ParameterizedModelState",
     "ParameterizedModel",
