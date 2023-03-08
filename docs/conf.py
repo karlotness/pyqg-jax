@@ -1,8 +1,6 @@
 import inspect
 import importlib
 import pathlib
-import sys
-import shutil
 import packaging.version
 import pyqg_jax
 
