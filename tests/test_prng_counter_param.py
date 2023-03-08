@@ -3,7 +3,7 @@ import pyqg_jax
 
 
 def test_match_final_step():
-    jax_model = pyqg_jax.parameterizations.ParametrizedModel(
+    jax_model = pyqg_jax.parameterizations.ParameterizedModel(
         model=pyqg_jax.qg_model.QGModel(
             nx=64, precision=pyqg_jax.state.Precision.DOUBLE
         ),

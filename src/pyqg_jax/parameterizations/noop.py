@@ -16,11 +16,11 @@ __all__ = [
 ]
 
 
-from . import _parametrized_model
+from . import _parameterized_model
 
 
 def apply_parameterization(model):
-    return _parametrized_model.ParametrizedModel(
+    return _parameterized_model.ParameterizedModel(
         model=model,
         param_func=param_func,
         init_param_aux_func=init_param_aux_func,

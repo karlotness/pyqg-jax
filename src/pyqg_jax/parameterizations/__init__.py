@@ -3,8 +3,8 @@
 
 
 __all__ = [
-    "ParametrizedModelState",
-    "ParametrizedModel",
+    "ParameterizedModelState",
+    "ParameterizedModel",
     "uv_parameterization",
     "q_parameterization",
     "smagorinsky",
@@ -13,6 +13,6 @@ __all__ = [
 ]
 
 
-from ._parametrized_model import ParametrizedModelState, ParametrizedModel
+from ._parameterized_model import ParameterizedModelState, ParameterizedModel
 from ._defs import uv_parameterization, q_parameterization
 from . import smagorinsky, zannabolton2020, noop

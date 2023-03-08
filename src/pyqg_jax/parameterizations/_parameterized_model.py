@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MIT
 
 
-__all__ = ["ParametrizedModelState", "ParametrizedModel"]
+__all__ = ["ParameterizedModelState", "ParameterizedModel"]
 
 
 import dataclasses
@@ -13,7 +13,7 @@ from .. import state as _state, _utils, steppers as _steppers
 
 @_utils.register_pytree_dataclass
 @dataclasses.dataclass(frozen=True)
-class ParametrizedModelState:
+class ParameterizedModelState:
     model_state: typing.Union[
         _state.PseudoSpectralState, _state.FullPseudoSpectralState
     ]
@@ -27,7 +27,7 @@ class ParametrizedModelState:
             _utils.summarize_object(self.param_aux), 2
         )
         return f"""\
-ParametrizedModelState(
+ParameterizedModelState(
   model_state={model_state_summary},
   param_aux={param_aux_summary},
 )"""
@@ -38,7 +38,7 @@ def _init_none(init_state, model):
 
 
 @_utils.register_pytree_node_class_private
-class ParametrizedModel:
+class ParameterizedModel:
     def __init__(self, model, param_func, init_param_aux_func=None):
         # param_func(full_state, param_aux, model) -> full_state, param_aux
         # init_param_aux_func(model_state, model) -> param_aux
@@ -58,13 +58,13 @@ class ParametrizedModel:
         param_updates, new_param_aux = self.param_func(
             state.model_state, state.param_aux.value, self.model
         )
-        return ParametrizedModelState(
+        return ParameterizedModelState(
             model_state=param_updates,
             param_aux=_steppers.NoStepValue(new_param_aux),
         )
 
     def postprocess_state(self, state):
-        return ParametrizedModelState(
+        return ParameterizedModelState(
             model_state=self.model.postprocess_state(state.model_state),
             param_aux=state.param_aux,
         )
@@ -78,7 +78,7 @@ class ParametrizedModel:
 
     def initialize_param_state(self, state, *args, **kwargs):
         init_param_state = self.init_param_aux_func(state, self.model, *args, **kwargs)
-        return ParametrizedModelState(
+        return ParameterizedModelState(
             model_state=state,
             param_aux=_steppers.NoStepValue(init_param_state),
         )
@@ -110,7 +110,7 @@ class ParametrizedModel:
             _utils.summarize_object(self.init_param_aux_func), 2
         )
         return f"""\
-ParametrizedModel(
+ParameterizedModel(
   model={model_summary},
   param_func={param_func_summary},
   init_param_aux_func={init_param_aux_func_summary},

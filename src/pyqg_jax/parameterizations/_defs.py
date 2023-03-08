@@ -8,6 +8,10 @@ from .. import state as _state
 
 
 def uv_parameterization(param_func):
+    """
+    See also: :class:`pyqg.parameterizations.UVParameterization`
+    """
+
     @functools.wraps(param_func)
     def wrapped_uv_param(state, param_aux, model, *args, **kwargs):
         (du, dv), param_aux = param_func(state, param_aux, model, *args, **kwargs)
@@ -25,6 +29,10 @@ def uv_parameterization(param_func):
 
 
 def q_parameterization(param_func):
+    """
+    See also: :class:`pyqg.parameterizations.QParameterization`
+    """
+
     @functools.wraps(param_func)
     def wrapped_q_param(state, param_aux, model, *args, **kwargs):
         dq, param_aux = param_func(state, param_aux, model, *args, **kwargs)

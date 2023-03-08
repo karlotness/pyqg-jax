@@ -11,9 +11,10 @@ Parameterizations
    reference.parameterizations.zannabolton2020
    reference.parameterizations.noop
 
-.. autoclass:: ParametrizedModel
+.. autoclass:: ParameterizedModel
+   :members: get_full_state, get_updates, postprocess_state, create_initial_state, initialize_param_state
 
-.. autoclass:: ParametrizedModelState
+.. autoclass:: ParameterizedModelState
 
 .. autodecorator:: uv_parameterization
 
