@@ -86,8 +86,8 @@ For repeated time-stepping combine `step_model` with
 [`jax.lax.scan`](https://jax.readthedocs.io/en/latest/_autosummary/jax.lax.scan.html).
 
 ## License
-The code in this repository is distributed under the MIT license. See
-LICENSE.txt for the license text.
+This software is distributed under the MIT license. See LICENSE.txt
+for the license text.
 
 [pypi]: https://pypi.org/project/pyqg-jax
 [docs]: https://pyqg-jax.readthedocs.io/en/latest/
