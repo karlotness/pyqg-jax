@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MIT
 
 
-# Zanna and Bolton 2020: https://doi.org/10.1029/2020GL088376
+"""Parameterization as in `Zanna and Bolton (2020) <https://doi.org/10.1029/2020GL088376>`__."""
 
 
 __all__ = [
@@ -17,7 +17,24 @@ from . import _defs, _parameterized_model
 from .. import state as _state
 
 
-def apply_parameterization(model, kappa=-46761284):
+def apply_parameterization(model, *, kappa=-46761284):
+    """Apply the Zanna-Bolton parameterization to `model`.
+
+    See also: :class:`pyqg.parameterizations.ZannaBolton2020`
+
+    Parameters
+    ----------
+    model
+        The inner model to wrap in the parameterization.
+
+    kappa : float, optional
+        Scaling constant with units :math:`\mathrm{m}^{-2}`.
+
+    Returns
+    -------
+    ParameterizedModel
+        `model` wrapped in the parameterization.
+    """
     return _parameterized_model.ParameterizedModel(
         model=model,
         param_func=functools.partial(param_func, kappa=kappa),
@@ -26,7 +43,7 @@ def apply_parameterization(model, kappa=-46761284):
 
 
 @_defs.uv_parameterization
-def param_func(state, param_aux, model, kappa=-46761284):
+def param_func(state, param_aux, model, *, kappa=-46761284):
     full_state = model.get_full_state(state)
     uh = full_state.uh
     vh = full_state.vh

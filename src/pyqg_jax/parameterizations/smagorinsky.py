@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MIT
 
 
-# Smagorinsky 1963: https://doi.org/10.1175/1520-0493(1963)091%3C0099:GCEWTP%3E2.3.CO;2
+"""Parameterization as in `Smagorinsky (1963) <https://doi.org/10.1175/1520-0493(1963)091%3C0099:GCEWTP%3E2.3.CO;2>`__."""
 
 
 __all__ = [
@@ -18,7 +18,24 @@ from . import _defs, _parameterized_model
 from .. import state as _state
 
 
-def apply_parameterization(model, constant=0.1):
+def apply_parameterization(model, *, constant=0.1):
+    """Apply the Smagorinsky parameterization to `model`.
+
+    See also: :class:`pyqg.parameterizations.Smagorinsky`
+
+    Parameters
+    ----------
+    model
+        The inner model to wrap in the parameterization.
+
+    constant : float, optional
+        Smagorinsky constant
+
+    Returns
+    -------
+    ParameterizedModel
+        `model` wrapped in the parameterization.
+    """
     return _parameterized_model.ParameterizedModel(
         model=model,
         param_func=functools.partial(param_func, constant=constant),
@@ -27,7 +44,7 @@ def apply_parameterization(model, constant=0.1):
 
 
 @_defs.uv_parameterization
-def param_func(state, param_aux, model, constant=0.1):
+def param_func(state, param_aux, model, *, constant=0.1):
     full_state = model.get_full_state(state)
     uh = full_state.uh
     vh = full_state.vh
