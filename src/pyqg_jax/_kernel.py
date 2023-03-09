@@ -164,11 +164,8 @@ class PseudoSpectralKernel:
         # calculate spectral velocities
         uh = (-1 * jnp.expand_dims(self._il, (0, -1))) * ph
         vh = jnp.expand_dims(self._ik, (0, 1)) * ph
-        # transform to get u and v
-        u = _state._generic_irfftn(uh)
-        v = _state._generic_irfftn(vh)
         # Update state values
-        return state.update(ph=ph, u=u, v=v)
+        return state.update(ph=ph, uh=uh, vh=vh)
 
     def _do_advection(
         self, state: _state.FullPseudoSpectralState
@@ -176,16 +173,14 @@ class PseudoSpectralKernel:
         # multiply to get advective flux in space
         uq = (state.u + jnp.expand_dims(self.Ubg[: self.nz], (-1, -2))) * state.q
         vq = state.v * state.q
-        # transform to get spectral advective flux
-        uqh = _state._generic_rfftn(uq)
-        vqh = _state._generic_rfftn(vq)
+        state = state.update(uq=uq, vq=vq)
         # spectral divergence
         dqhdt = -1 * (
-            jnp.expand_dims(self._ik, (0, 1)) * uqh
-            + jnp.expand_dims(self._il, (0, -1)) * vqh
+            jnp.expand_dims(self._ik, (0, 1)) * state.uqh
+            + jnp.expand_dims(self._il, (0, -1)) * state.vqh
             + jnp.expand_dims(self._ikQy[: self.nz], 1) * state.ph
         )
-        return state.update(uq=uq, vq=vq, dqhdt=dqhdt)
+        return state.update(dqhdt=dqhdt)
 
     def _do_friction(
         self, state: _state.FullPseudoSpectralState
