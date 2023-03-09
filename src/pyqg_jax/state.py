@@ -165,8 +165,8 @@ class PseudoSpectralState:
         return dataclasses.replace(self, qh=new_qh)
 
     def __repr__(self):
-        q_summary = _utils.summarize_object(self.q)
-        return f"PseudoSpectralState(q={q_summary})"
+        qh_summary = _utils.summarize_object(self.qh)
+        return f"PseudoSpectralState(qh={qh_summary})"
 
 
 @_utils.register_pytree_dataclass
