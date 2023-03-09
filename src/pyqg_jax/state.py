@@ -362,10 +362,6 @@ class FullPseudoSpectralState:
             elif name == "p":
                 new_val = _generic_rfftn(new_val)
                 name = "ph"
-            elif name == "state":
-                # Do the full state object replacement by updating it
-                # This is to run the internal tests for shape and dtype matching
-                new_val = self.state.update(qh=new_val.qh)
             # Check that we don't have duplicate destinations
             if name in new_values:
                 raise ValueError(f"duplicate updates for {name}")
