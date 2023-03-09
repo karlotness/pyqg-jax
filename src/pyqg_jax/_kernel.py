@@ -25,11 +25,11 @@ class PseudoSpectralKernel:
         self.ny = ny
         self.nx = nx
         self.rek = rek
-        self._precision = precision
-        if self._precision == _state.Precision.SINGLE:
+        self.precision = precision
+        if self.precision == _state.Precision.SINGLE:
             self._dtype_real = jnp.float32
             self._dtype_complex = jnp.complex64
-        elif self._precision == _state.Precision.DOUBLE:
+        elif self.precision == _state.Precision.DOUBLE:
             self._dtype_real = jnp.float64
             self._dtype_complex = jnp.complex128
         else:
@@ -218,7 +218,7 @@ class PseudoSpectralKernel:
             "nz",
             "ny",
             "nx",
-            "_precision",
+            "precision",
             "_dtype_real",
             "_dtype_complex",
         )

@@ -290,7 +290,7 @@ class QGModel(_model.Model):
         U1_summary = _utils.indent_repr(_utils.summarize_object(self.U1), 2)
         U2_summary = _utils.indent_repr(_utils.summarize_object(self.U2), 2)
         H1_summary = _utils.indent_repr(_utils.summarize_object(self.H1), 2)
-        precision_summary = self._precision.name
+        precision_summary = self.precision.name
         return f"""\
 QGModel(
   nx={nx_summary},
