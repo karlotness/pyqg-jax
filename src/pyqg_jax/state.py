@@ -200,6 +200,9 @@ class FullPseudoSpectralState:
 
         Pass-through accessor for :attr:`state.qh <PseudoSpectralState.qh>`
 
+    p : jax.Array
+        Streamfunction in real space.
+
     ph : jax.Array
         Streamfunction in spectral space.
 
@@ -243,6 +246,10 @@ class FullPseudoSpectralState:
         return self.state.q
 
     @property
+    def p(self) -> jnp.ndarray:
+        return _generic_irfftn(self.ph)
+
+    @property
     def uh(self) -> jnp.ndarray:
         return _generic_rfftn(self.u)
 
@@ -281,6 +288,9 @@ class FullPseudoSpectralState:
 
         qh : jax.Array
             Replacement value for :attr:`qh`. This also updates :attr:`state`.
+
+        p : jax.Array
+            Replacement value for :attr:`p`.
 
         ph : jax.Array
             Replacement value for :attr:`ph`.
@@ -349,6 +359,9 @@ class FullPseudoSpectralState:
                 # Handle other spectral names, store as non-spectral
                 new_val = _generic_irfftn(new_val)
                 name = name[:-1]
+            elif name == "p":
+                new_val = _generic_rfftn(new_val)
+                name = "ph"
             elif name == "state":
                 # Do the full state object replacement by updating it
                 # This is to run the internal tests for shape and dtype matching
