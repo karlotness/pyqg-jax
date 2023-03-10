@@ -44,6 +44,7 @@ class PseudoSpectralKernel:
         def _empty_com():
             return jnp.zeros((self.nz, self.nl, self.nk), dtype=self._dtype_complex)
 
+        self._state_shape_check(state)
         full_state = _state.FullPseudoSpectralState(
             state=state,
             ph=_empty_com(),
@@ -113,6 +114,15 @@ class PseudoSpectralKernel:
         return _state.PseudoSpectralState(
             qh=jnp.zeros((self.nz, self.nl, self.nk), dtype=self._dtype_complex)
         )
+
+    def _state_shape_check(self, state):
+        if state.qh.ndim != 3:
+            vmap_msg = " (use jax.vmap)" if state.qh.ndim > 3 else ""
+            raise ValueError(
+                f"state has {state.qh.ndim} dimensions, but should have 3{vmap_msg}."
+            )
+        if state.qh.shape != (self.nz, self.nl, self.nk):
+            raise ValueError(f"state.qh has incorrect shape {state.qh.shape}")
 
     @property
     def nl(self):
