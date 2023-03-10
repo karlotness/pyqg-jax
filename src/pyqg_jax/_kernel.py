@@ -219,9 +219,7 @@ class PseudoSpectralKernel:
         )
 
     def _apply_a_ph(self, state):
-        a = jnp.zeros((self.nz, self.nz, self.nl, self.nk), dtype=self._dtype_complex)
-        ph = jnp.sum(a * jnp.expand_dims(state.qh, 0), axis=1)
-        return ph
+        return jnp.zeros_like(state.ph)
 
     def _tree_flatten(self):
         static_attributes = (
