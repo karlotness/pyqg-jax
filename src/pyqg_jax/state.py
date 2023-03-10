@@ -283,17 +283,15 @@ class FullPseudoSpectralState:
         attributes replaced.
 
         The keyword arguments may specify any of this class's
-        attributes, but must not apply multiple updates to the same
-        attribute. That is, modifying both the spectral and real space
-        values at the same time is not allowed.
+        attributes *except* :attr:`state`, but must not apply multiple
+        updates to the same attribute. That is, modifying both the
+        spectral and real space values at the same time is not
+        allowed.
 
         The object this method is called on is not modified.
 
         Parameters
         ----------
-        state : PseudoSpectralState
-            Replacement value for :attr:`state`
-
         q : jax.Array
             Replacement value for :attr:`q`. This also updates :attr:`state`.
 
