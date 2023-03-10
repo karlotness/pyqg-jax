@@ -40,18 +40,18 @@ def test_full_state_update_rejects_state(full_state):
 
 
 @pytest.mark.parametrize(
-    "name", ["ph", "p", "u", "v", "uq", "vq", "dqhdt", "uh", "vh", "uqh", "vqh"]
+    "name", ["ph", "p", "u", "v", "uq", "vq", "dqhdt", "dqdt", "uh", "vh", "uqh", "vqh"]
 )
 def test_full_state_update(full_state, name):
     new_val = jnp.ones_like(getattr(full_state, name))
     new_state = full_state.update(**{name: new_val})
     assert jnp.allclose(getattr(new_state, name), 1)
-    if name not in {"p", "uh", "vh", "uqh", "vqh"}:
+    if name not in {"p", "uh", "vh", "uqh", "vqh", "dqdt"}:
         assert getattr(new_state, name) is new_val
 
 
 @pytest.mark.parametrize(
-    "name", ["ph", "p", "u", "v", "uq", "vq", "dqhdt", "uh", "vh", "uqh", "vqh"]
+    "name", ["ph", "p", "u", "v", "uq", "vq", "dqhdt", "dqdt", "uh", "vh", "uqh", "vqh"]
 )
 def test_full_state_update_rejects_wrong_shape(full_state, name):
     new_val = jnp.ones_like(getattr(full_state, name)[..., 1:])
@@ -60,7 +60,7 @@ def test_full_state_update_rejects_wrong_shape(full_state, name):
 
 
 @pytest.mark.parametrize(
-    "name", ["ph", "p", "u", "v", "uq", "vq", "dqhdt", "uh", "vh", "uqh", "vqh"]
+    "name", ["ph", "p", "u", "v", "uq", "vq", "dqhdt", "dqdt", "uh", "vh", "uqh", "vqh"]
 )
 def test_full_state_update_rejects_wrong_dtype(full_state, name):
     if name.endswith("h") or name == "dqhdt":
@@ -72,11 +72,15 @@ def test_full_state_update_rejects_wrong_dtype(full_state, name):
         _ = full_state.update(**{name: new_val})
 
 
-@pytest.mark.parametrize("name", ["p", "u", "v", "uq", "vq"])
+@pytest.mark.parametrize("name", ["p", "u", "v", "uq", "vq", "dqdt"])
 def test_full_state_update_rejects_duplicate_updates(full_state, name):
+    if name == "dqdt":
+        spectral_name = "dqhdt"
+    else:
+        spectral_name = f"{name}h"
     new_vals = {
         name: getattr(full_state, name),
-        f"{name}h": getattr(full_state, f"{name}h"),
+        spectral_name: getattr(full_state, spectral_name),
     }
     with pytest.raises(ValueError, match="duplicate"):
         _ = full_state.update(**new_vals)

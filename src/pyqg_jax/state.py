@@ -231,6 +231,9 @@ class FullPseudoSpectralState:
 
         This value is the update applied to the model when time
         stepping.
+
+    dqdt : jax.Array
+        Real space version of :attr:`dqhdt`.
     """
 
     state: PseudoSpectralState
@@ -268,6 +271,10 @@ class FullPseudoSpectralState:
     @property
     def vqh(self) -> jnp.ndarray:
         return _generic_rfftn(self.vq)
+
+    @property
+    def dqdt(self) -> jnp.ndarray:
+        return _generic_irfftn(self.dqhdt)
 
     def update(self, **kwargs) -> "FullPseudoSpectralState":
         """Replace values stored in this state.
@@ -326,6 +333,9 @@ class FullPseudoSpectralState:
         dqhdt : jax.Array
             Replacement value for :attr:`dqhdt`.
 
+        dqdt : jax.Array
+            Replacement value for :attr:`dqdt`.
+
         Returns
         -------
         FullPseudoSpectralState
@@ -366,6 +376,9 @@ class FullPseudoSpectralState:
             elif name == "p":
                 new_val = _generic_rfftn(new_val)
                 name = "ph"
+            elif name == "dqdt":
+                new_val = _generic_rfftn(new_val)
+                name = "dqhdt"
             # Check that we don't have duplicate destinations
             if name in new_values:
                 raise ValueError(f"duplicate updates for {name}")
