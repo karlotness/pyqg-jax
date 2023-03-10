@@ -375,7 +375,7 @@ class FullPseudoSpectralState:
         return dataclasses.replace(self, **new_values)
 
     def __repr__(self):
-        q_summary = _utils.summarize_object(self.q)
+        state_summary = _utils.indent_repr(_utils.summarize_object(self.state), 2)
         ph_summary = _utils.summarize_object(self.ph)
         u_summary = _utils.summarize_object(self.u)
         v_summary = _utils.summarize_object(self.v)
@@ -384,7 +384,7 @@ class FullPseudoSpectralState:
         dqhdt_summary = _utils.summarize_object(self.dqhdt)
         return f"""\
 FullPseudoSpectralState(
-  q={q_summary},
+  state={state_summary},
   ph={ph_summary},
   u={u_summary},
   v={v_summary},
