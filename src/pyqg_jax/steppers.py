@@ -101,6 +101,18 @@ class StepperState(typing.Generic[P]):
         attr_dict.update(kwargs)
         return self._tree_unflatten(attr_names, [attr_dict[k] for k in attr_names])
 
+    def __repr__(self):
+        class_name = type(self).__name__
+        state_summary = _utils.indent_repr(_utils.summarize_object(self.state), 2)
+        t_summary = _utils.summarize_object(self.t)
+        tc_summary = _utils.summarize_object(self.tc)
+        return f"""\
+{class_name}(
+  t={t_summary},
+  tc={tc_summary},
+  state={state_summary},
+)"""
+
 
 S = typing.TypeVar("S", bound=StepperState)
 
@@ -118,6 +130,11 @@ class Stepper:
 
     def apply_updates(self, stepper_state, updates):
         raise NotImplementedError("implement in a subclass")
+
+    def __repr__(self):
+        class_name = type(self).__name__
+        dt_summary = _utils.summarize_object(self.dt)
+        return f"{class_name}(dt={dt_summary})"
 
 
 @_utils.register_pytree_node_class_private
@@ -330,17 +347,6 @@ class AB3State(StepperState[P]):
         children = [*super_children, self._ablevel, self._updates]
         return children, attr_names
 
-    def __repr__(self):
-        state_summary = _utils.indent_repr(_utils.summarize_object(self.state), 2)
-        t_summary = _utils.summarize_object(self.t)
-        tc_summary = _utils.summarize_object(self.tc)
-        return f"""\
-AB3State(
-  t={t_summary},
-  tc={tc_summary},
-  state={state_summary},
-)"""
-
 
 @_utils.register_pytree_node_class_private
 class AB3Stepper(Stepper):
@@ -463,10 +469,6 @@ class AB3Stepper(Stepper):
         obj = cls.__new__(cls)
         obj.dt = children[0]
         return obj
-
-    def __repr__(self):
-        dt_summary = _utils.summarize_object(self.dt)
-        return f"AB3Stepper(dt={dt_summary})"
 
 
 @_utils.register_pytree_node_class_private
