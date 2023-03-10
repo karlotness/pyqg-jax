@@ -220,7 +220,11 @@ class FullPseudoSpectralState:
 
     uq : jax.Array
 
+    uqh : jax.Array
+
     vq : jax.Array
+
+    vqh : jax.Array
 
     dqhdt : jax.Array
         Spectral derivative with respect to time for :attr:`qh`.
