@@ -40,7 +40,7 @@ Documentation = "https://pyqg-jax.readthedocs.io"
 "Bug Tracker" = "https://github.com/karlotness/pyqg-jax/issues"
 
 [tool.flit.sdist]
-include = ["tests/"]
+include = ["tests/", "LICENSE.txt"]
 exclude = ["**/*~"]
 
 [tool.pytest.ini_options]
