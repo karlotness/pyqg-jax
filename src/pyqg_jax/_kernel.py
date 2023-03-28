@@ -121,8 +121,11 @@ class PseudoSpectralKernel:
             raise ValueError(
                 f"state has {state.qh.ndim} dimensions, but should have 3{vmap_msg}."
             )
-        if state.qh.shape != (self.nz, self.nl, self.nk):
-            raise ValueError(f"state.qh has incorrect shape {state.qh.shape}")
+        correct_shape = (self.nz, self.nl, self.nk)
+        if state.qh.shape != correct_shape:
+            raise ValueError(
+                f"state.qh has wrong shape {state.qh.shape}, should be {correct_shape}"
+            )
 
     @property
     def nl(self):
