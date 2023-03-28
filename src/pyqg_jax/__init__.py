@@ -29,7 +29,7 @@ stepped forward in time.
 
 
 __version__ = "0.5.2.dev"
-__all__ = ["state", "qg_model", "steppers", "parameterizations"]
+__all__ = ["state", "qg_model", "bt_model", "steppers", "parameterizations"]
 
 
-from . import state, qg_model, steppers, parameterizations
+from . import state, qg_model, bt_model, steppers, parameterizations
