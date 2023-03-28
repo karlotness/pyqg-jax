@@ -97,7 +97,7 @@ class StepperState(typing.Generic[P]):
             raise ValueError("invalid state updates, can only update state, t, and tc")
         # Perform the update
         children, attr_names = self._tree_flatten()
-        attr_dict = {k: v for k, v in zip(attr_names, children)}
+        attr_dict = dict(zip(attr_names, children))
         attr_dict.update(kwargs)
         return self._tree_unflatten(attr_names, [attr_dict[k] for k in attr_names])
 
