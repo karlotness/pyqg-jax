@@ -3,6 +3,7 @@
 [![PyQG-JAX on PyPI](https://img.shields.io/pypi/v/pyqg-jax)][pypi]
 [![Documentation](https://readthedocs.org/projects/pyqg-jax/badge/?version=latest)][docs]
 [![Tests](https://github.com/karlotness/pyqg-jax/actions/workflows/test.yml/badge.svg)][tests]
+[![Zenodo](https://zenodo.org/badge/523137021.svg)][zenodo]
 
 This is a partial port of [PyQG](https://github.com/pyqg/pyqg) to
 [JAX](https://github.com/google/jax) which enables GPU acceleration,
@@ -91,3 +92,4 @@ for the license text.
 [pypi]: https://pypi.org/project/pyqg-jax
 [docs]: https://pyqg-jax.readthedocs.io/en/latest/
 [tests]: https://github.com/karlotness/pyqg-jax/actions
+[zenodo]: https://zenodo.org/badge/latestdoi/523137021
