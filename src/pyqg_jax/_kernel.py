@@ -175,7 +175,7 @@ class PseudoSpectralKernel:
         # invert qh to find ph
         ph = self._apply_a_ph(state)
         # calculate spectral velocities
-        uh = (-1 * jnp.expand_dims(self._il, (0, -1))) * ph
+        uh = jnp.negative(jnp.expand_dims(self._il, (0, -1))) * ph
         vh = jnp.expand_dims(self._ik, (0, 1)) * ph
         # Update state values
         return state.update(ph=ph, uh=uh, vh=vh)
@@ -188,7 +188,7 @@ class PseudoSpectralKernel:
         vq = state.v * state.q
         state = state.update(uq=uq, vq=vq)
         # spectral divergence
-        dqhdt = -1 * (
+        dqhdt = jnp.negative(
             jnp.expand_dims(self._ik, (0, 1)) * state.uqh
             + jnp.expand_dims(self._il, (0, -1)) * state.vqh
             + jnp.expand_dims(self._ikQy[: self.nz], 1) * state.ph
