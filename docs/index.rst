@@ -15,9 +15,7 @@ That said, a note on the state of the port:
 
 .. warning::
    This is a partial, early stage port. There may be bugs and other
-   numerical issues. Only part of the :class:`QGModel
-   <pyqg_jax.qg_model.QGModel>` has been ported, and the API will very
-   likely evolve as work continues.
+   numerical issues. The API may evolve as work continues.
 
 Even so, we hope that the port will be useful. We have successfully
 made use of it in ongoing research projects, and hope that others can

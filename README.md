@@ -13,8 +13,7 @@ batching, automatic differentiation, etc.
 - **Bug Reports:** https://github.com/karlotness/pyqg-jax/issues
 
 ⚠️ **Warning:** this is a partial, early stage port. There may be bugs
-and other numerical issues. Only part of the `QGModel` has been
-ported, and the API will very likely evolve as work continues.
+and other numerical issues. The API may evolve as work continues.
 
 ## Installation
 Install from PyPI using pip:
