@@ -15,6 +15,51 @@ from . import _model, _utils, state as _state
 
 @_utils.register_pytree_node_class_private
 class BTModel(_model.Model):
+    r"""Single-layer (barotropic) quasigeostrophic model.
+
+    See also :class:`pyqg.BTModel`.
+
+    Parameters
+    ----------
+    nx : int, optional
+        Number of grid points in the `x` direction.
+
+    ny : int, optional
+        Number of grid points in the `y` direction. Defaults to `nx`.
+
+    L : float, optional
+        Domain length in the `x` direction. Units: :math:`\mathrm{m}`.
+
+    W : float, optional
+        Domain length in the `y` direction. Defaults to `L`.
+        Units: :math:`\mathrm{m}`.
+
+    rek : float, optional
+        Linear drag in lower layer. Units: :math:`\mathrm{sec}^{-1}`.
+
+    filterfac : float, optional
+        Amplitude of the spectral spherical filter.
+
+    f : float, optional
+
+    g : float, optional
+
+    beta : float, optional
+        Gradient of coriolis parameter. Units:
+        :math:`\mathrm{m}^{-1}\ \mathrm{sec}^{-1}`.
+
+    rd : float, optional
+        Deformation radius. Units: :math:`\mathrm{m}`.
+
+    H : float, optional
+
+    U : float, optional
+        Upper layer flow. Units: :math:`\mathrm{m}\ \mathrm{sec}^{-1}`.
+
+    precision : Precision, optional
+        Precision of model computation. Selects dtype of state values.
+    """
+
     def __init__(
         self,
         *,
