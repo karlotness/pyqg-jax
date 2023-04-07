@@ -17,7 +17,7 @@ batching, automatic differentiation, etc.
 and other numerical issues. The API may evolve as work continues.
 
 ## Installation
-Install from PyPI using pip:
+Install from [PyPI][pypi] using pip:
 ```console
 $ python -m pip install pyqg-jax
 ```
