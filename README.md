@@ -1,6 +1,7 @@
 # PyQG JAX Port
 
 [![PyQG-JAX on PyPI](https://img.shields.io/pypi/v/pyqg-jax)][pypi]
+[![PyQG-JAX on conda-forge](https://img.shields.io/conda/vn/conda-forge/pyqg-jax.svg)][condaforge]
 [![Documentation](https://readthedocs.org/projects/pyqg-jax/badge/?version=latest)][docs]
 [![Tests](https://github.com/karlotness/pyqg-jax/actions/workflows/test.yml/badge.svg)][tests]
 [![Zenodo](https://zenodo.org/badge/523137021.svg)][zenodo]
@@ -21,9 +22,13 @@ Install from [PyPI][pypi] using pip:
 ```console
 $ python -m pip install pyqg-jax
 ```
+or from [conda-forge][condaforge]:
+``` console
+$ conda install -c conda-forge pyqg-jax
+```
 This should install required dependencies, but JAX itself may require
-special attention. Follow the [JAX installation
-instructions](https://github.com/google/jax#installation).
+special attention, particularly for GPU support.
+Follow the [JAX installation instructions](https://github.com/google/jax#installation).
 
 ## Usage
 [Documentation][docs] is a work in progress. The parameters `QGModel`
@@ -90,6 +95,7 @@ This software is distributed under the MIT license. See LICENSE.txt
 for the license text.
 
 [pypi]: https://pypi.org/project/pyqg-jax
+[condaforge]: https://anaconda.org/conda-forge/pyqg-jax
 [docs]: https://pyqg-jax.readthedocs.io/en/latest/
 [tests]: https://github.com/karlotness/pyqg-jax/actions
 [zenodo]: https://zenodo.org/badge/latestdoi/523137021

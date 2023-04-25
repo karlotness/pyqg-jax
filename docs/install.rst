@@ -29,6 +29,21 @@ For more details on pip, consult its `user guide
 is best to ensure your package manager is up to date (`upgrade pip
 <https://pip.pypa.io/en/stable/installation/#upgrading-pip>`__).
 
+Conda-Forge
+-----------
+
+This package can also be installed into a `Conda environment
+<https://docs.conda.io/projects/conda/en/stable/user-guide/tasks/manage-environments.html>`__
+from the `conda-forge <https://conda-forge.org/>`__ channel::
+
+  $ conda install -c conda-forge pyqg-jax
+
+For more information, consult the `conda-forge documentation
+<https://conda-forge.org/docs/user/introduction.html#how-can-i-install-packages-from-conda-forge>`__.
+Installing JAX, particularly with GPU support may require additional
+attention, consult the `JAX Conda install instructions
+<https://github.com/google/jax#conda-installation>`__.
+
 Source
 ------
 
