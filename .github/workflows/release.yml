@@ -70,8 +70,8 @@ jobs:
       with:
         name: build
         path: |
-          dist/pyqg-jax-*
-          dist/pyqg_jax-*
+          dist/*.tar.gz
+          dist/*.whl
   check-artifacts:
     runs-on: ubuntu-latest
     timeout-minutes: 10
