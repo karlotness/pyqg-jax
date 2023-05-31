@@ -59,7 +59,6 @@ src = ["src"]
 line-length = 88
 respect-gitignore = false
 fix = false
-update-check = false
 
 [tool.ruff.flake8-import-conventions]
 [tool.ruff.flake8-import-conventions.extend-aliases]
