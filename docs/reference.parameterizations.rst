@@ -58,7 +58,8 @@ non-time-stepped value forward when stepping the model. Some
 possibilities:
 
 * Stochastic parameterizations will need to include and :func:`split
-  <jax.random.split>` a PRNGKey to use randomness.
+  <jax.random.split>` a :func:`PRNGKey <jax.random.PRNGKey>` to use
+  randomness.
 * Stateful parameterizations could maintain a history of previous
   model states.
 * Stateless, deterministic parameterizations can use :pycode:`None` as
