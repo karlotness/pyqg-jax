@@ -1,4 +1,4 @@
-pyqg-jax: Quasigeostrophic model in JAX
+pyqg-jax: Quasigeostrophic Model in JAX
 =======================================
 
 This is the documentation for the `pyqg-jax` package, a port of `PyQG
