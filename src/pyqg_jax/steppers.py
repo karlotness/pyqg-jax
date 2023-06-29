@@ -335,11 +335,11 @@ def _map_state_remove_nostep(state):
 @_utils.register_pytree_node_class_private
 class AB3State(StepperState[P]):
     def __init__(
-        self, *, state: P, t: float, tc: int, ablevel: int, updates: typing.Tuple[P, P]
+        self, *, state: P, t: float, tc: int, ablevel: int, updates: tuple[P, P]
     ):
         super().__init__(state=state, t=t, tc=tc)
         self._ablevel: int = jnp.uint8(ablevel)
-        self._updates: typing.Tuple[P, P] = updates
+        self._updates: tuple[P, P] = updates
 
     def _tree_flatten(self):
         super_children, super_attrs = super()._tree_flatten()

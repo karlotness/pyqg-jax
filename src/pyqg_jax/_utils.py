@@ -70,7 +70,7 @@ AuxData = typing.TypeVar("AuxData")
 
 
 class _PyTreePrivateProtocol(typing.Protocol[Children, AuxData]):
-    def _tree_flatten(self) -> typing.Tuple[Children, AuxData]:
+    def _tree_flatten(self) -> tuple[Children, AuxData]:
         ...
 
     @classmethod
@@ -78,8 +78,8 @@ class _PyTreePrivateProtocol(typing.Protocol[Children, AuxData]):
         ...
 
 
-C = typing.TypeVar("C", bound=typing.Type[_PyTreePrivateProtocol])
-Class = typing.TypeVar("Class", bound=typing.Type)
+C = typing.TypeVar("C", bound=type[_PyTreePrivateProtocol])
+Class = typing.TypeVar("Class", bound=type)
 
 
 def register_pytree_node_class_private(cls: C) -> C:
