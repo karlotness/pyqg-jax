@@ -16,7 +16,7 @@ __all__ = [
 ]
 
 
-import functools
+import jax
 import jax.numpy as jnp
 from . import _defs, _parameterized_model
 from .. import state as _state
@@ -50,7 +50,7 @@ def apply_parameterization(model, *, smag_constant=0.08, back_constant=0.99, eps
     """
     return _parameterized_model.ParameterizedModel(
         model=model,
-        param_func=functools.partial(
+        param_func=jax.tree_util.Partial(
             param_func,
             smag_constant=smag_constant,
             back_constant=back_constant,

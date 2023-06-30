@@ -12,7 +12,7 @@ __all__ = [
 ]
 
 
-import functools
+import jax
 from . import _defs, _parameterized_model
 from .. import state as _state
 
@@ -37,7 +37,7 @@ def apply_parameterization(model, *, kappa=-46761284):
     """
     return _parameterized_model.ParameterizedModel(
         model=model,
-        param_func=functools.partial(param_func, kappa=kappa),
+        param_func=jax.tree_util.Partial(param_func, kappa=kappa),
         init_param_aux_func=init_param_aux_func,
     )
 
