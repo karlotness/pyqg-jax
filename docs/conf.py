@@ -75,10 +75,13 @@ def linkcode_resolve(domain, info):
         return None
     if isinstance(obj, property):
         obj = obj.fget
+    if obj is None:
+        return None
     try:
-        source_file = str(
-            pathlib.Path(inspect.getsourcefile(obj)).relative_to(pkg_root)
-        )
+        source_file = inspect.getsourcefile(obj)
+        if source_file is None:
+            return None
+        source_file = pathlib.Path(source_file).relative_to(pkg_root)
         lines, line_start = inspect.getsourcelines(obj)
         line_end = line_start + len(lines) - 1
     except (ValueError, TypeError):
@@ -95,4 +98,4 @@ def linkcode_resolve(domain, info):
         line_suffix = f"#L{line_start}"
     else:
         line_suffix = ""
-    return f"{repo_url}/blob/{ref}/src/pyqg_jax/{source_file}{line_suffix}"
+    return f"{repo_url}/blob/{ref}/src/pyqg_jax/{source_file!s}{line_suffix}"
