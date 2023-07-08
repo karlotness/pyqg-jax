@@ -19,6 +19,7 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx.ext.linkcode",
     "sphinx_rtd_theme",
+    "myst_nb",
 ]
 
 templates_path = ['_templates']
@@ -26,6 +27,12 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 html_static_path = ['_static']
 html_css_files = ['css/pyqg-jax-fix-theme.css']
 suppress_warnings = ["epub.unknown_project_files"]
+
+source_suffix = {
+    '.rst': 'restructuredtext',
+    '.ipynb': 'myst-nb',
+    '.md': 'myst-nb',
+}
 
 # Insert code into each rst file
 rst_prolog = r"""
