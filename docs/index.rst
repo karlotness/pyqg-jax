@@ -27,6 +27,7 @@ do so as well.
    :caption: Contents
 
    install
+   examples
    reference
    license
 
