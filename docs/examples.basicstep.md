@@ -25,6 +25,9 @@ With that done we can begin by importing JAX, and the `pyqg_jax`
 package.
 
 ```{code-cell} ipython3
+import operator
+import functools
+import matplotlib.pyplot as plt
 import jax
 import jax.numpy as jnp
 import pyqg_jax
@@ -116,8 +119,6 @@ not resemble the states after several warmup time steps. See below for
 a sample of a more typical state produced after several time steps.
 
 ```{code-cell} ipython3
-import matplotlib.pyplot as plt
-
 inner_state = init_state.state.model_state
 for layer in range(2):
     data = inner_state.q[layer]
@@ -173,8 +174,6 @@ a trajectory by stepping forward in time. The most natural way to do
 this is to perform the stepping using {func}`jax.lax.scan`.
 
 ```{code-cell} ipython3
-import functools
-
 @functools.partial(jax.jit, static_argnames=["num_steps"])
 def roll_out_state(state, num_steps):
 
@@ -216,8 +215,6 @@ or equivalently we can use {func}`operator.itemgetter` and
 {class}`slice`.
 
 ```{code-cell} ipython3
-import operator
-
 jax.tree_util.tree_map(operator.itemgetter(slice(-5, None)), traj)
 ```
 
