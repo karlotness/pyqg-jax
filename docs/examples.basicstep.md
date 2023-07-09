@@ -186,7 +186,6 @@ def roll_out_state(state, num_steps):
     _final_carry, traj_steps = jax.lax.scan(
         loop_fn, state, None, length=num_steps
     )
-
     return traj_steps
 ```
 
@@ -224,8 +223,6 @@ jax.tree_util.tree_map(operator.itemgetter(slice(-5, None)), traj)
 
 We can use this approach to visualize the final state:
 ```{code-cell} ipython3
-import matplotlib.pyplot as plt
-
 final_state = jax.tree_util.tree_map(operator.itemgetter(-1), traj)
 final_q = final_state.state.model_state.q
 
