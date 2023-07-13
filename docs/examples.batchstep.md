@@ -87,7 +87,7 @@ Note that we now have three final states, one for each trajectory in the batch.
 
 ```{note}
 Note that `vmap` causes us to be unable to pass `num_steps` as a
-keyword/named argument (see for example
+keyword/named argument (see
 [JAX#7465](https://github.com/google/jax/issues/7465)).
 ```
 
