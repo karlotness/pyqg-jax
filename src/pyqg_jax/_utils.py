@@ -13,7 +13,7 @@ import jax
 import jaxtyping
 
 
-def summarize_object(obj):
+def summarize_object(obj: object) -> str:
     if hasattr(obj, "shape") and hasattr(obj, "dtype"):
         return summarize_array(obj)
     elif isinstance(obj, functools.partial):
@@ -24,7 +24,7 @@ def summarize_object(obj):
         return repr(obj)
 
 
-def summarize_function(func):
+def summarize_function(func: types.FunctionType) -> str:
     try:
         func_name = str(func.__qualname__)
         func_module = str(func.__module__)
@@ -35,7 +35,7 @@ def summarize_function(func):
     return f"<function {func_module}.{func_name}>"
 
 
-def summarize_partial(partial):
+def summarize_partial(partial: functools.partial) -> str:
     func = summarize_object(partial.func)
     args = (summarize_object(arg) for arg in partial.args)
     kwargs = (
@@ -45,7 +45,7 @@ def summarize_partial(partial):
     return f"functools.partial({contents})"
 
 
-def summarize_array(arr):
+def summarize_array(arr: jax.Array) -> str:
     dtype = (
         str(arr.dtype.name)
         .replace("float", "f")
@@ -57,7 +57,7 @@ def summarize_array(arr):
     return f"{dtype}[{shape}]"
 
 
-def indent_repr(text, spaces):
+def indent_repr(text: str, spaces: int) -> str:
     indent_str = " " * spaces
     indented = textwrap.indent(text, indent_str)
     if indented.startswith(indent_str):
