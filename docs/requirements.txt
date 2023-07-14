@@ -5,3 +5,5 @@ jax[cpu]
 packaging
 myst-nb
 matplotlib
+equinox
+optax
