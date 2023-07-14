@@ -20,6 +20,10 @@ def summarize_object(obj: object) -> str:
         return summarize_partial(obj)
     elif isinstance(obj, types.FunctionType):
         return summarize_function(obj)
+    elif isinstance(obj, (tuple, list, set)):
+        return summarize_sequence(obj)
+    elif isinstance(obj, dict):
+        return summarize_dict(obj)
     else:
         return repr(obj)
 
@@ -55,6 +59,27 @@ def summarize_array(arr: jax.Array) -> str:
     )
     shape = ",".join(str(d) for d in arr.shape)
     return f"{dtype}[{shape}]"
+
+
+class ReprDummy:
+    def __init__(self, rep_str: str):
+        self.rep_str = rep_str
+
+    def __repr__(self) -> str:
+        return self.rep_str
+
+
+def summarize_sequence(seq: tuple[object] | list[object] | set[object]) -> str:
+    return repr(type(seq)(ReprDummy(summarize_object(o)) for o in seq))
+
+
+def summarize_dict(dt: dict[object, object]) -> str:
+    return repr(
+        {
+            ReprDummy(summarize_object(k)): ReprDummy(summarize_object(v))
+            for k, v in dt.items()
+        }
+    )
 
 
 def indent_repr(text: str, spaces: int) -> str:
