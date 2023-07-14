@@ -8,3 +8,4 @@ Examples
    examples.basicstep
    examples.batchstep
    examples.coarsen
+   examples.implparam
