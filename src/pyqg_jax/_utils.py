@@ -69,7 +69,9 @@ class ReprDummy:
         return self.rep_str
 
 
-def summarize_sequence(seq: tuple[object] | list[object] | set[object]) -> str:
+def summarize_sequence(
+    seq: typing.Union[tuple[object], list[object], set[object]]
+) -> str:
     return repr(type(seq)(ReprDummy(summarize_object(o)) for o in seq))
 
 
