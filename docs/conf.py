@@ -48,6 +48,9 @@ rst_prolog = r"""
 # Theme
 html_theme = "sphinx_rtd_theme"
 
+# MyST-NB configuration
+nb_merge_streams = True
+
 # Autodoc configuration
 autodoc_mock_imports = []
 autodoc_typehints = "none"
