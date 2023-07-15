@@ -7,8 +7,9 @@ This is the documentation for the `pyqg-jax` package, a port of `PyQG
 
 Porting the model to JAX makes it possible to run it on GPU, and apply
 JAX transformations including :func:`jax.jit` and :func:`jax.vmap`.
-This also makes it possible to integrate learned parameterizations
-into the model, or train online through the simulation using
+This also makes it possible to :doc:`integrate learned
+parameterizations <examples.implparam>` into the model, or :doc:`train
+online <examples.onlinetrain>` through the simulation using
 :func:`jax.grad` to take gradients.
 
 That said, a note on the state of the port:
