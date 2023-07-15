@@ -9,3 +9,4 @@ Examples
    examples.batchstep
    examples.coarsen
    examples.implparam
+   examples.onlinetrain
