@@ -19,6 +19,16 @@ libraries such as [Flax](https://github.com/google/flax) could be used
 as well.
 
 ```{code-cell} ipython3
+:tags: [remove-cell]
+# Note: docs builds only have CPUs
+# This suppresses the JAX warning about missing GPU
+# If you're running this with a GPU, delete this cell
+%env JAX_PLATFORM_NAME=cpu
+```
+
+```{code-cell} ipython3
+%env JAX_ENABLE_X64=True
+%env JAX_DEFAULT_DTYPE_BITS=32
 import functools
 import jax
 import jax.numpy as jnp

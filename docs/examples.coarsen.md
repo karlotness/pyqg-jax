@@ -17,6 +17,16 @@ implementation of these operators is available on
 and [Zenodo](https://doi.org/10.5281/zenodo.6612447).
 
 ```{code-cell} ipython3
+:tags: [remove-cell]
+# Note: docs builds only have CPUs
+# This suppresses the JAX warning about missing GPU
+# If you're running this with a GPU, delete this cell
+%env JAX_PLATFORM_NAME=cpu
+```
+
+```{code-cell} ipython3
+%env JAX_ENABLE_X64=True
+%env JAX_DEFAULT_DTYPE_BITS=32
 import abc
 import inspect
 import functools
