@@ -14,7 +14,7 @@ import jaxtyping
 
 
 def summarize_object(obj: object) -> str:
-    if hasattr(obj, "shape") and hasattr(obj, "dtype"):
+    if isinstance(obj, jax.Array) or (hasattr(obj, "shape") and hasattr(obj, "dtype")):
         return summarize_array(obj)
     elif isinstance(obj, functools.partial):
         return summarize_partial(obj)
