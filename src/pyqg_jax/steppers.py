@@ -20,11 +20,10 @@ import dataclasses
 import abc
 import jax
 import jax.numpy as jnp
-import jaxtyping
 from . import _utils
 
 
-P = typing.TypeVar("P", bound=jaxtyping.PyTree)
+P = typing.TypeVar("P")
 
 
 @_utils.register_pytree_dataclass
