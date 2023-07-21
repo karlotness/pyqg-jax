@@ -17,6 +17,7 @@ __all__ = ["SteppedModel", "AB3Stepper", "AB3State", "NoStepValue"]
 import typing
 import functools
 import dataclasses
+import abc
 import jax
 import jax.numpy as jnp
 import jaxtyping
@@ -104,9 +105,9 @@ class StepperState(typing.Generic[P]):
 S = typing.TypeVar("S", bound=StepperState)
 
 
-class Stepper:
-    def __init__(self, dt: float):
-        self.dt = float(dt)
+@dataclasses.dataclass
+class Stepper(abc.ABC):
+    dt: float
 
     def initialize_stepper_state(self, state):
         return StepperState(
@@ -115,8 +116,9 @@ class Stepper:
             tc=jnp.uint32(0),
         )
 
+    @abc.abstractmethod
     def apply_updates(self, stepper_state, updates):
-        raise NotImplementedError("implement in a subclass")
+        pass
 
     def __repr__(self):
         class_name = type(self).__name__
@@ -326,7 +328,8 @@ class AB3State(StepperState[P]):
     _updates: tuple[P, P]
 
 
-@_utils.register_pytree_node_class_private
+@_utils.register_pytree_dataclass
+@dataclasses.dataclass(repr=False)
 class AB3Stepper(Stepper):
     """Third order Adams-Bashforth stepper.
 
@@ -345,9 +348,6 @@ class AB3Stepper(Stepper):
     dt : float
         Numerical time step
     """
-
-    def __init__(self, dt: float):
-        super().__init__(dt=dt)
 
     def initialize_stepper_state(self, state: P) -> AB3State[P]:
         """Wrap an existing `state` from a model in a
@@ -410,7 +410,7 @@ class AB3Stepper(Stepper):
         new_ablevel, dt1, dt2, dt3 = jax.lax.switch(
             stepper_state._ablevel,
             [
-                lambda: (jnp.uint8(1), self.dt, 0.0, 0.0),
+                lambda: (jnp.uint8(1), 1.0 * self.dt, 0.0, 0.0),
                 lambda: (jnp.uint8(2), 1.5 * self.dt, -0.5 * self.dt, 0.0),
                 lambda: (
                     jnp.uint8(2),
@@ -438,15 +438,6 @@ class AB3Stepper(Stepper):
             _ablevel=new_ablevel,
             _updates=new_updates,
         )
-
-    def _tree_flatten(self):
-        return (self.dt,), None
-
-    @classmethod
-    def _tree_unflatten(cls, aux_data, children):
-        obj = cls.__new__(cls)
-        obj.dt = children[0]
-        return obj
 
 
 @_utils.register_pytree_dataclass
