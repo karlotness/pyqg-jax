@@ -102,9 +102,6 @@ class StepperState(typing.Generic[P]):
 )"""
 
 
-S = typing.TypeVar("S", bound=StepperState)
-
-
 @dataclasses.dataclass
 class Stepper(abc.ABC):
     dt: float
