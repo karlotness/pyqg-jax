@@ -106,7 +106,6 @@ class _PyTreePrivateProtocol(typing.Protocol[Children, AuxData]):
 
 
 C = typing.TypeVar("C", bound=type[_PyTreePrivateProtocol])
-Class = typing.TypeVar("Class", bound=type)
 
 
 def register_pytree_node_class_private(cls: C) -> C:
@@ -118,14 +117,20 @@ def register_pytree_node_class_private(cls: C) -> C:
     return cls
 
 
-def register_pytree_dataclass(cls: Class) -> Class:
+def register_pytree_dataclass(cls):
     fields = tuple(f.name for f in dataclasses.fields(cls))
 
+    def flatten_with_keys(obj):
+        return [
+            (jax.tree_util.GetAttrKey(name), getattr(obj, name)) for name in fields
+        ], None
+
     def flatten(obj):
-        return [getattr(obj, name) for name in fields], fields
+        flatkeys, aux = flatten_with_keys(obj)
+        return [c for _, c in flatkeys], aux
 
     def unflatten(aux_data, flat_contents):
-        return cls(**dict(zip(aux_data, flat_contents)))
+        return cls(**dict(zip(fields, flat_contents)))
 
-    jax.tree_util.register_pytree_node(cls, flatten, unflatten)
+    jax.tree_util.register_pytree_with_keys(cls, flatten_with_keys, unflatten, flatten)
     return cls
