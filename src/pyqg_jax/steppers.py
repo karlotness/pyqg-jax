@@ -449,7 +449,8 @@ class AB3Stepper(Stepper):
         return obj
 
 
-@_utils.register_pytree_node_class_private
+@_utils.register_pytree_dataclass
+@dataclasses.dataclass
 class NoStepValue(typing.Generic[P]):
     """Shields contents from the provided time-steppers.
 
@@ -476,17 +477,7 @@ class NoStepValue(typing.Generic[P]):
         The internal, wrapped value
     """
 
-    def __init__(self, value: P, /):
-        self.value = value
-
-    def _tree_flatten(self):
-        return [self.value], None
-
-    @classmethod
-    def _tree_unflatten(cls, aux_data, children):
-        obj = cls.__new__(cls)
-        obj.value = children[0]
-        return obj
+    value: P
 
     def __repr__(self):
         value_summary = _utils.summarize_object(self.value)
