@@ -16,6 +16,7 @@ __all__ = ["SteppedModel", "AB3Stepper", "AB3State", "NoStepValue"]
 
 import typing
 import functools
+import dataclasses
 import jax
 import jax.numpy as jnp
 import jaxtyping
@@ -25,7 +26,8 @@ from . import _utils
 P = typing.TypeVar("P", bound=jaxtyping.PyTree)
 
 
-@_utils.register_pytree_node_class_private
+@_utils.register_pytree_dataclass
+@dataclasses.dataclass(frozen=True)
 class StepperState(typing.Generic[P]):
     """Model state wrapped for time-stepping
 
@@ -49,21 +51,9 @@ class StepperState(typing.Generic[P]):
         The current model timestep
     """
 
-    def __init__(self, *, state: P, t: float, tc: int):
-        self.state = state
-        self.t = jnp.float32(t)
-        self.tc = jnp.uint32(tc)
-
-    def _tree_flatten(self):
-        attr_names = ("state", "t", "tc")
-        return [getattr(self, name) for name in attr_names], attr_names
-
-    @classmethod
-    def _tree_unflatten(cls, aux_data, children):
-        obj = cls.__new__(cls)
-        for name, val in zip(aux_data, children):
-            setattr(obj, name, val)
-        return obj
+    state: P
+    t: jnp.float32
+    tc: jnp.uint32
 
     def update(self, **kwargs):
         """Replace values stored in this state.
@@ -96,10 +86,7 @@ class StepperState(typing.Generic[P]):
         if not kwargs.keys() <= {"state", "t", "tc"}:
             raise ValueError("invalid state updates, can only update state, t, and tc")
         # Perform the update
-        children, attr_names = self._tree_flatten()
-        attr_dict = dict(zip(attr_names, children))
-        attr_dict.update(kwargs)
-        return self._tree_unflatten(attr_names, [attr_dict[k] for k in attr_names])
+        return dataclasses.replace(self, **kwargs)
 
     def __repr__(self):
         class_name = type(self).__name__
@@ -332,20 +319,11 @@ def _map_state_remove_nostep(state):
     )
 
 
-@_utils.register_pytree_node_class_private
+@_utils.register_pytree_dataclass
+@dataclasses.dataclass(frozen=True, repr=False)
 class AB3State(StepperState[P]):
-    def __init__(
-        self, *, state: P, t: float, tc: int, ablevel: int, updates: tuple[P, P]
-    ):
-        super().__init__(state=state, t=t, tc=tc)
-        self._ablevel: int = jnp.uint8(ablevel)
-        self._updates: tuple[P, P] = updates
-
-    def _tree_flatten(self):
-        super_children, super_attrs = super()._tree_flatten()
-        attr_names = (*super_attrs, "_ablevel", "_updates")
-        children = [*super_children, self._ablevel, self._updates]
-        return children, attr_names
+    _ablevel: jnp.uint8
+    _updates: tuple[P, P]
 
 
 @_utils.register_pytree_node_class_private
@@ -395,8 +373,8 @@ class AB3Stepper(Stepper):
             state=base_state.state,
             t=base_state.t,
             tc=base_state.tc,
-            ablevel=jnp.uint8(0),
-            updates=(dummy_update, dummy_update),
+            _ablevel=jnp.uint8(0),
+            _updates=(dummy_update, dummy_update),
         )
 
     def apply_updates(
@@ -457,8 +435,8 @@ class AB3Stepper(Stepper):
             state=new_state,
             t=new_t,
             tc=new_tc,
-            ablevel=new_ablevel,
-            updates=new_updates,
+            _ablevel=new_ablevel,
+            _updates=new_updates,
         )
 
     def _tree_flatten(self):
