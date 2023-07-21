@@ -9,6 +9,8 @@ import types
 import operator
 import itertools
 import dataclasses
+import inspect
+import weakref
 import jax
 import jaxtyping
 
@@ -90,6 +92,62 @@ def indent_repr(text: str, spaces: int) -> str:
     if indented.startswith(indent_str):
         return indented[spaces:]
     return indented
+
+
+pytree_class_attrs_registry = weakref.WeakKeyDictionary()
+
+
+def register_pytree_class_attrs(children, static_attrs):
+    children = tuple(children)
+    static_attrs = tuple(static_attrs)
+
+    def do_registration(cls):
+        pytree_class_attrs_registry[cls] = (children, static_attrs)
+        # Combine recursively
+        mro = inspect.getmro(cls)
+        cls_children = set()
+        cls_static = set()
+        for c in mro:
+            c_children, c_static = pytree_class_attrs_registry.get(c, ((), ()))
+            cls_children.update(c_children)
+            cls_static.update(c_static)
+        if not cls_children.isdisjoint(cls_static):
+            raise ValueError("Recursive static and dynamic attributes overlap")
+        cls_children = tuple(cls_children)
+        cls_static = tuple(cls_static)
+
+        def flatten_with_keys(obj):
+            key_children = [
+                (jax.tree_util.GetAttrKey(name), getattr(obj, name))
+                for name in cls_children
+            ]
+            if cls_static:
+                aux = tuple(getattr(obj, name) for name in cls_static)
+            else:
+                aux = None
+            return key_children, aux
+
+        def flatten(obj):
+            flatkeys, aux = flatten_with_keys(obj)
+            return [c for _, c in flatkeys], aux
+
+        def unflatten(aux_data, children):
+            obj = cls.__new__(cls)
+            if aux_data is None:
+                aux_data = ()
+            for name, val in itertools.chain(
+                zip(cls_children, children),
+                zip(cls_static, aux_data),
+            ):
+                setattr(obj, name, val)
+            return obj
+
+        jax.tree_util.register_pytree_with_keys(
+            cls, flatten_with_keys, unflatten, flatten
+        )
+        return cls
+
+    return do_registration
 
 
 Children = typing.TypeVar("Children", bound=jaxtyping.PyTree)
