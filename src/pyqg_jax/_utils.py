@@ -6,13 +6,11 @@ import typing
 import functools
 import textwrap
 import types
-import operator
 import itertools
 import dataclasses
 import inspect
 import weakref
 import jax
-import jaxtyping
 
 
 def summarize_object(obj: object) -> str:
@@ -148,31 +146,6 @@ def register_pytree_class_attrs(children, static_attrs):
         return cls
 
     return do_registration
-
-
-Children = typing.TypeVar("Children", bound=jaxtyping.PyTree)
-AuxData = typing.TypeVar("AuxData")
-
-
-class _PyTreePrivateProtocol(typing.Protocol[Children, AuxData]):
-    def _tree_flatten(self) -> tuple[Children, AuxData]:
-        ...
-
-    @classmethod
-    def _tree_unflatten(cls, aux_data: AuxData, children: Children):
-        ...
-
-
-C = typing.TypeVar("C", bound=type[_PyTreePrivateProtocol])
-
-
-def register_pytree_node_class_private(cls: C) -> C:
-    jax.tree_util.register_pytree_node(
-        cls,
-        operator.methodcaller("_tree_flatten"),
-        cls._tree_unflatten,
-    )
-    return cls
 
 
 def register_pytree_dataclass(cls):
