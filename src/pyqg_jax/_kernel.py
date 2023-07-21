@@ -3,13 +3,15 @@
 
 
 import operator
-import itertools
 import jax
 import jax.numpy as jnp
 from . import _utils, state as _state
 
 
-@_utils.register_pytree_node_class_private
+@_utils.register_pytree_class_attrs(
+    children=["rek"],
+    static_attrs=["nz", "ny", "nx", "precision", "_dtype_real", "_dtype_complex"],
+)
 class PseudoSpectralKernel:
     def __init__(
         self,
@@ -223,28 +225,3 @@ class PseudoSpectralKernel:
 
     def _apply_a_ph(self, state):
         return jnp.zeros_like(state.ph)
-
-    def _tree_flatten(self):
-        static_attributes = (
-            "nz",
-            "ny",
-            "nx",
-            "precision",
-            "_dtype_real",
-            "_dtype_complex",
-        )
-        child_attributes = ("rek",)
-        child_vals = [getattr(self, attr) for attr in child_attributes]
-        static_vals = [getattr(self, attr) for attr in static_attributes]
-        return child_vals, (child_attributes, static_vals, static_attributes)
-
-    @classmethod
-    def _tree_unflatten(cls, aux_data, children):
-        child_attributes, static_vals, static_attributes = aux_data
-        obj = cls.__new__(cls)
-        for name, val in itertools.chain(
-            zip(child_attributes, children),
-            zip(static_attributes, static_vals),
-        ):
-            setattr(obj, name, val)
-        return obj

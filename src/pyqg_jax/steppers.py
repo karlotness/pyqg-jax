@@ -123,7 +123,10 @@ class Stepper(abc.ABC):
         return f"{class_name}(dt={dt_summary})"
 
 
-@_utils.register_pytree_node_class_private
+@_utils.register_pytree_class_attrs(
+    children=["model", "stepper"],
+    static_attrs=[],
+)
 class SteppedModel:
     """Combine an inner model with a time stepper.
 
@@ -255,17 +258,6 @@ class SteppedModel:
             <pyqg_jax.state.FullPseudoSpectralState>`.
         """
         return self.model.get_full_state(stepper_state.state)
-
-    def _tree_flatten(self):
-        return (self.model, self.stepper), None
-
-    @classmethod
-    def _tree_unflatten(cls, aux_data, children):
-        model, stepper = children
-        obj = cls.__new__(cls)
-        obj.model = model
-        obj.stepper = stepper
-        return obj
 
     def __repr__(self):
         model_summary = _utils.indent_repr(_utils.summarize_object(self.model), 2)

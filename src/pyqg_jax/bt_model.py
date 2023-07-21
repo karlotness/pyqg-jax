@@ -13,7 +13,10 @@ import jax.numpy as jnp
 from . import _model, _utils, state as _state
 
 
-@_utils.register_pytree_node_class_private
+@_utils.register_pytree_class_attrs(
+    children=["beta", "rd", "H", "U"],
+    static_attrs=[],
+)
 class BTModel(_model.Model):
     r"""Single-layer (barotropic) quasigeostrophic model.
 
@@ -148,18 +151,6 @@ class BTModel(_model.Model):
 
     def _apply_a_ph(self, state):
         return jnp.negative(state.qh * (self.wv2i + self.kd2))
-
-    def _tree_flatten(self):
-        super_children, (
-            super_attrs,
-            super_static_vals,
-            super_static_attrs,
-        ) = super()._tree_flatten()
-        new_attrs = ("beta", "rd", "H", "U")
-        new_children = [getattr(self, name) for name in new_attrs]
-        children = [*super_children, *new_children]
-        new_attrs = (*super_attrs, *new_attrs)
-        return children, (new_attrs, super_static_vals, super_static_attrs)
 
     def __repr__(self):
         nx_summary = _utils.indent_repr(_utils.summarize_object(self.nx), 2)

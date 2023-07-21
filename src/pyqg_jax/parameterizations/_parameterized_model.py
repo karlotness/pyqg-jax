@@ -6,7 +6,6 @@ __all__ = ["ParameterizedModelState", "ParameterizedModel"]
 
 
 import dataclasses
-import itertools
 from .. import state as _state, _utils, steppers as _steppers
 
 
@@ -57,7 +56,10 @@ def _init_none(init_state, model):
     return None
 
 
-@_utils.register_pytree_node_class_private
+@_utils.register_pytree_class_attrs(
+    children=["model"],
+    static_attrs=["param_func", "init_param_aux_func"],
+)
 class ParameterizedModel:
     """A model wrapped in a user-specified parameterization.
 
@@ -247,24 +249,6 @@ class ParameterizedModel:
             model_state=state,
             param_aux=_steppers.NoStepValue(init_param_state),
         )
-
-    def _tree_flatten(self):
-        static_attributes = ("param_func", "init_param_aux_func")
-        child_attributes = ("model",)
-        child_vals = [getattr(self, attr) for attr in child_attributes]
-        static_vals = [getattr(self, attr) for attr in static_attributes]
-        return child_vals, (child_attributes, static_vals, static_attributes)
-
-    @classmethod
-    def _tree_unflatten(cls, aux_data, children):
-        child_attributes, static_vals, static_attributes = aux_data
-        obj = cls.__new__(cls)
-        for name, val in itertools.chain(
-            zip(child_attributes, children),
-            zip(static_attributes, static_vals),
-        ):
-            setattr(obj, name, val)
-        return obj
 
     def __repr__(self):
         model_summary = _utils.indent_repr(_utils.summarize_object(self.model), 2)

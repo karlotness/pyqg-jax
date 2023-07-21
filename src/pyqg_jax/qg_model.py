@@ -15,7 +15,10 @@ import jax.numpy as jnp
 from . import _model, _utils, state as _state
 
 
-@_utils.register_pytree_node_class_private
+@_utils.register_pytree_class_attrs(
+    children=["beta", "rd", "delta", "U1", "U2", "H1"],
+    static_attrs=[],
+)
 class QGModel(_model.Model):
     r"""Two-layer quasi-geostrophic model.
 
@@ -260,18 +263,6 @@ class QGModel(_model.Model):
         # Combine and return
         ph = jnp.concatenate([ph_head, ph_tail], axis=0).reshape(qh_orig_shape)
         return jnp.moveaxis(ph, -1, 0)
-
-    def _tree_flatten(self):
-        super_children, (
-            super_attrs,
-            super_static_vals,
-            super_static_attrs,
-        ) = super()._tree_flatten()
-        new_attrs = ("beta", "rd", "delta", "U1", "U2", "H1")
-        new_children = [getattr(self, name) for name in new_attrs]
-        children = [*super_children, *new_children]
-        new_attrs = (*super_attrs, *new_attrs)
-        return children, (new_attrs, super_static_vals, super_static_attrs)
 
     def __repr__(self):
         nx_summary = _utils.indent_repr(_utils.summarize_object(self.nx), 2)

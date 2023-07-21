@@ -19,7 +19,10 @@ def _grid_kl(kk, ll):
     return k, l
 
 
-@_utils.register_pytree_node_class_private
+@_utils.register_pytree_class_attrs(
+    children=["L", "W", "filterfac", "g", "f"],
+    static_attrs=[],
+)
 class Model(_kernel.PseudoSpectralKernel):
     def __init__(
         self,
@@ -183,15 +186,3 @@ class Model(_kernel.PseudoSpectralKernel):
         wvx = jnp.sqrt((self.k * self.dx) ** 2 + (self.l * self.dy) ** 2)
         filtr = jnp.exp(-self.filterfac * (wvx - cphi) ** 4)
         return jnp.where(wvx <= cphi, 1, filtr)
-
-    def _tree_flatten(self):
-        super_children, (
-            super_attrs,
-            super_static_vals,
-            super_static_attrs,
-        ) = super()._tree_flatten()
-        new_attrs = ("L", "W", "filterfac", "g", "f")
-        new_children = [getattr(self, name) for name in new_attrs]
-        children = [*super_children, *new_children]
-        new_attrs = (*super_attrs, *new_attrs)
-        return children, (new_attrs, super_static_vals, super_static_attrs)
