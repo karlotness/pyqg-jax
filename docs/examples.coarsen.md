@@ -96,19 +96,18 @@ class SpectralCoarsener(abc.ABC):
         return self.big_model.nx / self.small_nx
 
     def coarsen_state(self, state):
-        if (
-            jax.eval_shape(lambda state: state.q, state).shape
-            != (self.big_model.nz, self.big_model.ny, self.big_model.nx)
+        if jax.eval_shape(lambda state: state.q, state).shape != (
+            self.big_model.nz,
+            self.big_model.ny,
+            self.big_model.nx,
         ):
             raise ValueError(f"incorrect input size {state.qh.shape}")
-        out_state = self.small_model.create_initial_state(
-            jax.random.PRNGKey(0)
-        )
+        out_state = self.small_model.create_initial_state(jax.random.PRNGKey(0))
         nk = out_state.qh.shape[-2] // 2
         trunc = jnp.concatenate(
             [
-                state.qh[:, :nk, :nk + 1],
-                state.qh[:, -nk:, :nk + 1],
+                state.qh[:, :nk, : nk + 1],
+                state.qh[:, -nk:, : nk + 1],
             ],
             axis=-2,
         )
