@@ -124,8 +124,8 @@ class SpectralCoarsener(abc.ABC):
     def spectral_filter(self):
         pass
 
-    def tree_flatten(self):
-        return [self.big_model], self.small_nx
+    def tree_flatten_with_keys(self):
+        return [(jax.tree_util.GetAttrKey("big_model"), self.big_model)], self.small_nx
 
     @classmethod
     def tree_unflatten(cls, aux_data, children):
@@ -136,13 +136,13 @@ From the above base class we define two subclasses implementing our
 two sample coarsening and filtering operators.
 
 ```{code-cell} ipython3
-@jax.tree_util.register_pytree_node_class
+@jax.tree_util.register_pytree_with_keys_class
 class Operator1(SpectralCoarsener):
     @property
     def spectral_filter(self):
         return self.small_model.filtr
 
-@jax.tree_util.register_pytree_node_class
+@jax.tree_util.register_pytree_with_keys_class
 class Operator2(SpectralCoarsener):
     @property
     def spectral_filter(self):
