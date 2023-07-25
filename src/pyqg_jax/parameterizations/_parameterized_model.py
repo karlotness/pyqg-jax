@@ -6,6 +6,8 @@ __all__ = ["ParameterizedModelState", "ParameterizedModel"]
 
 
 import dataclasses
+import types
+import jax
 from .. import state as _state, _utils, steppers as _steppers
 
 
@@ -57,8 +59,8 @@ def _init_none(init_state, model):
 
 
 @_utils.register_pytree_class_attrs(
-    children=["model"],
-    static_attrs=["param_func", "init_param_aux_func"],
+    children=["model", "param_func", "init_param_aux_func"],
+    static_attrs=[],
 )
 class ParameterizedModel:
     """A model wrapped in a user-specified parameterization.
@@ -97,11 +99,16 @@ class ParameterizedModel:
         # param_aux (often None) is used to carry parameterization state
         # between time steps, for example: a JAX PRNGKey, if needed
         self.model = model
+        if isinstance(param_func, types.FunctionType):
+            # If this is a plain function, wrap in Partial
+            # This ensures it is a pytree
+            param_func = jax.tree_util.Partial(param_func)
         self.param_func = param_func
         if init_param_aux_func is None:
-            self.init_param_aux_func = _init_none
-        else:
-            self.init_param_aux_func = init_param_aux_func
+            init_param_aux_func = _init_none
+        if isinstance(init_param_aux_func, types.FunctionType):
+            init_param_aux_func = jax.tree_util.Partial(init_param_aux_func)
+        self.init_param_aux_func = init_param_aux_func
 
     def get_full_state(self, state):
         """Expand a wrapped partial state into an *unwrapped* full
