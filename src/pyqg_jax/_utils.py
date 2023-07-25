@@ -46,7 +46,9 @@ def summarize_partial(partial: functools.partial) -> str:
         f"{name}={summarize_object(value)}" for name, value in partial.keywords.items()
     )
     contents = ", ".join(itertools.chain([func], args, kwargs))
-    return f"functools.partial({contents})"
+    cls = type(partial)
+    qualname = f"{cls.__module__!s}.{cls.__qualname__!s}"
+    return f"{qualname}({contents})"
 
 
 def summarize_array(arr: jax.Array) -> str:
