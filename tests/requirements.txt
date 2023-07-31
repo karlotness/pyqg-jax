@@ -1,3 +1,5 @@
 jax[cpu]
-pyqg
+# NOTE: need to install pyqg manually to work around Cython 3.0 incompatibility
+# pyqg
+pip
 pytest
