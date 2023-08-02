@@ -10,7 +10,7 @@ from . import _utils, state as _state
 
 @_utils.register_pytree_class_attrs(
     children=["rek"],
-    static_attrs=["nz", "ny", "nx", "precision", "_dtype_real", "_dtype_complex"],
+    static_attrs=["nz", "ny", "nx", "precision"],
 )
 class PseudoSpectralKernel:
     def __init__(
@@ -28,14 +28,8 @@ class PseudoSpectralKernel:
         self.nx = nx
         self.rek = rek
         self.precision = precision
-        if self.precision == _state.Precision.SINGLE:
-            self._dtype_real = jnp.float32
-            self._dtype_complex = jnp.complex64
-        elif self.precision == _state.Precision.DOUBLE:
-            self._dtype_real = jnp.float64
-            self._dtype_complex = jnp.complex128
-        else:
-            raise ValueError("invalid choice for precision")
+        if not isinstance(self.precision, _state.Precision):
+            raise ValueError(f"invalid choice for precision {precision}")
 
     def get_full_state(
         self, state: _state.PseudoSpectralState
@@ -128,6 +122,22 @@ class PseudoSpectralKernel:
             raise ValueError(
                 f"state.qh has wrong shape {state.qh.shape}, should be {correct_shape}"
             )
+
+    @property
+    def _dtype_real(self):
+        if self.precision == _state.Precision.SINGLE:
+            return jnp.float32
+        elif self.precision == _state.Precision.DOUBLE:
+            return jnp.float64
+        raise ValueError(f"invalid choice for precision {self.precision}")
+
+    @property
+    def _dtype_complex(self):
+        if self.precision == _state.Precision.SINGLE:
+            return jnp.complex64
+        elif self.precision == _state.Precision.DOUBLE:
+            return jnp.complex128
+        raise ValueError(f"invalid choice for precision {self.precision}")
 
     @property
     def nl(self):
