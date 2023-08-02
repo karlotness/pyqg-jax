@@ -38,6 +38,7 @@ import jax.numpy as jnp
 from . import _utils
 
 
+@enum.unique
 class Precision(enum.Enum):
     """Enumeration for model precision levels.
 
