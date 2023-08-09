@@ -41,20 +41,15 @@ class Model(_kernel.PseudoSpectralKernel):
         g=9.81,
         precision=state.Precision.SINGLE,
     ):
-        if ny is None:
-            ny = nx
         super().__init__(
             nz=nz,
-            ny=ny,
+            ny=ny if ny is not None else nx,
             nx=nx,
             rek=rek,
             precision=precision,
         )
-
-        if W is None:
-            W = L
         self.L = L
-        self.W = W
+        self.W = W if W is not None else L
         self.filterfac = filterfac
         self.g = g
         self.f = f

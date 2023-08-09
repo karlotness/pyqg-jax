@@ -98,9 +98,7 @@ class BTModel(_model.Model):
             precision=precision,
         )
         self.beta = beta
-        if rd is None:
-            rd = 0.0
-        self.rd = rd
+        self.rd = rd if rd is not None else 0.0
         self.H = H
         self.U = U
 
