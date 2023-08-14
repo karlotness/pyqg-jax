@@ -3,3 +3,4 @@ jax[cpu]
 # pyqg
 pip
 pytest
+numpy
