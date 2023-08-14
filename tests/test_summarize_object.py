@@ -111,7 +111,7 @@ def test_dict():
     summary_strings = {}
     for element in summary[1:-1].split(","):
         parts = element.split(":")
-        name = ast.literal_eval(parts[0])
+        name = ast.literal_eval(parts[0].strip())
         value = parts[1].strip()
         summary_strings[name] = value
     assert summary[0] == "{"
