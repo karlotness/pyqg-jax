@@ -272,8 +272,9 @@ Online training with long rollouts may lead to out-of-memory errors.
 One solution is to use {func}`jax.checkpoint` inside the {func}`scan
 <jax.lax.scan>` to save memory through recomputation.
 
-See this [sample
-code](https://github.com/google/jax/issues/2139#issuecomment-1189382794)
+An implementation of this is available in
+{func}`powerpax.checkpoint_chunked_scan`, or see this
+[sample code](https://github.com/google/jax/issues/2139#issuecomment-1189382794)
 for a starting point.
 ```
 

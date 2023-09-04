@@ -65,6 +65,7 @@ intersphinx_mapping = {
     "numpy": ("https://numpy.org/doc/stable/", None),
     "pyqg": ("https://pyqg.readthedocs.io/en/latest/", None),
     "jax": ("https://jax.readthedocs.io/en/latest/", None),
+    "powerpax": ("https://powerpax.readthedocs.io/en/latest/", None),
 }
 
 # Linkcode configuration
