@@ -181,6 +181,13 @@ Now that we have our `stepped_model` and `init_state` we can generate
 a trajectory by stepping forward in time. The most natural way to do
 this is to perform the stepping using {func}`jax.lax.scan`.
 
+```{tip}
+For long trajectories with many steps you may wish to keep only a
+subset or skip a warmup phase. One solution is to use
+{func}`powerpax.sliced_scan` and set *start* and *step* to subsample
+the trajectory.
+```
+
 ```{code-cell} ipython3
 @functools.partial(jax.jit, static_argnames=["num_steps"])
 def roll_out_state(state, num_steps):
