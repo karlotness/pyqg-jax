@@ -9,3 +9,4 @@ This package currently implements a subset of the models from PyQG.
 
    reference.models.qg_model
    reference.models.bt_model
+   reference.models.sqg_model
