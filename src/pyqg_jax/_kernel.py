@@ -3,6 +3,7 @@
 
 
 import operator
+import abc
 import jax
 import jax.numpy as jnp
 from . import _utils, state as _state
@@ -12,7 +13,7 @@ from . import _utils, state as _state
     children=["rek"],
     static_attrs=["nz", "ny", "nx", "precision"],
 )
-class PseudoSpectralKernel:
+class PseudoSpectralKernel(abc.ABC):
     def __init__(
         self,
         *,
@@ -173,12 +174,14 @@ class PseudoSpectralKernel:
         return jnp.zeros((self.nk,), dtype=self._dtype_real)
 
     @property
+    @abc.abstractmethod
     def filtr(self):
-        raise NotImplementedError("define filtr property in subclass")
+        pass
 
     @property
+    @abc.abstractmethod
     def _ikQy(self):
-        raise NotImplementedError("define _ikQy property in subclass")
+        pass
 
     def _invert(
         self, state: _state.FullPseudoSpectralState
