@@ -180,8 +180,12 @@ class PseudoSpectralKernel(abc.ABC):
 
     @property
     @abc.abstractmethod
-    def _ikQy(self):
+    def Qy(self):
         pass
+
+    @property
+    def _ikQy(self):
+        return 1j * (jnp.expand_dims(self.kk, 0) * jnp.expand_dims(self.Qy, -1))
 
     def _invert(
         self, state: _state.FullPseudoSpectralState

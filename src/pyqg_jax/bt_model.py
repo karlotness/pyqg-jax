@@ -143,10 +143,6 @@ class BTModel(_model.Model):
     def ilQx(self):
         return 0.0
 
-    @property
-    def _ikQy(self):
-        return 1j * (jnp.expand_dims(self.kk, 0) * jnp.expand_dims(self.Qy, -1))
-
     def _apply_a_ph(self, state):
         return jnp.negative(state.qh * (self.wv2i + self.kd2))
 

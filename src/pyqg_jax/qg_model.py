@@ -189,10 +189,6 @@ class QGModel(_model.Model):
         return jnp.array([self.Qy1, self.Qy2], dtype=self._dtype_real)
 
     @property
-    def _ikQy(self):
-        return 1j * (jnp.expand_dims(self.kk, 0) * jnp.expand_dims(self.Qy, -1))
-
-    @property
     def ikQy1(self):
         return self.Qy1 * 1j * self.k
 
