@@ -22,6 +22,8 @@ class BTModel(_model.Model):
 
     See also :class:`pyqg.BTModel`.
 
+    .. versionadded:: 0.6.0
+
     Parameters
     ----------
     nx : int, optional
