@@ -219,14 +219,6 @@ class FullPseudoSpectralState:
     vh : jax.Array
         Meridional velocity anomaly in spectral space.
 
-    uq : jax.Array
-
-    uqh : jax.Array
-
-    vq : jax.Array
-
-    vqh : jax.Array
-
     dqhdt : jax.Array
         Spectral derivative with respect to time for :attr:`qh`.
 
@@ -241,8 +233,6 @@ class FullPseudoSpectralState:
     ph: jnp.ndarray
     u: jnp.ndarray
     v: jnp.ndarray
-    uq: jnp.ndarray
-    vq: jnp.ndarray
     dqhdt: jnp.ndarray
 
     @property
@@ -264,14 +254,6 @@ class FullPseudoSpectralState:
     @property
     def vh(self) -> jnp.ndarray:
         return _generic_rfftn(self.v)
-
-    @property
-    def uqh(self) -> jnp.ndarray:
-        return _generic_rfftn(self.uq)
-
-    @property
-    def vqh(self) -> jnp.ndarray:
-        return _generic_rfftn(self.vq)
 
     @property
     def dqdt(self) -> jnp.ndarray:
@@ -317,18 +299,6 @@ class FullPseudoSpectralState:
         vh : jax.Array
             Replacement value for :attr:`vh`.
 
-        uq : jax.Array
-            Replacement value for :attr:`uq`.
-
-        uqh : jax.Array
-            Replacement value for :attr:`uqh`.
-
-        vq : jax.Array
-            Replacement value for :attr:`vq`.
-
-        vqh : jax.Array
-            Replacement value for :attr:`vqh`.
-
         dqhdt : jax.Array
             Replacement value for :attr:`dqhdt`.
 
@@ -368,7 +338,7 @@ class FullPseudoSpectralState:
                 # Special handling for q and qh, make spectral and assign to state
                 new_val = self.state.update(**{name: new_val})
                 name = "state"
-            elif name in {"uh", "vh", "uqh", "vqh"}:
+            elif name in {"uh", "vh"}:
                 # Handle other spectral names, store as non-spectral
                 new_val = _generic_irfftn(new_val)
                 name = name[:-1]
@@ -391,8 +361,6 @@ class FullPseudoSpectralState:
         ph_summary = _utils.summarize_object(self.ph)
         u_summary = _utils.summarize_object(self.u)
         v_summary = _utils.summarize_object(self.v)
-        uq_summary = _utils.summarize_object(self.uq)
-        vq_summary = _utils.summarize_object(self.vq)
         dqhdt_summary = _utils.summarize_object(self.dqhdt)
         return f"""\
 FullPseudoSpectralState(
@@ -400,7 +368,5 @@ FullPseudoSpectralState(
   ph={ph_summary},
   u={u_summary},
   v={v_summary},
-  uq={uq_summary},
-  vq={vq_summary},
   dqhdt={dqhdt_summary},
 )"""

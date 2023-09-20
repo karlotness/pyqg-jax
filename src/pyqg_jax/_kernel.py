@@ -47,8 +47,6 @@ class PseudoSpectralKernel(abc.ABC):
             ph=_empty_com(),
             u=_empty_real(),
             v=_empty_real(),
-            uq=_empty_real(),
-            vq=_empty_real(),
             dqhdt=_empty_com(),
         )
         full_state = self._invert(full_state)
@@ -205,11 +203,12 @@ class PseudoSpectralKernel(abc.ABC):
         # multiply to get advective flux in space
         uq = (state.u + jnp.expand_dims(self.Ubg[: self.nz], (-1, -2))) * state.q
         vq = state.v * state.q
-        state = state.update(uq=uq, vq=vq)
+        uqh = _state._generic_rfftn(uq)
+        vqh = _state._generic_rfftn(vq)
         # spectral divergence
         dqhdt = jnp.negative(
-            jnp.expand_dims(self._ik, (0, 1)) * state.uqh
-            + jnp.expand_dims(self._il, (0, -1)) * state.vqh
+            jnp.expand_dims(self._ik, (0, 1)) * uqh
+            + jnp.expand_dims(self._il, (0, -1)) * vqh
             + jnp.expand_dims(self._ikQy[: self.nz], 1) * state.ph
         )
         return state.update(dqhdt=dqhdt)

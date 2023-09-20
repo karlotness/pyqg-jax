@@ -39,9 +39,7 @@ def test_full_state_update_rejects_state(full_state):
         _ = full_state.update(state=full_state.state)
 
 
-@pytest.mark.parametrize(
-    "name", ["ph", "p", "u", "v", "uq", "vq", "dqhdt", "dqdt", "uh", "vh", "uqh", "vqh"]
-)
+@pytest.mark.parametrize("name", ["ph", "p", "u", "v", "dqhdt", "dqdt", "uh", "vh"])
 def test_full_state_update(full_state, name):
     new_val = jnp.ones_like(getattr(full_state, name))
     new_state = full_state.update(**{name: new_val})
@@ -50,18 +48,14 @@ def test_full_state_update(full_state, name):
         assert getattr(new_state, name) is new_val
 
 
-@pytest.mark.parametrize(
-    "name", ["ph", "p", "u", "v", "uq", "vq", "dqhdt", "dqdt", "uh", "vh", "uqh", "vqh"]
-)
+@pytest.mark.parametrize("name", ["ph", "p", "u", "v", "dqhdt", "dqdt", "uh", "vh"])
 def test_full_state_update_rejects_wrong_shape(full_state, name):
     new_val = jnp.ones_like(getattr(full_state, name)[..., 1:])
     with pytest.raises(ValueError, match="shape"):
         _ = full_state.update(**{name: new_val})
 
 
-@pytest.mark.parametrize(
-    "name", ["ph", "p", "u", "v", "uq", "vq", "dqhdt", "dqdt", "uh", "vh", "uqh", "vqh"]
-)
+@pytest.mark.parametrize("name", ["ph", "p", "u", "v", "dqhdt", "dqdt", "uh", "vh"])
 def test_full_state_update_rejects_wrong_dtype(full_state, name):
     if name.endswith("h") or name == "dqhdt":
         dtype = jnp.float32
@@ -72,7 +66,7 @@ def test_full_state_update_rejects_wrong_dtype(full_state, name):
         _ = full_state.update(**{name: new_val})
 
 
-@pytest.mark.parametrize("name", ["p", "u", "v", "uq", "vq", "dqdt"])
+@pytest.mark.parametrize("name", ["p", "u", "v", "dqdt"])
 def test_full_state_update_rejects_duplicate_updates(full_state, name):
     if name == "dqdt":
         spectral_name = "dqhdt"
