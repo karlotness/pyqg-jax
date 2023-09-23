@@ -17,13 +17,12 @@ jobs:
     - name: Check version
       run: |
         VERSION=$(sed -n -E 's!^__version__\s*(:\s*[^=[:space:]]+\s*)?=\s*"\s*([^[:space:]]+)\s*"\s*$!\2!p' src/pyqg_jax/__init__.py)
-        REF_VERSION='${{ github.ref_name }}'
         echo "Detected version: ${VERSION}"
         if [[ ${VERSION} == *'dev'* ]]; then
           echo 'Development version. Not releasing.'
           exit 1
         fi
-        if [[ "v${VERSION}" != "${REF_VERSION}" ]]; then
+        if [[ "v${VERSION}" != "$GITHUB_REF_NAME" ]]; then
           echo 'Package and tag version do not match. Not releasing.'
           exit 1
         fi
@@ -125,7 +124,7 @@ jobs:
           echo -e '```\n\n</details>'
         } > release_body.md
     - name: Create release
-      run: gh release create '${{ github.ref_name }}' --title '${{ github.ref_name }}' --target '${{ github.sha }}' --draft --notes-file 'release_body.md' --repo '${{ github.repository }}' dist/*.tar.gz dist/*.whl
+      run: gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --target "$GITHUB_SHA" --draft --notes-file 'release_body.md' --repo "$GITHUB_REPOSITORY" dist/*.tar.gz dist/*.whl
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Prepare step summary
@@ -181,6 +180,6 @@ jobs:
       contents: write
     steps:
     - name: Publish GitHub release
-      run: gh release edit '${{ github.ref_name }}' --draft=false --repo '${{ github.repository }}'
+      run: gh release edit "$GITHUB_REF_NAME" --draft=false --repo "$GITHUB_REPOSITORY"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
