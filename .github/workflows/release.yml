@@ -16,9 +16,9 @@ jobs:
         persist-credentials: false
     - name: Check version
       run: |
-        VERSION=$(sed -n -E 's!^__version__\s*(:\s*[^=[:space:]]+\s*)?=\s*"\s*([^[:space:]]+)\s*"\s*$!\2!p' src/pyqg_jax/__init__.py)
+        VERSION="$(sed -n -E 's!^__version__\s*(:\s*[^=[:space:]]+\s*)?=\s*"\s*([^[:space:]]+)\s*"\s*$!\2!p' src/pyqg_jax/__init__.py)"
         echo "Detected version: ${VERSION}"
-        if [[ ${VERSION} == *'dev'* ]]; then
+        if [[ "$VERSION" == *'dev'* ]]; then
           echo 'Development version. Not releasing.'
           exit 1
         fi
@@ -128,7 +128,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Prepare step summary
-      run: echo '# Artifact Contents' > $GITHUB_STEP_SUMMARY
+      run: echo '# Artifact Contents' > "$GITHUB_STEP_SUMMARY"
     - name: Summarize checksums
       run: |
         {
@@ -139,23 +139,23 @@ jobs:
           echo -e '<details><summary>SHA512 Checksums</summary>\n\n```'
           sha512sum dist/*.tar.gz dist/*.whl | sed 's!dist/!!'
           echo -e '```\n\n</details>\n'
-        } >> $GITHUB_STEP_SUMMARY
+        } >> "$GITHUB_STEP_SUMMARY"
     - name: Summarize contents
       run: |
-        echo '## Contents' >> $GITHUB_STEP_SUMMARY
+        echo '## Contents' >> "$GITHUB_STEP_SUMMARY"
         for f in dist/*.tar.gz; do
           {
             echo -e "<details><summary>$(basename "$f")</summary>\n\n\`\`\`"
             tar -tzvf "$f"
             echo -e '```\n\n</details>\n'
-          } >> $GITHUB_STEP_SUMMARY
+          } >> "$GITHUB_STEP_SUMMARY"
         done
         for f in dist/*.whl; do
           {
             echo -e "<details><summary>$(basename "$f")</summary>\n\n\`\`\`"
             zipinfo "$f"
             echo -e '```\n\n</details>\n'
-          } >> $GITHUB_STEP_SUMMARY
+          } >> "$GITHUB_STEP_SUMMARY"
         done
   upload:
     runs-on: ubuntu-latest
