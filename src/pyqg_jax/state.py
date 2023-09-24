@@ -318,6 +318,11 @@ class FullPseudoSpectralState:
 
         TypeError
             If the dtype of the replacement does not match the existing type.
+
+        Notes
+        -----
+        .. versionchanged:: 0.7.0
+           Removed attributes `uq`, `vq`, `uqh`, and `vqh`.
         """
         new_values = {}
         if "state" in kwargs:
