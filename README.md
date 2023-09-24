@@ -28,7 +28,7 @@ $ conda install -c conda-forge pyqg-jax
 ```
 This should install required dependencies, but JAX itself may require
 special attention, particularly for GPU support.
-Follow the [JAX installation instructions](https://github.com/google/jax#installation).
+Follow the [JAX installation instructions](https://jax.readthedocs.io/en/latest/installation.html).
 
 ## Usage
 [Documentation][docs] is a work in progress. The parameters `QGModel`
