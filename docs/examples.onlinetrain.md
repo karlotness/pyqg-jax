@@ -45,7 +45,7 @@ To carry out our training we will make use of several elements
 demonstrated in other examples. In particular:
 
 - `Operator1` from "{doc}`examples.coarsen`"
-- `NNParam` from "{doc}`examples.implparam`"
+- `NNParam` and `module_to_single` from "{doc}`examples.implparam`"
 
 ```{code-cell} ipython3
 :tags: [remove-cell]
@@ -133,6 +133,19 @@ class Operator1(SpectralCoarsener):
         return self.small_model.filtr
 
 
+def param_to_single(param):
+    if eqx.is_inexact_array(param):
+        if param.dtype == jnp.dtype(jnp.float64):
+            return param.astype(jnp.float32)
+        elif param.dtype == jnp.dtype(jnp.complex128):
+            return param.astype(jnp.complex64)
+    return param
+
+
+def module_to_single(module):
+    return jax.tree_util.tree_map(param_to_single, module)
+
+
 class NNParam(eqx.Module):
     ops: eqx.nn.Sequential
 
@@ -174,7 +187,8 @@ big_model = pyqg_jax.steppers.SteppedModel(
 
 coarse_op = Operator1(big_model.model, 32)
 
-net = NNParam(key=jax.random.PRNGKey(0))
+# Ensure that all module weights are float32
+net = module_to_single(NNParam(key=jax.random.PRNGKey(123)))
 
 optim = optax.adam(LEARNING_RATE)
 optim_state = optim.init(eqx.filter(net, eqx.is_array))

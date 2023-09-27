@@ -44,6 +44,17 @@ with zeros, but because system states are periodic it may be desirable
 to use periodic padding for real applications.
 
 ```{code-cell} ipython3
+def param_to_single(param):
+    if eqx.is_inexact_array(param):
+        if param.dtype == jnp.dtype(jnp.float64):
+            return param.astype(jnp.float32)
+        elif param.dtype == jnp.dtype(jnp.complex128):
+            return param.astype(jnp.complex64)
+    return param
+
+def module_to_single(module):
+    return jax.tree_util.tree_map(param_to_single, module)
+
 class NNParam(eqx.Module):
     ops: eqx.nn.Sequential
 
@@ -60,7 +71,8 @@ class NNParam(eqx.Module):
     def __call__(self, x, *, key=None):
         return self.ops(x, key=key)
 
-net = NNParam(key=jax.random.PRNGKey(0))
+# Ensure that all module weights are float32
+net = module_to_single(NNParam(key=jax.random.PRNGKey(123)))
 
 net
 ```
