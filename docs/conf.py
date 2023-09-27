@@ -49,6 +49,7 @@ rst_prolog = r"""
 html_theme = "sphinx_rtd_theme"
 
 # MyST-NB configuration
+nb_output_stderr = "remove"
 nb_merge_streams = True
 
 # Autodoc configuration
