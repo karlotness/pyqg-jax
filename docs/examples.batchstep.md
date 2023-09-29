@@ -25,7 +25,6 @@ capacity.
 
 ```{code-cell} ipython3
 %env JAX_ENABLE_X64=True
-%env JAX_DEFAULT_DTYPE_BITS=32
 import functools
 import matplotlib.pyplot as plt
 import jax

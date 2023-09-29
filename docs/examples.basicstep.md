@@ -10,8 +10,8 @@ In this example we demonstrate basic use of this package and how to
 initialize one of the models and step a simulation through time.
 
 For this example we will run some calculations using `float64`. We
-need to enable JAX's double precision support by setting a few
-environment variables before importing anything.
+need to enable JAX's double precision support. To do this we set an
+environment variable before importing anything.
 
 ```{code-cell} ipython3
 :tags: [remove-cell]
@@ -23,11 +23,7 @@ environment variables before importing anything.
 
 ```{code-cell} ipython3
 %env JAX_ENABLE_X64=True
-%env JAX_DEFAULT_DTYPE_BITS=32
 ```
-
-Any time you are using double precision support, you should set these
-environment variables before you import JAX.
 
 With that done we can begin by importing JAX, and the `pyqg_jax`
 package.

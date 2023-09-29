@@ -26,7 +26,6 @@ and [Zenodo](https://doi.org/10.5281/zenodo.6612447).
 
 ```{code-cell} ipython3
 %env JAX_ENABLE_X64=True
-%env JAX_DEFAULT_DTYPE_BITS=32
 import abc
 import inspect
 import functools

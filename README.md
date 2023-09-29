@@ -53,10 +53,9 @@ The `QGModel` uses double precision (`float64`) values for part of its
 computation regardless of the precision setting. Make sure JAX is set
 to enable 64-bit. [See the
 documentation](https://jax.readthedocs.io/en/latest/notebooks/Common_Gotchas_in_JAX.html#double-64bit-precision)
-for details. One option is to set the following environment variables:
+for details. One option is to set the following environment variable:
 ```bash
 export JAX_ENABLE_X64=True
-export JAX_DEFAULT_DTYPE_BITS=32
 ```
 or use the [`%env`
 magic](https://ipython.readthedocs.io/en/stable/interactive/magics.html#magic-env)

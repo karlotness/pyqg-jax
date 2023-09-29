@@ -30,7 +30,6 @@ optimizers.
 
 ```{code-cell} ipython3
 %env JAX_ENABLE_X64=True
-%env JAX_DEFAULT_DTYPE_BITS=32
 import functools
 import jax
 import jax.numpy as jnp
