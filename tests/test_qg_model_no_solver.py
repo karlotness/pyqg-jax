@@ -54,7 +54,7 @@ def test_compute_inversion_matrix():
 
 def test_final_step_matches():
     jax_model = QGModelNoSolver(precision=pyqg_jax.state.Precision.DOUBLE, **EDDY_ARGS)
-    start_jax_state = jax_model.create_initial_state(jax.random.PRNGKey(0))
+    start_jax_state = jax_model.create_initial_state(jax.random.key(0))
     dt = 3600
     num_steps = 500
     with warnings.catch_warnings():

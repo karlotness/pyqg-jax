@@ -105,7 +105,7 @@ def test_default_parameters_match(param):
 )
 def test_match_final_step(precision):
     jax_model = pyqg_jax.bt_model.BTModel(precision=precision, **BT_PARAMS)
-    start_jax_state = jax_model.create_initial_state(jax.random.PRNGKey(0))
+    start_jax_state = jax_model.create_initial_state(jax.random.key(0))
     dt = 0.0025
     num_steps = 1000
     with warnings.catch_warnings():

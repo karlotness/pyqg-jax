@@ -11,9 +11,9 @@ def test_match_final_step():
             state,
             (jax.random.split(param_aux[0], 2)[1], param_aux[1] + 1),
         ),
-        init_param_aux_func=lambda state, model: (jax.random.PRNGKey(0), 0),
+        init_param_aux_func=lambda state, model: (jax.random.key(0), 0),
     )
-    start_jax_state = jax_model.create_initial_state(jax.random.PRNGKey(0))
+    start_jax_state = jax_model.create_initial_state(jax.random.key(0))
     dt = 3600
     num_steps = 1000
 

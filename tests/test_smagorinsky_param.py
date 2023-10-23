@@ -12,7 +12,7 @@ def test_match_final_step():
         pyqg_jax.qg_model.QGModel(nx=64, precision=pyqg_jax.state.Precision.DOUBLE),
         constant=0.08,
     )
-    start_jax_state = jax_model.create_initial_state(jax.random.PRNGKey(0))
+    start_jax_state = jax_model.create_initial_state(jax.random.key(0))
     dt = 3600
     num_steps = 1000
     with warnings.catch_warnings():

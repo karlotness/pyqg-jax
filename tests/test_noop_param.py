@@ -8,7 +8,7 @@ def test_match_final_step():
         nx=64, precision=pyqg_jax.state.Precision.SINGLE
     )
     param_model = pyqg_jax.parameterizations.noop.apply_parameterization(jax_model)
-    start_state = jax_model.create_initial_state(jax.random.PRNGKey(0))
+    start_state = jax_model.create_initial_state(jax.random.key(0))
     param_start_state = param_model.initialize_param_state(start_state)
     dt = 3600
     num_steps = 1000

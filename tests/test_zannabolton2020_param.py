@@ -11,7 +11,7 @@ def test_match_final_step():
     jax_model = pyqg_jax.parameterizations.zannabolton2020.apply_parameterization(
         pyqg_jax.qg_model.QGModel(nx=64, precision=pyqg_jax.state.Precision.DOUBLE)
     )
-    start_jax_state = jax_model.create_initial_state(jax.random.PRNGKey(0))
+    start_jax_state = jax_model.create_initial_state(jax.random.key(0))
     dt = 3600
     num_steps = 1000
     with warnings.catch_warnings():
