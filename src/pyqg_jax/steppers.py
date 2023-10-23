@@ -164,8 +164,8 @@ class SteppedModel:
 
         Parameters
         ----------
-        key : jax.random.PRNGKey
-            The PRNG used as the random key for initialization.
+        key : jax.random.key
+            The PRNG state used as the random key for initialization.
 
         *args
             Arbitrary additional arguments for the model's
@@ -438,7 +438,7 @@ class NoStepValue(typing.Generic[P]):
     value from the updates. This allows a user to manually update an
     auxiliary value outside the normal time-stepping.
 
-    For example, :func:`jax.random.PRNGKey` values should not be
+    For example, :func:`jax.random.key` values should not be
     time-stepped normally. Wrapping them in this class and manually
     :func:`updating them <jax.random.split>` can accomplish this.
 

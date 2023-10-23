@@ -77,7 +77,7 @@ and taking a single step.
 ... )
 >>> # Initialize the model state (wrapped in stepper and parameterization state)
 >>> stepper_state = stepped_model.create_initial_state(
-...     jax.random.PRNGKey(0)
+...     jax.random.key(0)
 ... )
 >>> # Compute next state
 >>> next_stepper_state = stepped_model.step_model(stepper_state)

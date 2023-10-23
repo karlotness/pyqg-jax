@@ -204,8 +204,8 @@ class ParameterizedModel:
 
         Parameters
         ----------
-        key : jax.random.PRNGKey
-            The PRNG used as the random key for initialization.
+        key : jax.random.key
+            The PRNG state used as the random key for initialization.
 
         *args
             Arbitrary additional arguments for :attr:`init_param_aux_func`

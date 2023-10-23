@@ -71,7 +71,7 @@ class NNParam(eqx.Module):
         return self.ops(x, key=key)
 
 # Ensure that all module weights are float32
-net = module_to_single(NNParam(key=jax.random.PRNGKey(123)))
+net = module_to_single(NNParam(key=jax.random.key(123)))
 
 net
 ```
@@ -150,7 +150,7 @@ not time-stepped. It is up to your parameterization to provide new
 values for these, as needed.
 
 ```{code-cell} ipython3
-init_state = model.create_initial_state(jax.random.PRNGKey(0))
+init_state = model.create_initial_state(jax.random.key(0))
 
 init_state
 ```
@@ -181,7 +181,7 @@ cases. In particular here we use a nested tuple of several values.
 
 Our auxiliary state will have two components:
 
-1. a {func}`PRNGKey <jax.random.PRNGKey>` to provide randomness for
+1. a {func}`key <jax.random.key>` to provide randomness for
    use with the parameterization
 2. a two-step shift register of past parameterization outputs
 
@@ -193,13 +193,13 @@ states.
 
 The first step required is to provide code to initialize our
 `param_aux` values. Here, our function takes on additional argument
-`seed` which we use to construct a `PRNGKey`. We also produce two
+`seed` which we use to construct a `key`. We also produce two
 placeholders for the past model states, in this case arrays with the
 proper shapes filled with zeros.
 
 ```{code-cell} ipython3
 def net_init_aux(model_state, model, seed):
-    rng = jax.random.PRNGKey(seed)
+    rng = jax.random.key(seed)
     init_state = jnp.zeros_like(model_state.q, dtype=jnp.float32)
     init_states = (init_state, init_state)
     return rng, init_states
@@ -251,13 +251,13 @@ that we provide the additional `seed` argument which is passed through
 to `net_init_aux`.
 
 ```{code-cell} ipython3
-init_key_state = state_model.create_initial_state(jax.random.PRNGKey(0), seed=10)
+init_key_state = state_model.create_initial_state(jax.random.key(0), seed=10)
 
 init_key_state
 ```
 
 Notice that the `param_aux` value wrapped inside the `NoStepValue`
-object is no longer `None`. The `PRNGKey`'s `uint32` array is visible,
+object is no longer `None`. The `key` array is visible,
 along with two `float32` arrays for past parameterization outputs.
 
 Finally, as before we can roll out a trajectory:

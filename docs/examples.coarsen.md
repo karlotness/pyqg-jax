@@ -101,7 +101,7 @@ class SpectralCoarsener(abc.ABC):
             self.big_model.nx,
         ):
             raise ValueError(f"incorrect input size {state.qh.shape}")
-        out_state = self.small_model.create_initial_state(jax.random.PRNGKey(0))
+        out_state = self.small_model.create_initial_state(jax.random.key(0))
         nk = out_state.qh.shape[-2] // 2
         trunc = jnp.concatenate(
             [
@@ -180,7 +180,7 @@ def roll_out_state(state, num_steps):
     return final_state
 
 final_step = roll_out_state(
-    model.create_initial_state(jax.random.PRNGKey(0)), num_steps=7500
+    model.create_initial_state(jax.random.key(0)), num_steps=7500
 )
 ```
 

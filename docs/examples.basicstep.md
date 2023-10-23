@@ -112,7 +112,7 @@ information on additional attributes and properties.
 
 ```{code-cell} ipython3
 init_state = stepped_model.create_initial_state(
-    jax.random.PRNGKey(0)
+    jax.random.key(0)
 )
 
 init_state
@@ -133,7 +133,7 @@ for layer in range(2):
 ```
 
 This state can now be stepped forward in time to produce a trajectory.
-Generating the initial condition uses a {func}`jax.random.PRNGKey` for
+Generating the initial condition uses a {func}`jax.random.key` for
 random number generation.
 
 ### Wrapping an External Array
@@ -146,7 +146,7 @@ obtain a state from the `base_model` and *replace* its contents:
 # Stand in for an externally-computed value (perhaps from a file)
 new_q = jnp.linspace(0, 1, 64 * 64 * 2, dtype=jnp.float64).reshape((2, 64, 64))
 # Create a state and perform the replacement
-dummy_state = base_model.create_initial_state(jax.random.PRNGKey(0))
+dummy_state = base_model.create_initial_state(jax.random.key(0))
 base_state = dummy_state.update(q=new_q)
 
 base_state

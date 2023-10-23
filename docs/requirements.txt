@@ -1,7 +1,7 @@
 sphinx>=5.3.0
 sphinx-rtd-theme>=1.2.0
 numpy
-jax[cpu]
+jax[cpu]>=0.4.11
 packaging
 myst-nb
 matplotlib

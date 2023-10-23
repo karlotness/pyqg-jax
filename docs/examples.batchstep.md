@@ -47,10 +47,10 @@ model = pyqg_jax.steppers.SteppedModel(
 ```
 
 Next we can use `vmap` to create our initial states from a stack of
-`PRNGKey` objects:
+`key` objects:
 
 ```{code-cell} ipython3
-init_rngs = jax.vmap(jax.random.PRNGKey)(jnp.asarray([0, 1, 2]))
+init_rngs = jax.vmap(jax.random.key)(jnp.asarray([0, 1, 2]))
 init_states = jax.vmap(model.create_initial_state)(init_rngs)
 
 init_states
@@ -158,7 +158,7 @@ function properly. We run both models on the same initial state.
 ```{code-cell} ipython3
 def make_initial_state(model, seed):
     return model.create_initial_state(
-        jax.random.PRNGKey(seed)
+        jax.random.key(seed)
     )
 
 batch_state = jax.vmap(make_initial_state)(models, jnp.zeros(2, dtype=jnp.int32))

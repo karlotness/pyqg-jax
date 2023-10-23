@@ -94,7 +94,7 @@ class SpectralCoarsener(abc.ABC):
         ):
             raise ValueError(f"incorrect input size {state.qh.shape}")
         out_state = self.small_model.create_initial_state(
-            jax.random.PRNGKey(0)
+            jax.random.key(0)
         )
         nk = out_state.qh.shape[-2] // 2
         trunc = jnp.concatenate(
@@ -187,7 +187,7 @@ big_model = pyqg_jax.steppers.SteppedModel(
 coarse_op = Operator1(big_model.model, 32)
 
 # Ensure that all module weights are float32
-net = module_to_single(NNParam(key=jax.random.PRNGKey(123)))
+net = module_to_single(NNParam(key=jax.random.key(123)))
 
 optim = optax.adam(LEARNING_RATE)
 optim_state = optim.init(eqx.filter(net, eqx.is_array))
@@ -213,7 +213,7 @@ def generate_train_data(seed, num_steps):
         return next_state, small_state.q
 
     _final_big_state, target_q = jax.lax.scan(
-        step, big_model.create_initial_state(jax.random.PRNGKey(seed)), None, length=num_steps
+        step, big_model.create_initial_state(jax.random.key(seed)), None, length=num_steps
     )
     return target_q
 
@@ -253,7 +253,7 @@ def roll_out_with_net(init_q, net, num_steps):
     # Package our state
     # First, package it for the base model
     base_state = small_model.model.model.create_initial_state(
-        jax.random.PRNGKey(0)
+        jax.random.key(0)
     ).update(q=init_q)
     # Next, wrap it for the parameterization and stepper
     init_state = small_model.initialize_stepper_state(

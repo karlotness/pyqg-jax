@@ -45,7 +45,7 @@ and a sample `init_param_aux_func`::
 
 These two work together. The auxiliary state is an arbitrary object
 (must be a JAX PyTree). Simple choices are tuples of JAX values
-(:class:`arrays <jax.Array>`, :func:`PRNGKey <jax.random.PRNGKey>`,
+(:class:`arrays <jax.Array>`, :func:`key <jax.random.key>`,
 etc.) or immutable python objects (:class:`str <python:str>`,
 :class:`bool <python:bool>`, etc.). The auxiliary state can be
 :pycode:`None` if no values are necessary.
@@ -60,7 +60,7 @@ non-time-stepped value forward when stepping the model. Some
 possibilities:
 
 * Stochastic parameterizations will need to include and :func:`split
-  <jax.random.split>` a :func:`PRNGKey <jax.random.PRNGKey>` to use
+  <jax.random.split>` a :func:`key <jax.random.key>` to use
   randomness.
 * Stateful parameterizations could maintain a history of previous
   model states.
