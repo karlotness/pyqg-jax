@@ -104,10 +104,9 @@ def register_pytree_class_attrs(children, static_attrs):
     def do_registration(cls):
         pytree_class_attrs_registry[cls] = (children, static_attrs)
         # Combine recursively
-        mro = inspect.getmro(cls)
         cls_children = set()
         cls_static = set()
-        for c in mro:
+        for c in inspect.getmro(cls):
             c_children, c_static = pytree_class_attrs_registry.get(c, ((), ()))
             cls_children.update(c_children)
             cls_static.update(c_static)
