@@ -1,7 +1,6 @@
 import inspect
 import importlib
 import pathlib
-import re
 import packaging.version
 import pyqg_jax
 
@@ -75,7 +74,7 @@ def linkcode_resolve(domain, info):
     if domain != "py":
         return None
     mod_name = info["module"]
-    if not re.match(r"^pyqg_jax(?:\.|$)", mod_name):
+    if mod_name != "pyqg_jax" and not mod_name.startswith("pyqg_jax."):
         return None
     fullname = info["fullname"]
     pkg_root = pathlib.Path(pyqg_jax.__file__).parent
