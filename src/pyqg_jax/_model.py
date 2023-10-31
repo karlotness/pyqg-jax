@@ -128,8 +128,9 @@ class Model(_kernel.PseudoSpectralKernel):
     @property
     def ll(self):
         return self.dl * jnp.append(
-            jnp.arange(0.0, self.nx / 2), jnp.arange(-self.nx / 2, 0.0)
-        ).astype(self._dtype_real)
+            jnp.arange(0.0, self.nx / 2, dtype=self._dtype_real),
+            jnp.arange(-self.nx / 2, 0.0, dtype=self._dtype_real),
+        )
 
     @property
     def _il(self):
@@ -141,7 +142,7 @@ class Model(_kernel.PseudoSpectralKernel):
 
     @property
     def kk(self):
-        return self.dk * jnp.arange(0.0, self.nk).astype(self._dtype_real)
+        return self.dk * jnp.arange(0.0, self.nk, dtype=self._dtype_real)
 
     @property
     def _ik(self):
