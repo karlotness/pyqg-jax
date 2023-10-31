@@ -44,8 +44,7 @@ arguments from an existing model object.
 ```{code-cell} ipython3
 def model_to_args(model):
     return {
-        arg: getattr(model, arg)
-        for arg in inspect.signature(type(model)).parameters.keys()
+        arg: getattr(model, arg) for arg in inspect.signature(type(model)).parameters
     }
 ```
 
