@@ -111,7 +111,7 @@ def register_pytree_class_attrs(children, static_attrs):
             cls_children.update(c_children)
             cls_static.update(c_static)
         if not cls_children.isdisjoint(cls_static):
-            raise ValueError("Recursive static and dynamic attributes overlap")
+            raise ValueError("recursive static and dynamic attributes overlap")
         cls_children = tuple(cls_children)
         cls_static = tuple(cls_static)
 
