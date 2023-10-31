@@ -9,7 +9,7 @@
 __all__ = ["QGModel"]
 
 
-import math
+import inspect
 import jax
 import jax.numpy as jnp
 from . import _model, _utils, state as _state
@@ -215,35 +215,29 @@ class QGModel(_model.Model):
         return (self.delta + 1) ** -1
 
     def _apply_a_ph(self, state):
+        f64_args = {
+            arg: getattr(self, arg) for arg in inspect.signature(QGModel).parameters
+        }
+        f64_args["precision"] = _state.Precision.DOUBLE
+        f64_model = QGModel(**f64_args)
         qh = jnp.moveaxis(state.qh, 0, -1)
         qh_orig_shape = qh.shape
         qh = qh.reshape((-1, 2))
         # Compute inversion matrix
-        dk = 2 * math.pi / self.L
-        dl = 2 * math.pi / self.W
-        ll = dl * jnp.concatenate(
-            [
-                jnp.arange(0, self.nx / 2, dtype=jnp.float64),
-                jnp.arange(-self.nx / 2, 0, dtype=jnp.float64),
-            ]
-        )
-        kk = dk * jnp.arange(0, self.nk, dtype=jnp.float64)
-        k, l = jnp.meshgrid(kk, ll)
-        wv2 = k**2 + l**2
         inv_mat2 = jnp.moveaxis(
             jnp.array(
                 [
                     [
                         # 0, 0
-                        -(wv2 + self.F1),
+                        -(f64_model.wv2 + f64_model.F1),
                         # 0, 1
-                        jnp.full_like(wv2, self.F1),
+                        jnp.full_like(f64_model.wv2, f64_model.F1),
                     ],
                     [
                         # 1, 0
-                        jnp.full_like(wv2, self.F2),
+                        jnp.full_like(f64_model.wv2, f64_model.F2),
                         # 1, 1
-                        -(wv2 + self.F2),
+                        -(f64_model.wv2 + f64_model.F2),
                     ],
                 ]
             ),
@@ -251,9 +245,9 @@ class QGModel(_model.Model):
             (-2, -1),
         ).reshape((-1, 2, 2))[1:]
         # Solve the system for the tail
-        ph_tail = jnp.linalg.solve(inv_mat2, qh[1:].astype(jnp.complex128)).astype(
-            self._dtype_complex
-        )
+        ph_tail = jnp.linalg.solve(
+            inv_mat2, qh[1:].astype(f64_model._dtype_complex)
+        ).astype(self._dtype_complex)
         # Fill zeros for the head
         ph_head = jnp.expand_dims(jnp.zeros_like(qh[0]), 0)
         # Combine and return
