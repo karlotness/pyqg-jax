@@ -215,11 +215,15 @@ class QGModel(_model.Model):
         return (self.delta + 1) ** -1
 
     def _apply_a_ph(self, state):
-        f64_args = {
-            arg: getattr(self, arg) for arg in inspect.signature(QGModel).parameters
-        }
-        f64_args["precision"] = _state.Precision.DOUBLE
-        f64_model = QGModel(**f64_args)
+        f64_model = QGModel(
+            **(
+                {
+                    arg: getattr(self, arg)
+                    for arg in inspect.signature(QGModel).parameters
+                }
+                | {"precision": _state.Precision.DOUBLE}
+            )
+        )
         qh = jnp.moveaxis(state.qh, 0, -1)
         qh_orig_shape = qh.shape
         qh = qh.reshape((-1, 2))
