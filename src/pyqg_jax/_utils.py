@@ -112,16 +112,16 @@ def register_pytree_class_attrs(children, static_attrs):
             cls_static.update(c_static)
         if not cls_children.isdisjoint(cls_static):
             raise ValueError("recursive static and dynamic attributes overlap")
-        cls_children = tuple(cls_children)
-        cls_static = tuple(cls_static)
+        cls_child_fields = tuple(cls_children)
+        cls_static_fields = tuple(cls_static)
 
         def flatten_with_keys(obj):
             key_children = [
                 (jax.tree_util.GetAttrKey(name), getattr(obj, name))
-                for name in cls_children
+                for name in cls_child_fields
             ]
-            if cls_static:
-                aux = tuple(getattr(obj, name) for name in cls_static)
+            if cls_static_fields:
+                aux = tuple(getattr(obj, name) for name in cls_static_fields)
             else:
                 aux = None
             return key_children, aux
@@ -135,8 +135,8 @@ def register_pytree_class_attrs(children, static_attrs):
             if aux_data is None:
                 aux_data = ()
             for name, val in itertools.chain(
-                zip(cls_children, children),
-                zip(cls_static, aux_data),
+                zip(cls_child_fields, children),
+                zip(cls_static_fields, aux_data),
             ):
                 setattr(obj, name, val)
             return obj
