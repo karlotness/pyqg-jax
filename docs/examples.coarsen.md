@@ -29,6 +29,7 @@ and [Zenodo](https://doi.org/10.5281/zenodo.6612447).
 import abc
 import inspect
 import functools
+import operator
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 import jax
@@ -94,7 +95,7 @@ class SpectralCoarsener(abc.ABC):
         return self.big_model.nx / self.small_nx
 
     def coarsen_state(self, state):
-        if jax.eval_shape(lambda state: state.q, state).shape != (
+        if jax.eval_shape(operator.attrgetter("q"), state).shape != (
             self.big_model.nz,
             self.big_model.ny,
             self.big_model.nx,
