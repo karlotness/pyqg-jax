@@ -63,7 +63,9 @@ in a Jupyter notebook.
 
 ### Short Example
 A short example initializing a `QGModel`, adding a parameterization,
-and taking a single step.
+and taking a single step (for more, see the
+[examples](https://pyqg-jax.readthedocs.io/en/latest/examples.html) in
+the documentation).
 ```pycon
 >>> import pyqg_jax
 >>> import jax
