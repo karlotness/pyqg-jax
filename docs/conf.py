@@ -1,5 +1,5 @@
 import inspect
-import importlib
+import pkgutil
 import pathlib
 import packaging.version
 import pyqg_jax
@@ -79,11 +79,8 @@ def linkcode_resolve(domain, info):
         return None
     fullname = info["fullname"]
     pkg_root = pathlib.Path(pyqg_jax.__file__).parent
-    module = importlib.import_module(mod_name)
-    obj = module
     try:
-        for name in fullname.split("."):
-            obj = getattr(obj, name)
+        obj = pkgutil.resolve_name(f"{mod_name}:{fullname}")
     except AttributeError:
         return None
     if isinstance(obj, property):
