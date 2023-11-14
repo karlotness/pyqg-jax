@@ -106,6 +106,23 @@ class Stepper(abc.ABC):
     dt: float
 
     def initialize_stepper_state(self, state):
+        """Wrap an existing `state` from a model in a
+        :class:`StepperState` to prepare it for time stepping.
+
+        This initializes a new :class:`StepperState` from a time of
+        :pycode:`0`.
+
+        Parameters
+        ----------
+        state
+            The model state to wrap.
+
+        Returns
+        -------
+        StepperState
+            The wrapped state. Note this will be a subclass of
+            :class:`StepperState` appropriate for this time stepper.
+        """
         return StepperState(
             state=state,
             t=jnp.float32(0),
