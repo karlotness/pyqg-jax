@@ -11,7 +11,14 @@ PyQG.
 """
 
 
-__all__ = ["SteppedModel", "AB3Stepper", "AB3State", "NoStepValue"]
+__all__ = [
+    "SteppedModel",
+    "AB3Stepper",
+    "AB3State",
+    "NoStepValue",
+    "EulerStepper",
+    "StepperState",
+]
 
 
 import typing
@@ -324,6 +331,62 @@ def _map_state_remove_nostep(state):
     return jax.tree_util.tree_map(
         leaf_map, state, is_leaf=(lambda l: isinstance(l, NoStepValue))
     )
+
+
+@_utils.register_pytree_dataclass
+@dataclasses.dataclass(repr=False)
+class EulerStepper(Stepper):
+    """Forward Euler (first-order) stepper.
+
+    Parameters
+    ----------
+    dt : float
+        Numerical time step
+
+    Attributes
+    ----------
+    dt : float
+        Numerical time step
+    """
+
+    def apply_updates(self, stepper_state, updates):
+        """Apply `updates` to the existing `stepper_state` producing
+        the next step in time.
+
+        `updates` should be provided by the model that produced
+        :attr:`StepperState.state`.
+
+        Parameters
+        ----------
+        stepper_state : StepperState
+            The time-stepper wrapped state to be updated.
+
+        updates : PseudoSpectralState or ParameterizedModelState
+            The *unwrapped* updates to apply. The actual type of
+            `updates` depends on the model being stepped.
+
+        Returns
+        -------
+        StepperState
+            The updated, wrapped state at the next time step.
+
+        Note
+        ----
+        This method does not apply post-processing to the updated
+        state.
+        """
+        new_state = _nostep_tree_map(
+            (lambda v, u: v + (self.dt * u)),
+            stepper_state.state,
+            updates,
+        )
+        new_t = stepper_state.t + jnp.float32(self.dt)
+        new_tc = stepper_state.tc + 1
+        return StepperState(
+            state=new_state,
+            t=new_t,
+            tc=new_tc,
+        )
 
 
 @_utils.register_pytree_dataclass

@@ -24,6 +24,10 @@ Implemented time-stepping schemes (currently only :class:`AB3Stepper`).
    :members: initialize_stepper_state, apply_updates
    :inherited-members:
 
+.. autoclass:: EulerStepper
+   :members: initialize_stepper_state, apply_updates
+   :inherited-members:
+
 State Manipulation
 ------------------
 
