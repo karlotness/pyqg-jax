@@ -52,14 +52,16 @@ addopts = [
 
 [tool.ruff]
 target-version = "py39"
-select = ["E", "F", "W", "B", "RUF", "UP", "C4", "YTT", "T10", "T20", "ICN", "SIM"]
-ignore = ["E741", "E743", "UP015", "SIM108"]
-exclude = ["docs/_build/"]
+extend-exclude = ["docs/_build/"]
 src = ["src"]
 line-length = 88
-respect-gitignore = false
+respect-gitignore = true
 fix = false
 
-[tool.ruff.flake8-import-conventions]
-[tool.ruff.flake8-import-conventions.extend-aliases]
+[tool.ruff.lint]
+select = ["E", "F", "W", "B", "RUF", "UP", "C4", "YTT", "T10", "T20", "ICN", "SIM"]
+ignore = ["E741", "E743", "UP015", "SIM108"]
+
+[tool.ruff.lint.flake8-import-conventions]
+[tool.ruff.lint.flake8-import-conventions.extend-aliases]
 "jax.numpy" = "jnp"
