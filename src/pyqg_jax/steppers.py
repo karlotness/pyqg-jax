@@ -338,6 +338,8 @@ def _map_state_remove_nostep(state):
 class EulerStepper(Stepper):
     """Forward Euler (first-order) stepper.
 
+    .. versionadded:: 0.8.0
+
     Parameters
     ----------
     dt : float
