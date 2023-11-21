@@ -40,7 +40,8 @@ here is randomly initialized, but in real use it would likely use
 trained weights loaded from a file. Also, the architecture here has a
 padding size configured to keep the state sizes constant. This pads
 with zeros, but because system states are periodic it may be desirable
-to use periodic padding for real applications.
+to use periodic padding for real applications (see the `"wrap"` mode
+of {func}`jax.numpy.pad`).
 
 ```{code-cell} ipython3
 def param_to_single(param):
