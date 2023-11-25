@@ -17,13 +17,13 @@ jobs:
     - name: Check version
       run: |
         VERSION="$(sed -n -E 's!^__version__\s*(:\s*[^=[:space:]]+\s*)?=\s*"\s*([^[:space:]]+)\s*"\s*$!\2!p' src/pyqg_jax/__init__.py)"
-        echo "Detected version: ${VERSION}"
+        printf 'Detected version: %s\n' "$VERSION"
         if [[ "$VERSION" == *'dev'* ]]; then
-          echo 'Development version. Not releasing.'
+          printf 'Development version. Not releasing.\n'
           exit 1
         fi
         if [[ "v${VERSION}" != "$GITHUB_REF_NAME" ]]; then
-          echo 'Package and tag version do not match. Not releasing.'
+          printf 'Package and tag version do not match. Not releasing.\n'
           exit 1
         fi
     - name: Setup Python
@@ -116,45 +116,45 @@ jobs:
     - name: Draft release body
       run: |
         {
-          echo -e '<details><summary>SHA256 Checksums</summary>\n\n```'
+          printf '<details><summary>SHA256 Checksums</summary>\n\n```\n'
           sha256sum dist/*.tar.gz dist/*.whl | sed 's!dist/!!'
-          echo -e '```\n\n</details>\n'
-          echo -e '<details><summary>SHA512 Checksums</summary>\n\n```'
+          printf '```\n\n</details>\n\n'
+          printf '<details><summary>SHA512 Checksums</summary>\n\n```\n'
           sha512sum dist/*.tar.gz dist/*.whl | sed 's!dist/!!'
-          echo -e '```\n\n</details>'
+          printf '```\n\n</details>\n'
         } > release_body.md
     - name: Create release
       run: gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --target "$GITHUB_SHA" --draft --notes-file 'release_body.md' --repo "$GITHUB_REPOSITORY" dist/*.tar.gz dist/*.whl
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Prepare step summary
-      run: echo '# Artifact Contents' > "$GITHUB_STEP_SUMMARY"
+      run: printf '# Artifact Contents\n' > "$GITHUB_STEP_SUMMARY"
     - name: Summarize checksums
       run: |
         {
-          echo -e '## Checksums\n'
-          echo -e '<details><summary>SHA256 Checksums</summary>\n\n```'
+          printf '## Checksums\n\n'
+          printf '<details><summary>SHA256 Checksums</summary>\n\n```\n'
           sha256sum dist/*.tar.gz dist/*.whl | sed 's!dist/!!'
-          echo -e '```\n\n</details>\n'
-          echo -e '<details><summary>SHA512 Checksums</summary>\n\n```'
+          printf '```\n\n</details>\n\n'
+          printf '<details><summary>SHA512 Checksums</summary>\n\n```\n'
           sha512sum dist/*.tar.gz dist/*.whl | sed 's!dist/!!'
-          echo -e '```\n\n</details>\n'
+          printf '```\n\n</details>\n\n'
         } >> "$GITHUB_STEP_SUMMARY"
     - name: Summarize contents
       run: |
-        echo '## Contents' >> "$GITHUB_STEP_SUMMARY"
+        printf '## Contents\n' >> "$GITHUB_STEP_SUMMARY"
         for f in dist/*.tar.gz; do
           {
-            echo -e "<details><summary>$(basename "$f")</summary>\n\n\`\`\`"
+            printf '<details><summary>%s</summary>\n\n```\n' "$(basename "$f")"
             tar -tzvf "$f"
-            echo -e '```\n\n</details>\n'
+            printf '```\n\n</details>\n\n'
           } >> "$GITHUB_STEP_SUMMARY"
         done
         for f in dist/*.whl; do
           {
-            echo -e "<details><summary>$(basename "$f")</summary>\n\n\`\`\`"
+            printf '<details><summary>%s</summary>\n\n```\n' "$(basename "$f")"
             zipinfo "$f"
-            echo -e '```\n\n</details>\n'
+            printf '```\n\n</details>\n\n'
           } >> "$GITHUB_STEP_SUMMARY"
         done
   upload:
