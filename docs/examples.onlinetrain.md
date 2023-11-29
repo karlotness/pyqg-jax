@@ -321,9 +321,16 @@ def train_batch(batch, net, optim_state):
 We use the components we have to run a short training loop and report
 the loss after each step. The training steps are all JIT compiled.
 
+For the training function above, `batch` has shape `(batch_size,
+num_time_steps, nz, ny, nx)`. Each batch should have at least two time
+steps otherwise the parameterization will not be evaluated in the
+resulting trajectory because in the sample here the evaluated
+trajectory includes the unmodified initial step.
+
 ```{code-cell} ipython3
 BATCH_SIZE = 8
 BATCH_STEPS = 10
+assert BATCH_STEPS >= 2
 
 np_rng = np.random.default_rng(seed=456)
 losses = []
