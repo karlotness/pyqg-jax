@@ -163,8 +163,8 @@ class NNParam(eqx.Module):
 ```
 
 In addition to the high-resolution stepped model (size 128), the
-network, and the coarsening operator we also configure an Adam
-optimizer to train our network. For more information on combining
+network, and the coarsening operator we also configure an {func}`Adam
+optimizer <optax.adam>` to train our network. For more information on combining
 these optimizers with Equinox, consult the [Equinox
 documentation](https://docs.kidger.site/equinox/) and the [Optax
 documentation](https://optax.readthedocs.io/en/latest/). Note that
@@ -276,8 +276,8 @@ def roll_out_with_net(init_q, net, num_steps):
 We provide a function using the above to roll out a trajectory at the
 low resolution and compute errors against the reference trajectory
 `target_q`. In this case we use a simple MSE loss for training. We
-also use Equinox's "filtered" transforms (`filter_jit`,
-`filter_value_and_grad`) since these interact more naturally with the
+also use Equinox's "filtered" transforms ({func}`equinox.filter_jit`,
+{func}`equinox.filter_value_and_grad`) since these interact more naturally with the
 Equinox neural network modules.
 
 ```{note}
