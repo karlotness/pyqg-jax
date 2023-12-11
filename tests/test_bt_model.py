@@ -142,3 +142,10 @@ def test_match_final_step(precision):
     assert jnp.all(
         relerr < (0.025 if precision == pyqg_jax.state.Precision.SINGLE else 1e-10)
     )
+
+
+def test_tree_flatten_roundtrip():
+    model = pyqg_jax.bt_model.BTModel(**BT_PARAMS)
+    leaves, treedef = jax.tree_util.tree_flatten(model)
+    restored_model = jax.tree_util.tree_unflatten(treedef, leaves)
+    assert vars(restored_model) == vars(model)
