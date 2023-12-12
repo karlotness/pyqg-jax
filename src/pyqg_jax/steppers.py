@@ -4,10 +4,14 @@
 
 """Time-stepping schemes and utilities for using them to update model states.
 
-To step a model through time, use :class:`SteppedModel`.
+To step a model through time, use :class:`SteppedModel` and combine it
+with a time-stepper.
 
-:class:`AB3Stepper` implements the same time-stepping scheme used in
-PyQG.
+Available time-steppers included in this package are:
+
+* :class:`AB3Stepper` Third-order Adams-Bashforth stepper (the same
+  method used in PyQG)
+* :class:`EulerStepper` Forward Euler first-order method
 """
 
 
@@ -401,7 +405,7 @@ class AB3State(StepperState[P]):
 @_utils.register_pytree_dataclass
 @dataclasses.dataclass(repr=False)
 class AB3Stepper(Stepper):
-    """Third order Adams-Bashforth stepper.
+    """Third-order Adams-Bashforth stepper.
 
     This is the same time stepping scheme as used in PyQG.
 
