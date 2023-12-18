@@ -24,8 +24,8 @@ jobs:
       uses: actions/cache@v3
       with:
         path: ~/.cache/pip
-        key: pip-lint-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ github.run_id }}
-        restore-keys: pip-lint-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-
+        key: pip-lint-${{ runner.os }}-${{ runner.arch }}-${{ steps.setup-python.outputs.python-version }}-${{ github.run_id }}
+        restore-keys: pip-lint-${{ runner.os }}-${{ runner.arch }}-${{ steps.setup-python.outputs.python-version }}-
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
@@ -52,8 +52,8 @@ jobs:
       uses: actions/cache@v3
       with:
         path: ~/.cache/pip
-        key: pip-test-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ github.run_id }}
-        restore-keys: pip-test-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-
+        key: pip-test-${{ runner.os }}-${{ runner.arch }}-${{ steps.setup-python.outputs.python-version }}-${{ github.run_id }}
+        restore-keys: pip-test-${{ runner.os }}-${{ runner.arch }}-${{ steps.setup-python.outputs.python-version }}-
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
