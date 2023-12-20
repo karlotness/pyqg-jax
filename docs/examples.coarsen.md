@@ -32,6 +32,7 @@ import functools
 import operator
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
+import cmocean.cm as cmo
 import jax
 import jax.numpy as jnp
 import pyqg_jax
@@ -218,7 +219,7 @@ gs = gridspec.GridSpec(2, 3)
 ax = fig.add_subplot(gs[:, 0])
 data = big_state.q[0]
 vmax = jnp.abs(data).max()
-ax.imshow(data, cmap="bwr", vmin=-vmax, vmax=vmax)
+ax.imshow(data, cmap=cmo.balance, vmin=-vmax, vmax=vmax)
 ax.set_title("High Resolution State")
 
 for i, (state, forcing) in enumerate(
@@ -227,7 +228,7 @@ for i, (state, forcing) in enumerate(
     ax1 = fig.add_subplot(gs[i, 1])
     data = state.q[0]
     vmax = jnp.abs(data).max()
-    ax1.imshow(data, cmap="bwr", vmin=-vmax, vmax=vmax)
+    ax1.imshow(data, cmap=cmo.balance, vmin=-vmax, vmax=vmax)
     ax1.set_title(f"Operator{i + 1:d} State")
 
     ax2 = fig.add_subplot(gs[i, 2])

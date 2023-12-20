@@ -5,5 +5,6 @@ jax[cpu]>=0.4.11
 packaging
 myst-nb
 matplotlib
+cmocean
 equinox
 optax

@@ -32,6 +32,7 @@ package.
 import operator
 import functools
 import matplotlib.pyplot as plt
+import cmocean.cm as cmo
 import jax
 import jax.numpy as jnp
 import pyqg_jax
@@ -129,7 +130,7 @@ for layer in range(2):
     vmax = jnp.abs(data).max()
     plt.subplot(1, 2, layer + 1)
     plt.title(f"Layer {layer}")
-    plt.imshow(data, cmap="bwr", vmin=-vmax, vmax=vmax)
+    plt.imshow(data, cmap=cmo.balance, vmin=-vmax, vmax=vmax)
 ```
 
 This state can now be stepped forward in time to produce a trajectory.
@@ -240,5 +241,5 @@ for layer in range(2):
     vmax = jnp.abs(data).max()
     plt.subplot(1, 2, layer + 1)
     plt.title(f"Layer {layer}")
-    plt.imshow(data, cmap="bwr", vmin=-vmax, vmax=vmax)
+    plt.imshow(data, cmap=cmo.balance, vmin=-vmax, vmax=vmax)
 ```

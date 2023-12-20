@@ -27,6 +27,7 @@ capacity.
 %env JAX_ENABLE_X64=True
 import functools
 import matplotlib.pyplot as plt
+import cmocean.cm as cmo
 import jax
 import jax.numpy as jnp
 import pyqg_jax
@@ -110,7 +111,7 @@ for i in range(3):
     vmax = jnp.abs(data).max()
     plt.subplot(1, 3, i + 1)
     plt.title(f"Trajectory {i}")
-    plt.imshow(data, cmap="bwr", vmin=-vmax, vmax=vmax)
+    plt.imshow(data, cmap=cmo.balance, vmin=-vmax, vmax=vmax)
 ```
 
 Notice that each trajectory has evolved separately and produced a
@@ -176,7 +177,7 @@ for i in range(2):
     vmax = jnp.abs(data).max()
     plt.subplot(1, 2, i + 1)
     plt.title(f"Trajectory {i}")
-    plt.imshow(data, cmap="bwr", vmin=-vmax, vmax=vmax)
+    plt.imshow(data, cmap=cmo.balance, vmin=-vmax, vmax=vmax)
 ```
 
 We now rework our `roll_out_state` function to accept the models as an
@@ -216,5 +217,5 @@ for i in range(2):
     vmax = jnp.abs(data).max()
     plt.subplot(1, 2, i + 1)
     plt.title(f"Trajectory {i}")
-    plt.imshow(data, cmap="bwr", vmin=-vmax, vmax=vmax)
+    plt.imshow(data, cmap=cmo.balance, vmin=-vmax, vmax=vmax)
 ```
