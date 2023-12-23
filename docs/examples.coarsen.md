@@ -212,26 +212,25 @@ Finally, we show the low-resolution states and forcing values next to
 the original high-resolution state.
 
 ```{code-cell} ipython3
+q_vmax = max(jnp.abs(s.q[0]).max() for s in [big_state, op1_state, op2_state])
+f_vmax = max(jnp.abs(f[0]).max() for f in [op1_forcing, op2_forcing])
+
 fig = plt.figure(tight_layout=True)
 gs = gridspec.GridSpec(2, 3)
 
 # Plot large image
 ax = fig.add_subplot(gs[:, 0])
-data = big_state.q[0]
-vmax = jnp.abs(data).max()
-ax.imshow(data, cmap=cmo.balance, vmin=-vmax, vmax=vmax)
+ax.imshow(big_state.q[0], cmap=cmo.balance, vmin=-q_vmax, vmax=q_vmax)
 ax.set_title("High Resolution State")
 
 for i, (state, forcing) in enumerate(
     [(op1_state, op1_forcing), (op2_state, op2_forcing)]
 ):
     ax1 = fig.add_subplot(gs[i, 1])
-    data = state.q[0]
-    vmax = jnp.abs(data).max()
-    ax1.imshow(data, cmap=cmo.balance, vmin=-vmax, vmax=vmax)
+    ax1.imshow(state.q[0], cmap=cmo.balance, vmin=-q_vmax, vmax=q_vmax)
     ax1.set_title(f"Operator{i + 1:d} State")
 
     ax2 = fig.add_subplot(gs[i, 2])
-    ax2.imshow(forcing[0])
+    ax2.imshow(forcing[0], cmap=cmo.curl, vmin=-f_vmax, vmax=f_vmax)
     ax2.set_title(f"Operator{i + 1:d} Forcing")
 ```
