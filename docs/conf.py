@@ -100,14 +100,9 @@ def linkcode_resolve(domain, info):
         return None
     # Form the URL from the pieces
     repo_url = "https://github.com/karlotness/pyqg-jax"
-    if packaging.version.Version(version).is_devrelease:
-        ref = "master"
-    else:
-        ref = f"v{version}"
-    if line_start and line_end:
-        line_suffix = f"#L{line_start}-L{line_end}"
-    elif line_start:
-        line_suffix = f"#L{line_start}"
-    else:
-        line_suffix = ""
-    return f"{repo_url}/blob/{ref}/src/pyqg_jax/{source_file!s}{line_suffix}"
+    ref = (
+        "master" if packaging.version.Version(version).is_devrelease else f"v{version}"
+    )
+    return (
+        f"{repo_url}/blob/{ref}/src/pyqg_jax/{source_file!s}#L{line_start}-L{line_end}"
+    )
