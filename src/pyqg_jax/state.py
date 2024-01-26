@@ -113,12 +113,10 @@ class PseudoSpectralState:
         return _generic_irfftn(self.qh)
 
     @typing.overload
-    def update(self, *, q: jnp.ndarray) -> "PseudoSpectralState":
-        ...
+    def update(self, *, q: jnp.ndarray) -> "PseudoSpectralState": ...
 
     @typing.overload
-    def update(self, *, qh: jnp.ndarray) -> "PseudoSpectralState":
-        ...
+    def update(self, *, qh: jnp.ndarray) -> "PseudoSpectralState": ...
 
     def update(self, **kwargs) -> "PseudoSpectralState":
         """Replace the value stored in this state.
