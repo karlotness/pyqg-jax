@@ -94,6 +94,16 @@ def indent_repr(text: str, spaces: int) -> str:
     return indented
 
 
+def auto_repr(obj: object) -> str:
+    parts = [f"{type(obj).__name__}("]
+    for attr in inspect.signature(type(obj)).parameters:
+        parts.append(
+            f"  {attr}={indent_repr(summarize_object(getattr(obj, attr)), 2)},"
+        )
+    parts.append(")")
+    return "\n".join(parts)
+
+
 pytree_class_attrs_registry = weakref.WeakKeyDictionary()
 
 

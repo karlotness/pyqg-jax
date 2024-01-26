@@ -241,3 +241,6 @@ class PseudoSpectralKernel(abc.ABC):
 
     def _apply_a_ph(self, state):
         return jnp.zeros_like(state.ph)
+
+    def __repr__(self):
+        return _utils.auto_repr(self)

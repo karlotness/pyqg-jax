@@ -147,36 +147,3 @@ class BTModel(_model.Model):
 
     def _apply_a_ph(self, state):
         return jnp.negative(state.qh * (self.wv2i + self.kd2))
-
-    def __repr__(self):
-        nx_summary = _utils.indent_repr(_utils.summarize_object(self.nx), 2)
-        ny_summary = _utils.indent_repr(_utils.summarize_object(self.ny), 2)
-        L_summary = _utils.indent_repr(_utils.summarize_object(self.L), 2)
-        W_summary = _utils.indent_repr(_utils.summarize_object(self.W), 2)
-        rek_summary = _utils.indent_repr(_utils.summarize_object(self.rek), 2)
-        filterfac_summary = _utils.indent_repr(
-            _utils.summarize_object(self.filterfac), 2
-        )
-        f_summary = _utils.indent_repr(_utils.summarize_object(self.f), 2)
-        g_summary = _utils.indent_repr(_utils.summarize_object(self.g), 2)
-        beta_summary = _utils.indent_repr(_utils.summarize_object(self.beta), 2)
-        rd_summary = _utils.indent_repr(_utils.summarize_object(self.rd), 2)
-        H_summary = _utils.indent_repr(_utils.summarize_object(self.H), 2)
-        U_summary = _utils.indent_repr(_utils.summarize_object(self.U), 2)
-        precision_summary = self.precision.name
-        return f"""\
-BTModel(
-  nx={nx_summary},
-  ny={ny_summary},
-  L={L_summary},
-  W={W_summary},
-  rek={rek_summary},
-  filterfac={filterfac_summary},
-  f={f_summary},
-  g={g_summary},
-  beta={beta_summary},
-  rd={rd_summary},
-  H={H_summary},
-  U={U_summary},
-  precision={precision_summary},
-)"""

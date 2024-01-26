@@ -287,13 +287,7 @@ class SteppedModel:
         return self.model.get_full_state(stepper_state.state)
 
     def __repr__(self):
-        model_summary = _utils.indent_repr(_utils.summarize_object(self.model), 2)
-        stepper_summary = _utils.indent_repr(_utils.summarize_object(self.stepper), 2)
-        return f"""\
-SteppedModel(
-  model={model_summary},
-  stepper={stepper_summary},
-)"""
+        return _utils.auto_repr(self)
 
 
 def _wrap_nostep_update(func):

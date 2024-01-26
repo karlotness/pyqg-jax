@@ -155,38 +155,3 @@ class SQGModel(_model.Model):
 
     def _apply_a_ph(self, state):
         return (self.f_0 / self.Nb) * jnp.sqrt(self.wv2i) * state.qh
-
-    def __repr__(self):
-        nx_summary = _utils.indent_repr(_utils.summarize_object(self.nx), 2)
-        ny_summary = _utils.indent_repr(_utils.summarize_object(self.ny), 2)
-        L_summary = _utils.indent_repr(_utils.summarize_object(self.L), 2)
-        W_summary = _utils.indent_repr(_utils.summarize_object(self.W), 2)
-        rek_summary = _utils.indent_repr(_utils.summarize_object(self.rek), 2)
-        filterfac_summary = _utils.indent_repr(
-            _utils.summarize_object(self.filterfac), 2
-        )
-        f_summary = _utils.indent_repr(_utils.summarize_object(self.f), 2)
-        g_summary = _utils.indent_repr(_utils.summarize_object(self.g), 2)
-        beta_summary = _utils.indent_repr(_utils.summarize_object(self.beta), 2)
-        Nb_summary = _utils.indent_repr(_utils.summarize_object(self.Nb), 2)
-        f_0_summary = _utils.indent_repr(_utils.summarize_object(self.f_0), 2)
-        H_summary = _utils.indent_repr(_utils.summarize_object(self.H), 2)
-        U_summary = _utils.indent_repr(_utils.summarize_object(self.U), 2)
-        precision_summary = self.precision.name
-        return f"""\
-SQGModel(
-  nx={nx_summary},
-  ny={ny_summary},
-  L={L_summary},
-  W={W_summary},
-  rek={rek_summary},
-  filterfac={filterfac_summary},
-  f={f_summary},
-  g={g_summary},
-  beta={beta_summary},
-  Nb={Nb_summary},
-  f_0={f_0_summary},
-  H={H_summary},
-  U={U_summary},
-  precision={precision_summary},
-)"""

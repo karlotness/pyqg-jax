@@ -258,16 +258,4 @@ class ParameterizedModel:
         )
 
     def __repr__(self):
-        model_summary = _utils.indent_repr(_utils.summarize_object(self.model), 2)
-        param_func_summary = _utils.indent_repr(
-            _utils.summarize_object(self.param_func), 2
-        )
-        init_param_aux_func_summary = _utils.indent_repr(
-            _utils.summarize_object(self.init_param_aux_func), 2
-        )
-        return f"""\
-ParameterizedModel(
-  model={model_summary},
-  param_func={param_func_summary},
-  init_param_aux_func={init_param_aux_func_summary},
-)"""
+        return _utils.auto_repr(self)
