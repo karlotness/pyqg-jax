@@ -29,8 +29,8 @@ class Model(_kernel.PseudoSpectralKernel):
         *,
         # grid size parameters
         nz=1,
-        nx=64,
         ny=None,
+        nx=64,
         L=1e6,
         W=None,
         # friction parameters
