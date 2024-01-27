@@ -27,6 +27,8 @@ def apply_parameterization(model, *, smag_constant=0.08, back_constant=0.99, eps
 
     See also: :class:`pyqg.parameterizations.BackscatterBiharmonic`
 
+    .. versionadded:: 0.5.0
+
     Parameters
     ----------
     model

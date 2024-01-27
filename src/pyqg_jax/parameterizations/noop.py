@@ -30,6 +30,8 @@ from . import _parameterized_model
 def apply_parameterization(model):
     """Apply the no-op parameterization to `model`.
 
+    .. versionadded:: 0.3.0
+
     Parameters
     ----------
     model
