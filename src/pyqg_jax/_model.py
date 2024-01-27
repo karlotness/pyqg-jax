@@ -87,19 +87,19 @@ class Model(_kernel.PseudoSpectralKernel):
 
     @property
     def dk(self):
-        return 2 * jnp.pi / self.L
+        return self.get_grid().dk
 
     @property
     def dl(self):
-        return 2 * jnp.pi / self.W
+        return self.get_grid().dl
 
     @property
     def dx(self):
-        return self.L / self.nx
+        return self.get_grid().dx
 
     @property
     def dy(self):
-        return self.W / self.ny
+        return self.get_grid().dy
 
     @property
     def M(self):
@@ -166,11 +166,11 @@ class Model(_kernel.PseudoSpectralKernel):
 
     @property
     def wv2(self):
-        return self.k**2 + self.l**2
+        return self.wv**2
 
     @property
     def wv(self):
-        return jnp.sqrt(self.wv2)
+        return self.get_grid().get_kappa(self.precision)
 
     @property
     def wv2i(self):

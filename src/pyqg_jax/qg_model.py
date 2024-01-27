@@ -177,11 +177,11 @@ class QGModel(_model.Model):
 
     @property
     def Hi(self):
-        return jnp.array([self.H1, self.H1 / self.delta], dtype=self._dtype_real)
+        return self.get_grid().Hi
 
     @property
     def H(self):
-        return self.Hi.sum()
+        return self.get_grid().H
 
     @property
     def Ubg(self):

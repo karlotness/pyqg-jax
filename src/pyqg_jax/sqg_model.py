@@ -154,7 +154,7 @@ class SQGModel(_model.Model):
 
     @property
     def Hi(self):
-        return jnp.full(shape=(1,), fill_value=self.H, dtype=self._dtype_real)
+        return self.get_grid().Hi
 
     @property
     def Qy(self):

@@ -36,10 +36,12 @@ class PseudoSpectralKernel(abc.ABC):
         self, state: _state.PseudoSpectralState
     ) -> _state.FullPseudoSpectralState:
         def _empty_real():
-            return jnp.zeros((self.nz, self.ny, self.nx), dtype=self._dtype_real)
+            return jnp.zeros(self.get_grid().real_state_shape, dtype=self._dtype_real)
 
         def _empty_com():
-            return jnp.zeros((self.nz, self.nl, self.nk), dtype=self._dtype_complex)
+            return jnp.zeros(
+                self.get_grid().spectral_state_shape, dtype=self._dtype_complex
+            )
 
         self._state_shape_check(state)
         full_state = _state.FullPseudoSpectralState(
@@ -107,7 +109,9 @@ class PseudoSpectralKernel(abc.ABC):
 
     def create_initial_state(self, key=None) -> _state.PseudoSpectralState:
         return _state.PseudoSpectralState(
-            qh=jnp.zeros((self.nz, self.nl, self.nk), dtype=self._dtype_complex)
+            qh=jnp.zeros(
+                self.get_grid().spectral_state_shape, dtype=self._dtype_complex
+            )
         )
 
     @abc.abstractmethod
@@ -115,15 +119,17 @@ class PseudoSpectralKernel(abc.ABC):
         pass
 
     def _state_shape_check(self, state):
-        if state.qh.ndim != 3:
-            vmap_msg = " (use jax.vmap)" if state.qh.ndim > 3 else ""
+        corr_shape = self.get_grid().spectral_state_shape
+        corr_dims = len(corr_shape)
+        dims = state.qh.ndim
+        if dims != corr_dims:
+            vmap_msg = " (use jax.vmap)" if dims > corr_dims else ""
             raise ValueError(
-                f"state has {state.qh.ndim} dimensions, but should have 3{vmap_msg}."
+                f"state has {dims} dimensions, but should have {corr_dims}{vmap_msg}."
             )
-        correct_shape = (self.nz, self.nl, self.nk)
-        if state.qh.shape != correct_shape:
+        if state.qh.shape != corr_shape:
             raise ValueError(
-                f"state.qh has wrong shape {state.qh.shape}, should be {correct_shape}"
+                f"state.qh has wrong shape {state.qh.shape}, should be {corr_shape}"
             )
 
     @property
@@ -144,11 +150,11 @@ class PseudoSpectralKernel(abc.ABC):
 
     @property
     def nl(self):
-        return self.ny
+        return self.get_grid().nl
 
     @property
     def nk(self):
-        return (self.nx // 2) + 1
+        return self.get_grid().nk
 
     @property
     def kk(self):
