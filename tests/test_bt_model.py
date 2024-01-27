@@ -144,6 +144,31 @@ def test_match_final_step(precision):
     )
 
 
+@pytest.mark.parametrize("nx,ny", [(16, 32), (17, 15)])
+def test_rectangular_stepping(nx, ny):
+    jax_model = pyqg_jax.steppers.SteppedModel(
+        model=pyqg_jax.bt_model.BTModel(**(BT_PARAMS | {"nx": nx, "ny": ny})),
+        stepper=pyqg_jax.steppers.AB3Stepper(dt=0.0025),
+    )
+    init_state = jax_model.create_initial_state(jax.random.key(0))
+
+    @jax.jit
+    def do_jax_steps(init_state):
+        final_state, _ = jax.lax.scan(
+            lambda carry, _: (
+                jax_model.step_model(carry),
+                None,
+            ),
+            init_state,
+            None,
+            length=3,
+        )
+        return final_state.state.q
+
+    final_state = do_jax_steps(init_state)
+    assert jnp.all(jnp.isfinite(final_state))
+
+
 def test_tree_flatten_roundtrip():
     model = pyqg_jax.bt_model.BTModel(**BT_PARAMS)
     leaves, treedef = jax.tree_util.tree_flatten(model)
