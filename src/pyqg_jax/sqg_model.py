@@ -133,6 +133,25 @@ class SQGModel(_model.Model):
             )
         )
 
+    def get_grid(self) -> _state.Grid:
+        """Retrieve information on the model grid.
+
+        Returns
+        -------
+        Grid
+            A grid instance with attributes giving information on the
+            spatial and spectral model grids.
+        """
+        Hi = jnp.full(shape=(1,), fill_value=self.H, dtype=self._dtype_real)
+        return _state.Grid(
+            nz=self.nz,
+            ny=self.ny,
+            nx=self.nx,
+            L=self.L,
+            W=self.W,
+            Hi=Hi,
+        )
+
     @property
     def Hi(self):
         return jnp.full(shape=(1,), fill_value=self.H, dtype=self._dtype_real)

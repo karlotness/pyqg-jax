@@ -152,6 +152,25 @@ class QGModel(_model.Model):
         )
         return state
 
+    def get_grid(self) -> _state.Grid:
+        """Retrieve information on the model grid.
+
+        Returns
+        -------
+        Grid
+            A grid instance with attributes giving information on the
+            spatial and spectral model grids.
+        """
+        Hi = jnp.array([self.H1, self.H1 / self.delta], dtype=self._dtype_real)
+        return _state.Grid(
+            nz=self.nz,
+            ny=self.ny,
+            nx=self.nx,
+            L=self.L,
+            W=self.W,
+            Hi=Hi,
+        )
+
     @property
     def U(self):
         return self.U1 - self.U2

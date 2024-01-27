@@ -110,6 +110,10 @@ class PseudoSpectralKernel(abc.ABC):
             qh=jnp.zeros((self.nz, self.nl, self.nk), dtype=self._dtype_complex)
         )
 
+    @abc.abstractmethod
+    def get_grid(self) -> _state.Grid:
+        pass
+
     def _state_shape_check(self, state):
         if state.qh.ndim != 3:
             vmap_msg = " (use jax.vmap)" if state.qh.ndim > 3 else ""
