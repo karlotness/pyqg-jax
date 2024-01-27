@@ -28,7 +28,7 @@ To access these variables, the states can be expanded into a
 """
 
 
-__all__ = ["Precision", "PseudoSpectralState", "FullPseudoSpectralState"]
+__all__ = ["Precision", "PseudoSpectralState", "FullPseudoSpectralState", "Grid"]
 
 
 import enum
@@ -372,3 +372,182 @@ FullPseudoSpectralState(
   v={v_summary},
   dqhdt={dqhdt_summary},
 )"""
+
+
+def _precision_to_real_dtype(
+    precision: typing.Union[Precision, jnp.dtype], /
+) -> jnp.dtype:
+    if isinstance(precision, Precision):
+        if precision == Precision.SINGLE:
+            return jnp.float32
+        elif precision == Precision.DOUBLE:
+            return jnp.float64
+        else:
+            raise ValueError(f"unsupported precision {precision}")
+    return precision
+
+
+@_utils.register_pytree_class_attrs(
+    children=["L", "W", "Hi"],
+    static_attrs=["nz", "ny", "nx"],
+)
+class Grid:
+    """Information on the spatial grid used by a model.
+
+    The models in this package use an `Arakawa A-grid
+    <https://en.wikipedia.org/wiki/Arakawa_grids#Arakawa_A-grid>`__
+    for real space grids. This class also provides information on the
+    shapes of arrays storing real and spectral values and the
+    distances along each grid edge.
+
+    Warning
+    -------
+    You should not construct this class yourself. Instead, you should
+    retrieve instances from a model.
+
+    Attributes
+    ----------
+    real_state_shape : tuple[int, int, int]
+        Tuple specifying the shape of arrays for real space variables.
+
+    spectral_state_shape : tuple[int, int, int]
+        Tuple specifying the shape of arrays for spectral variables.
+
+    nx : int
+        Number of grid points in the x direction.
+
+    ny : int
+        Number of grid points in the y direction.
+
+    nz : int
+        Number of grid points in the z direction.
+
+    L : float
+        Domain length in the x direction.
+
+    W : float
+        Domain length in the y direction.
+
+    H : float
+        Domain length in the z direction.
+
+        In most cases this may actually be a JAX float scalar or
+        tracer.
+
+    Hi : jax.Array
+        The length of each layer in the z direction.
+
+        This is a vector of length :attr:`nz` and whose entries sum to
+        :attr:`H`.
+
+    nk : int
+        Number of spectral grid points in the k direction.
+
+    nl : int
+        Number of spectral grid points in the l direction.
+
+    dx : float
+        Space between grid points in the x direction.
+
+    dy : float
+        Space between grid points in the y direction.
+
+    dk : float
+        Spectral spacing in the k direction.
+
+    dl : float
+        Spectral spacing in the l direction.
+    """
+
+    def __init__(
+        self,
+        *,
+        nz: int,
+        ny: int,
+        nx: int,
+        L: float,
+        W: float,
+        Hi: jax.Array,
+    ):
+        self.nz = nz
+        self.ny = ny
+        self.nx = nx
+        self.L = L
+        self.W = W
+        self.Hi = Hi
+        if jnp.ndim(self.Hi) != 1:
+            raise ValueError(
+                f"Hi must be a 1D sequence, but had {jnp.ndim(self.Hi)} dimensions"
+            )
+        if jnp.shape(self.Hi)[0] != self.nz:
+            raise ValueError(
+                f"Hi must match nz ({self.nz}), but had {jnp.shape(self.Hi)[0]} entries"
+            )
+
+    @property
+    def real_state_shape(self) -> tuple[int, int, int]:
+        return (self.nz, self.ny, self.nx)
+
+    @property
+    def spectral_state_shape(self) -> tuple[int, int, int]:
+        return (self.nz, self.nl, self.nk)
+
+    @property
+    def H(self) -> jax.Array:
+        return self.Hi.sum()
+
+    @property
+    def nl(self) -> int:
+        return self.ny
+
+    @property
+    def nk(self) -> int:
+        return (self.nx // 2) + 1
+
+    @property
+    def dx(self):
+        return self.L / self.nx
+
+    @property
+    def dy(self):
+        return self.W / self.ny
+
+    @property
+    def dl(self):
+        return 2 * jnp.pi / self.W
+
+    @property
+    def dk(self):
+        return 2 * jnp.pi / self.L
+
+    def get_kappa(self, dtype=Precision.SINGLE):
+        """Information on the wavenumber at each spectral grid point.
+
+        Parameters
+        ----------
+        precision : Precision, optional
+            Precision for the wavenumber calculations.
+
+        Returns
+        -------
+        jax.Array
+            A two-dimensional grid of wavenumber values at the
+            specified precision.
+
+            These values have the shape of a spectral state (see
+            :attr:`spectral_state_shape`) without the leading
+            :attr:`nz` dimension.
+        """
+        real_dtype = _precision_to_real_dtype(dtype)
+        k, l = jnp.meshgrid(
+            jnp.fft.rfftfreq(
+                self.nx, d=(self.L / (2 * jnp.pi * self.nx)), dtype=real_dtype
+            ),
+            jnp.fft.fftfreq(
+                self.ny, d=(self.W / (2 * jnp.pi * self.ny)), dtype=real_dtype
+            ),
+        )
+        return jnp.sqrt(k**2 + l**2)
+
+    def __repr__(self):
+        return _utils.auto_repr(self)
