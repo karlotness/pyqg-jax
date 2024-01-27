@@ -183,12 +183,12 @@ class PseudoSpectralKernel(abc.ABC):
 
     @property
     @abc.abstractmethod
-    def filtr(self):
+    def filtr(self) -> jax.Array:
         pass
 
     @property
     @abc.abstractmethod
-    def Qy(self):
+    def Qy(self) -> jax.Array:
         pass
 
     @property
