@@ -400,6 +400,8 @@ class Grid:
     shapes of arrays storing real and spectral values and the
     distances along each grid edge.
 
+    .. versionadded:: 0.8.0
+
     Warning
     -------
     You should not construct this class yourself. Instead, you should

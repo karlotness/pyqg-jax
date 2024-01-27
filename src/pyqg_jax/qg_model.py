@@ -155,6 +155,8 @@ class QGModel(_model.Model):
     def get_grid(self) -> _state.Grid:
         """Retrieve information on the model grid.
 
+        .. versionadded:: 0.8.0
+
         Returns
         -------
         Grid
