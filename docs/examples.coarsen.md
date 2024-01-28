@@ -21,7 +21,7 @@ and [Zenodo](https://doi.org/10.5281/zenodo.6612447).
 # Note: docs builds only have CPUs
 # This suppresses the JAX warning about missing GPU
 # If you're running this with a GPU, delete this cell
-%env JAX_PLATFORM_NAME=cpu
+%env JAX_PLATFORMS=cpu
 ```
 
 ```{code-cell} ipython3
