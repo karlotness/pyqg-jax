@@ -125,7 +125,7 @@ class PseudoSpectralKernel(abc.ABC):
         if dims != corr_dims:
             vmap_msg = " (use jax.vmap)" if dims > corr_dims else ""
             raise ValueError(
-                f"state has {dims} dimensions, but should have {corr_dims}{vmap_msg}."
+                f"state has {dims} dimensions, but should have {corr_dims}{vmap_msg}"
             )
         if state.qh.shape != corr_shape:
             raise ValueError(
