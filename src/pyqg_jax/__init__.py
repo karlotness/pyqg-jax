@@ -36,7 +36,16 @@ __all__ = [
     "sqg_model",
     "steppers",
     "parameterizations",
+    "diagnostics",
 ]
 
 
-from . import state, qg_model, bt_model, sqg_model, steppers, parameterizations
+from . import (
+    state,
+    qg_model,
+    bt_model,
+    sqg_model,
+    steppers,
+    parameterizations,
+    diagnostics,
+)
