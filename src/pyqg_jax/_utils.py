@@ -63,27 +63,22 @@ def summarize_array(arr: jax.Array) -> str:
     return f"{dtype}[{shape}]"
 
 
+@dataclasses.dataclass(frozen=True)
 class ReprDummy:
-    def __init__(self, rep_str: str):
-        self.rep_str = rep_str
+    obj: object
 
-    def __repr__(self) -> str:
-        return self.rep_str
+    def __repr__(self):
+        return summarize_object(self.obj)
 
 
 def summarize_sequence(
     seq: typing.Union[tuple[object], list[object], set[object]]
 ) -> str:
-    return repr(type(seq)(ReprDummy(summarize_object(o)) for o in seq))
+    return repr(type(seq)(ReprDummy(o) for o in seq))
 
 
 def summarize_dict(dt: dict[object, object]) -> str:
-    return repr(
-        {
-            ReprDummy(summarize_object(k)): ReprDummy(summarize_object(v))
-            for k, v in dt.items()
-        }
-    )
+    return repr({ReprDummy(k): ReprDummy(v) for k, v in dt.items()})
 
 
 def indent_repr(text: str, spaces: int) -> str:
