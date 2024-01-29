@@ -63,6 +63,11 @@ class BTModel(_model.Model):
 
     precision : Precision, optional
         Precision of model computation. Selects dtype of state values.
+
+    Attributes
+    ----------
+    Ubg : jax.Array
+        The background velocity for this model.
     """
 
     def __init__(

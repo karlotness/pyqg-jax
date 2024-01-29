@@ -71,6 +71,11 @@ class QGModel(_model.Model):
     precision : Precision, optional
         Precision of model computation. Selects dtype of state values.
 
+    Attributes
+    ----------
+    Ubg : jax.Array
+        The background velocity for this model.
+
     Note
     ----
     This model internally uses 64-bit floating point values for part
