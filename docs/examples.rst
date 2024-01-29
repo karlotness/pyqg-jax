@@ -14,3 +14,4 @@ complexity.
    examples.coarsen
    examples.implparam
    examples.onlinetrain
+   examples.diagnostics

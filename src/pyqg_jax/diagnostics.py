@@ -78,16 +78,16 @@ def cfl(full_state, grid, ubg, dt):
 
     This computes the `CFL
     <https://en.wikipedia.org/wiki/Courant%E2%80%93Friedrichs%E2%80%93Lewy_condition>`__
-    at each grid point in a given state. To report the worst value
-    across the full state, aggregate them using :func:`jnp.max
-    <jax.numpy.max>`.
+    condition value at each grid point in a given state. To report the
+    worst value across the full state, aggregate them using
+    :func:`jnp.max <jax.numpy.max>`.
 
     .. versionadded:: 0.8.0
 
     Parameters
     ----------
     full_state : FullPseudoSpectralState
-        The state for which the CFL condition is to be computed. This
+        The state for which the CFL condition is to be checked. This
         argument should be retrieved from a model, for example from
         :meth:`~pyqg_jax.qg_model.QGModel.get_full_state`.
 

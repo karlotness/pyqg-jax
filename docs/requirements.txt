@@ -8,3 +8,4 @@ matplotlib
 cmocean
 equinox
 optax
+powerpax
