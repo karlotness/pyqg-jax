@@ -155,19 +155,39 @@ def register_pytree_class_attrs(children, static_attrs):
 
 
 def register_pytree_dataclass(cls):
-    fields = tuple(f.name for f in dataclasses.fields(cls))
+    cls_fields = []
+    cls_static_fields = []
+    for field in dataclasses.fields(cls):
+        if field.metadata.get("pyqg_jax", {}).get("static", False):
+            cls_static_fields.append(field.name)
+        else:
+            cls_fields.append(field.name)
+    fields = tuple(cls_fields)
+    static_fields = tuple(cls_static_fields)
 
     def flatten_with_keys(obj):
+        if static_fields:
+            aux = tuple(getattr(obj, name) for name in static_fields)
+        else:
+            aux = None
         return [
             (jax.tree_util.GetAttrKey(name), getattr(obj, name)) for name in fields
-        ], None
+        ], aux
 
     def flatten(obj):
         flatkeys, aux = flatten_with_keys(obj)
         return [c for _, c in flatkeys], aux
 
     def unflatten(aux_data, flat_contents):
-        return cls(**dict(zip(fields, flat_contents)))
+        if aux_data is None:
+            aux_data = []
+        return cls(
+            **dict(
+                itertools.chain(
+                    zip(fields, flat_contents), zip(static_fields, aux_data)
+                )
+            )
+        )
 
     jax.tree_util.register_pytree_with_keys(cls, flatten_with_keys, unflatten, flatten)
     return cls
