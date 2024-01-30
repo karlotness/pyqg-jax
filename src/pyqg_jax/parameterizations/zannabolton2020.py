@@ -47,10 +47,10 @@ def param_func(state, param_aux, model, *, kappa=-46761284):
     full_state = model.get_full_state(state)
     uh = full_state.uh
     vh = full_state.vh
-    vx = _state._generic_irfftn(vh * model.ik)
-    vy = _state._generic_irfftn(vh * model.il)
-    ux = _state._generic_irfftn(uh * model.ik)
-    uy = _state._generic_irfftn(uh * model.il)
+    vx = _state._generic_irfftn(vh * model.ik, shape=model.get_grid().real_state_shape)
+    vy = _state._generic_irfftn(vh * model.il, shape=model.get_grid().real_state_shape)
+    ux = _state._generic_irfftn(uh * model.ik, shape=model.get_grid().real_state_shape)
+    uy = _state._generic_irfftn(uh * model.il, shape=model.get_grid().real_state_shape)
     rel_vort = vx - uy
     shearing = vx + uy
     stretching = ux - vy
@@ -58,10 +58,12 @@ def param_func(state, param_aux, model, *, kappa=-46761284):
     rv_shear = _state._generic_rfftn(rel_vort * shearing)
     sum_sqs = _state._generic_rfftn(rel_vort**2 + shearing**2 + stretching**2) / 2
     du = kappa * _state._generic_irfftn(
-        model.ik * (sum_sqs - rv_shear) + model.il * rv_stretch
+        model.ik * (sum_sqs - rv_shear) + model.il * rv_stretch,
+        shape=model.get_grid().real_state_shape,
     )
     dv = kappa * _state._generic_irfftn(
-        model.il * (sum_sqs + rv_shear) + model.ik * rv_stretch
+        model.il * (sum_sqs + rv_shear) + model.ik * rv_stretch,
+        shape=model.get_grid().real_state_shape,
     )
     return (du, dv), None
 

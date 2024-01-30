@@ -10,8 +10,12 @@ import pyqg_jax
 @pytest.mark.parametrize("dtype", [jnp.float32, jnp.float64])
 def test_state_initialization(dt, dtype):
     stepper = pyqg_jax.steppers.EulerStepper(dt=dt)
-    state_a = pyqg_jax.state.PseudoSpectralState(qh=jnp.ones(5, dtype=dtype))
-    state_b = pyqg_jax.state.PseudoSpectralState(qh=jnp.arange(5, dtype=dtype))
+    state_a = pyqg_jax.state.PseudoSpectralState(
+        qh=jnp.ones((5, 3), dtype=dtype), _q_shape=(5, 4)
+    )
+    state_b = pyqg_jax.state.PseudoSpectralState(
+        qh=jnp.arange(15, dtype=dtype).reshape((5, 3)), _q_shape=(5, 4)
+    )
     wrapped_state = stepper.initialize_stepper_state(state_a)
     updated_state = stepper.apply_updates(wrapped_state, state_b)
     diff = updated_state.state.qh - wrapped_state.state.qh

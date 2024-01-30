@@ -16,7 +16,8 @@ def full_state():
         precision=pyqg_jax.state.Precision.SINGLE,
     )
     small_state = pyqg_jax.state.PseudoSpectralState(
-        qh=jnp.zeros((2, 16, 9), dtype=jnp.complex64)
+        qh=jnp.zeros((2, 16, 9), dtype=jnp.complex64),
+        _q_shape=(16, 16),
     )
     return model.get_full_state(small_state)
 

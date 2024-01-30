@@ -83,6 +83,7 @@ class PseudoSpectralKernel(abc.ABC):
         full_state = self.get_full_state(state)
         return _state.PseudoSpectralState(
             qh=full_state.dqhdt,
+            _q_shape=self.get_grid().real_state_shape[-2:],
         )
 
     def postprocess_state(
@@ -111,7 +112,8 @@ class PseudoSpectralKernel(abc.ABC):
         return _state.PseudoSpectralState(
             qh=jnp.zeros(
                 self.get_grid().spectral_state_shape, dtype=self._dtype_complex
-            )
+            ),
+            _q_shape=self.get_grid().real_state_shape[-2:],
         )
 
     @abc.abstractmethod

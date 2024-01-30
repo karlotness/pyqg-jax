@@ -48,20 +48,30 @@ def param_func(state, param_aux, model, *, constant=0.1):
     full_state = model.get_full_state(state)
     uh = full_state.uh
     vh = full_state.vh
-    Sxx = _state._generic_irfftn(uh * model.ik)
-    Syy = _state._generic_irfftn(vh * model.il)
-    Sxy = 0.5 * _state._generic_irfftn(uh * model.il + vh * model.ik)
+    Sxx = _state._generic_irfftn(uh * model.ik, shape=model.get_grid().real_state_shape)
+    Syy = _state._generic_irfftn(vh * model.il, shape=model.get_grid().real_state_shape)
+    Sxy = 0.5 * _state._generic_irfftn(
+        uh * model.il + vh * model.ik, shape=model.get_grid().real_state_shape
+    )
     nu = (constant * model.dx) ** 2 * jnp.sqrt(2 * (Sxx**2 + Syy**2 + 2 * Sxy**2))
     nu_Sxxh = _state._generic_rfftn(nu * Sxx)
     nu_Sxyh = _state._generic_rfftn(nu * Sxy)
     nu_Syyh = _state._generic_rfftn(nu * Syy)
     du = 2 * (
-        _state._generic_irfftn(nu_Sxxh * model.ik)
-        + _state._generic_irfftn(nu_Sxyh * model.il)
+        _state._generic_irfftn(
+            nu_Sxxh * model.ik, shape=model.get_grid().real_state_shape
+        )
+        + _state._generic_irfftn(
+            nu_Sxyh * model.il, shape=model.get_grid().real_state_shape
+        )
     )
     dv = 2 * (
-        _state._generic_irfftn(nu_Sxyh * model.ik)
-        + _state._generic_irfftn(nu_Syyh * model.il)
+        _state._generic_irfftn(
+            nu_Sxyh * model.ik, shape=model.get_grid().real_state_shape
+        )
+        + _state._generic_irfftn(
+            nu_Syyh * model.il, shape=model.get_grid().real_state_shape
+        )
     )
     return (du, dv), None
 

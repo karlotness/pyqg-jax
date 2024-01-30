@@ -10,7 +10,8 @@ import pyqg_jax
 
 def test_contains_spectral_leaf():
     state = pyqg_jax.state.PseudoSpectralState(
-        qh=jnp.zeros((2, 16, 9), dtype=jnp.complex64)
+        qh=jnp.zeros((2, 16, 9), dtype=jnp.complex64),
+        _q_shape=(16, 16),
     )
     leaves = jax.tree_util.tree_leaves(state)
     assert len(leaves) == 1
@@ -20,7 +21,8 @@ def test_contains_spectral_leaf():
 
 def test_converts_to_spatial():
     state = pyqg_jax.state.PseudoSpectralState(
-        qh=jnp.zeros((2, 16, 9), dtype=jnp.complex64)
+        qh=jnp.zeros((2, 16, 9), dtype=jnp.complex64),
+        _q_shape=(16, 16),
     )
     assert state.q.dtype == jnp.float32
     assert state.q.shape == (2, 16, 16)
@@ -29,7 +31,8 @@ def test_converts_to_spatial():
 
 def test_update_qh():
     state = pyqg_jax.state.PseudoSpectralState(
-        qh=jnp.zeros((2, 16, 9), dtype=jnp.complex64)
+        qh=jnp.zeros((2, 16, 9), dtype=jnp.complex64),
+        _q_shape=(16, 16),
     )
     new_state = state.update(qh=jnp.ones((2, 16, 9), dtype=jnp.complex64))
     assert jnp.allclose(state.qh, 0)
@@ -38,7 +41,8 @@ def test_update_qh():
 
 def test_update_q():
     state = pyqg_jax.state.PseudoSpectralState(
-        qh=jnp.zeros((2, 16, 9), dtype=jnp.complex64)
+        qh=jnp.zeros((2, 16, 9), dtype=jnp.complex64),
+        _q_shape=(16, 16),
     )
     new_state = state.update(q=jnp.ones((2, 16, 16), dtype=jnp.float32))
     assert jnp.allclose(state.qh, 0)
@@ -48,7 +52,8 @@ def test_update_q():
 
 def test_update_rejects_duplicate_updates():
     state = pyqg_jax.state.PseudoSpectralState(
-        qh=jnp.zeros((2, 16, 9), dtype=jnp.complex64)
+        qh=jnp.zeros((2, 16, 9), dtype=jnp.complex64),
+        _q_shape=(16, 16),
     )
     with pytest.raises(ValueError, match="duplicate"):
         state.update(
@@ -60,7 +65,8 @@ def test_update_rejects_duplicate_updates():
 @pytest.mark.parametrize("update_name", ["q", "qh"])
 def test_update_rejects_wrong_shape(update_name):
     state = pyqg_jax.state.PseudoSpectralState(
-        qh=jnp.zeros((2, 16, 9), dtype=jnp.complex64)
+        qh=jnp.zeros((2, 16, 9), dtype=jnp.complex64),
+        _q_shape=(16, 16),
     )
     update_args = {
         update_name: jnp.ones(
@@ -74,7 +80,8 @@ def test_update_rejects_wrong_shape(update_name):
 @pytest.mark.parametrize("update_name", ["q", "qh"])
 def test_update_rejects_wrong_dtype(update_name):
     state = pyqg_jax.state.PseudoSpectralState(
-        qh=jnp.zeros((2, 16, 9), dtype=jnp.complex64)
+        qh=jnp.zeros((2, 16, 9), dtype=jnp.complex64),
+        _q_shape=(16, 16),
     )
     update_args = {
         update_name: jnp.ones(

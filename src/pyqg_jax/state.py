@@ -74,8 +74,8 @@ def _generic_rfftn(a):
     return jnp.fft.rfftn(a, axes=(-2, -1))
 
 
-def _generic_irfftn(a):
-    return jnp.fft.irfftn(a, axes=(-2, -1))
+def _generic_irfftn(a, shape):
+    return jnp.fft.irfftn(a, axes=(-2, -1), s=shape[-2:])
 
 
 @_utils.register_pytree_dataclass
@@ -107,10 +107,13 @@ class PseudoSpectralState:
     """
 
     qh: jnp.ndarray
+    _q_shape: tuple[int, int] = dataclasses.field(
+        metadata={"pyqg_jax": {"static": True}}
+    )
 
     @property
     def q(self) -> jnp.ndarray:
-        return _generic_irfftn(self.qh)
+        return _generic_irfftn(self.qh, shape=self._q_shape)
 
     @typing.overload
     def update(self, *, q: jnp.ndarray) -> "PseudoSpectralState": ...
@@ -250,7 +253,7 @@ class FullPseudoSpectralState:
 
     @property
     def p(self) -> jnp.ndarray:
-        return _generic_irfftn(self.ph)
+        return _generic_irfftn(self.ph, shape=self.state._q_shape)
 
     @property
     def uh(self) -> jnp.ndarray:
@@ -262,7 +265,7 @@ class FullPseudoSpectralState:
 
     @property
     def dqdt(self) -> jnp.ndarray:
-        return _generic_irfftn(self.dqhdt)
+        return _generic_irfftn(self.dqhdt, shape=self.state._q_shape)
 
     def update(self, **kwargs) -> "FullPseudoSpectralState":
         """Replace values stored in this state.
@@ -342,7 +345,7 @@ class FullPseudoSpectralState:
                 name = "state"
             elif name in {"uh", "vh"}:
                 # Handle other spectral names, store as non-spectral
-                new_val = _generic_irfftn(new_val)
+                new_val = _generic_irfftn(new_val, shape=self.state._q_shape)
                 name = name[:-1]
             elif name == "p":
                 new_val = _generic_rfftn(new_val)

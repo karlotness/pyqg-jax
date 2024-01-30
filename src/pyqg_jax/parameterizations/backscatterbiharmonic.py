@@ -65,9 +65,11 @@ def apply_parameterization(model, *, smag_constant=0.08, back_constant=0.99, eps
 def _smagorinsky_just_viscosity(full_state, model, constant):
     uh = full_state.uh
     vh = full_state.vh
-    Sxx = _state._generic_irfftn(uh * model.ik)
-    Syy = _state._generic_irfftn(vh * model.il)
-    Sxy = 0.5 * _state._generic_irfftn(uh * model.il + vh * model.ik)
+    Sxx = _state._generic_irfftn(uh * model.ik, shape=model.get_grid().real_state_shape)
+    Syy = _state._generic_irfftn(vh * model.il, shape=model.get_grid().real_state_shape)
+    Sxy = 0.5 * _state._generic_irfftn(
+        uh * model.il + vh * model.ik, shape=model.get_grid().real_state_shape
+    )
     nu = (constant * model.dx) ** 2 * jnp.sqrt(2 * (Sxx**2 + Syy**2 + 2 * Sxy**2))
     return nu
 
@@ -78,8 +80,10 @@ def param_func(
 ):
     full_state = model.get_full_state(state)
     lap = model.ik**2 + model.il**2
-    psi = _state._generic_irfftn(full_state.ph)
-    lap_lap_psi = _state._generic_irfftn(lap**2 * full_state.ph)
+    psi = _state._generic_irfftn(full_state.ph, shape=model.get_grid().real_state_shape)
+    lap_lap_psi = _state._generic_irfftn(
+        lap**2 * full_state.ph, shape=model.get_grid().real_state_shape
+    )
     dissipation = -_state._generic_irfftn(
         lap
         * _state._generic_rfftn(
@@ -88,7 +92,8 @@ def param_func(
             * _smagorinsky_just_viscosity(
                 full_state=full_state, model=model, constant=smag_constant
             )
-        )
+        ),
+        shape=model.get_grid().real_state_shape,
     )
     backscatter = (
         -back_constant
