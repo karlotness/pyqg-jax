@@ -180,7 +180,7 @@ def register_pytree_dataclass(cls):
 
     def unflatten(aux_data, flat_contents):
         if aux_data is None:
-            aux_data = []
+            aux_data = ()
         return cls(
             **dict(
                 itertools.chain(
