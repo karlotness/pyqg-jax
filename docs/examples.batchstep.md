@@ -51,7 +51,8 @@ Next we can use `vmap` to create our initial states from a stack of
 `key` objects:
 
 ```{code-cell} ipython3
-init_rngs = jax.vmap(jax.random.key)(jnp.asarray([0, 1, 2]))
+# Split one initial RNG key into three, then stack and vmap
+init_rngs = jnp.stack(jax.random.split(jax.random.key(0), 3))
 init_states = jax.vmap(model.create_initial_state)(init_rngs)
 
 init_states
@@ -157,12 +158,14 @@ The batched model's methods must be called inside a `vmap` in order to
 function properly. We run both models on the same initial state.
 
 ```{code-cell} ipython3
-def make_initial_state(model, seed):
-    return model.create_initial_state(
-        jax.random.key(seed)
-    )
+def make_initial_state(model, rng):
+    return model.create_initial_state(rng)
 
-batch_state = jax.vmap(make_initial_state)(models, jnp.zeros(2, dtype=jnp.int32))
+# Call the function with a constant RNG key (seeded to zero) but different stacked models.
+# It would also be possible to provide different RNG keys for each model as was done above.
+batch_state = jax.vmap(functools.partial(make_initial_state, rng=jax.random.key(0)))(
+    models
+)
 
 batch_state
 ```
