@@ -51,6 +51,7 @@ def test_partial(cls):
         rf"kwarg2={re.escape(repr('value2'))}\)$"
     )
     assert re.match(rgx, summarize_object(obj))
+    assert "._src." not in summarize_object(obj)
 
 
 def test_function():

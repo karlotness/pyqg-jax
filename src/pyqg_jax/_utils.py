@@ -47,7 +47,10 @@ def summarize_partial(partial: functools.partial) -> str:
     )
     contents = ", ".join(itertools.chain([func], args, kwargs))
     cls = type(partial)
-    qualname = f"{cls.__module__!s}.{cls.__qualname__!s}"
+    if cls == jax.tree_util.Partial:
+        qualname = "jax.tree_util.Partial"
+    else:
+        qualname = f"{cls.__module__!s}.{cls.__qualname__!s}"
     return f"{qualname}({contents})"
 
 
