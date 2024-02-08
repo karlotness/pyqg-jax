@@ -34,7 +34,7 @@ __all__ = ["Precision", "PseudoSpectralState", "FullPseudoSpectralState", "Grid"
 import enum
 import dataclasses
 import typing
-import operator
+import functools
 import jax
 import jax.numpy as jnp
 from . import _utils
@@ -334,7 +334,9 @@ class FullPseudoSpectralState:
             )
         for name, new_val in kwargs.items():
             # Check that shapes and dtypes match
-            current_sd = jax.eval_shape(operator.attrgetter(name), self)
+            current_sd = jax.eval_shape(
+                functools.partial(lambda s, n: getattr(s, n), n=name), self
+            )
             if getattr(current_sd, "shape", None) != getattr(new_val, "shape", None):
                 raise ValueError(f"found mismatched shapes for {name}")
             if getattr(current_sd, "dtype", None) != getattr(new_val, "dtype", None):

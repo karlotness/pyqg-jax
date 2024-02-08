@@ -51,7 +51,6 @@ demonstrated in other examples. In particular:
 
 import inspect
 import abc
-import operator
 
 def model_to_args(model):
     return {
@@ -89,7 +88,7 @@ class SpectralCoarsener(abc.ABC):
 
     def coarsen_state(self, state):
         if (
-            jax.eval_shape(operator.attrgetter("q"), state).shape
+            jax.eval_shape(lambda s: s.q, state).shape
             != (self.big_model.nz, self.big_model.ny, self.big_model.nx)
         ):
             raise ValueError(f"incorrect input size {state.qh.shape}")
