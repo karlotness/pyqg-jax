@@ -51,6 +51,7 @@ html_theme = "sphinx_rtd_theme"
 nb_output_stderr = "remove"
 nb_merge_streams = True
 nb_execution_timeout = 180
+nb_execution_raise_on_error = True
 
 # Autodoc configuration
 autodoc_mock_imports = []
