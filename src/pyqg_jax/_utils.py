@@ -102,6 +102,15 @@ def auto_repr(obj: object) -> str:
     return "\n".join(parts)
 
 
+@dataclasses.dataclass(frozen=True)
+class AttrGetter:
+    # Like operator.attrgetter but supports weak references
+    attr: str
+
+    def __call__(self, obj):
+        return getattr(obj, self.attr)
+
+
 pytree_class_attrs_registry = weakref.WeakKeyDictionary()
 
 
