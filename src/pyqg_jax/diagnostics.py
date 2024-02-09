@@ -237,4 +237,10 @@ def calc_ispec(spec_vals, grid):
         A one-dimensional array providing the isotropic spectrum of
         `spec_vals`.
     """
+    shape = spec_vals.shape
+    corr_shape = grid.spectral_state_shape
+    if shape != corr_shape:
+        raise ValueError(
+            f"mismatched shape for calc_ispec, expected {corr_shape} but got {shape}"
+        )
     return _spectral.calc_ispec(spec_vals, grid, averaging=True, truncate=True)
