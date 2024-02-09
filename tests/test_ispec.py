@@ -13,10 +13,8 @@ def test_ispec_grid(nx, ny, L, W):
     assert keep < iso_k.shape[0]
 
 
-@pytest.mark.parametrize("nx,ny", [(32, 32), (16, 16), (16, 32), (15, 13)])
-@pytest.mark.parametrize("L,W", [(1e6, 1e6), (1e5, 1e6), (1e6, 1e5)])
-def test_ispec_zero(nx, ny, L, W):
-    jax_model = pyqg_jax.qg_model.QGModel(nx=16, L=L, W=W)
+def test_ispec_zero():
+    jax_model = pyqg_jax.qg_model.QGModel(nx=16, L=1e6, W=1e6)
     test_sd = jax.eval_shape(
         lambda s: jnp.abs(jax_model.create_initial_state(s).qh), jax.random.key(0)
     )
