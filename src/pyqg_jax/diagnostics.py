@@ -12,6 +12,7 @@ the results.
 
 
 import jax.numpy as jnp
+from . import _spectral
 
 
 __all__ = ["total_ke", "cfl"]
@@ -125,3 +126,69 @@ def cfl(full_state, grid, ubg, dt):
     )
     v = jnp.abs(_getattr_shape_check(full_state, "v", grid)) / grid.dx
     return dt * (u + v)
+
+
+def ispec_grid(grid):
+    """Information on the spacing of values in an isotropic spectrum.
+
+    This function produces to results: `iso_k` and `keep`. The values
+    `iso_k` are the isotropic wavenumbers for each entry in the result
+    of `calc_ispec`. The result `keep` is an integer which should be
+    used to slice the result of `calc_ispec`. Only the first `keep`
+    entries should be interpreted.
+
+    These values from this function are useful when plotting the
+    result of :func:`calc_ispec`.
+
+    .. versionadded:: 0.8.0
+
+    Parameters
+    ----------
+    grid : Grid
+        The spatial grid over which the base values were defined. This
+        should be retrieved from a model, for example from
+        :meth:`~pyqg_jax.qg_model.QGModel.get_grid`.
+
+    Returns
+    -------
+    iso_k : jax.Array
+        The isotropic wavenumbers for each spectrum entry.
+
+    keep : int
+        An integer indicating how many of the first spectrum entries
+        should be interpreted or plotted.
+    """
+    iso_k, keep = _spectral.get_plot_kr(grid, truncate=True)
+    return iso_k, keep
+
+
+def calc_ispec(spec_vals, grid):
+    """Compute the isotropic spectrum from the given values.
+
+    The array `spec_vals` should have been computed by one of the
+    spectral diagnostics functions--for example :func:`ke_spec_vals`.
+
+    To correctly plot or interpret the spectrum computed by this
+    function, use the result of :func:`ispec_grid`.
+
+    .. versionadded:: 0.8.0
+
+    Parameters
+    ----------
+    spec_vals : jax.Array
+        The input values which should be processed into an isotropic
+        spectrum. These values should be a squared modulus of the
+        Fourier coefficients.
+
+    grid : Grid
+        The spatial grid over which the base values were defined. This
+        should be retrieved from a model, for example from
+        :meth:`~pyqg_jax.qg_model.QGModel.get_grid`.
+
+    Returns
+    -------
+    jax.Array
+        A one-dimensional array providing the isotropic spectrum of
+        `spec_vals`.
+    """
+    return _spectral.calc_ispec(spec_vals, grid, averaging=True, truncate=True)
