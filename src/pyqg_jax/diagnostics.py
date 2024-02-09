@@ -128,6 +128,46 @@ def cfl(full_state, grid, ubg, dt):
     return dt * (u + v)
 
 
+def ke_spec_vals(full_state, grid):
+    """Calculate the kinetic energy spectrum values for a snapshot.
+
+    The values produced by this function should be further processed
+    by :func:`calc_ispec` to produce the kinetic energy spectrum.
+
+    .. versionadded:: 0.8.0
+
+    Parameters
+    ----------
+    full_state : FullPseudoSpectralState
+        The state for which the KE spectrum values should be computed.
+        This argument should be retrieved from a model, for example
+        from :meth:`~pyqg_jax.qg_model.QGModel.get_full_state`.
+
+        This function only operates on a single time step. To apply it
+        to a trajectory use :func:`jax.vmap`.
+
+    grid : Grid
+        Information on the spatial grid for `full_state`. This should
+        be retrieved from a model, for example from
+        :meth:`~pyqg_jax.qg_model.QGModel.get_grid`.
+
+    Returns
+    -------
+    jax.Array
+        The KE spectrum values for the provided time step.
+
+    Note
+    ----
+    The returned array should be treated as opaque. Values should only
+    be averaged over any vmapped time dimensions, then passed to
+    :func:`calc_ispec`.
+    """
+    ph = _getattr_shape_check(full_state, "ph", grid)
+    M = grid.nx * grid.ny
+    abs_ph = jnp.abs(ph)
+    return grid.get_kappa(abs_ph.dtype) ** 2 * abs_ph**2 / M**2
+
+
 def ispec_grid(grid):
     """Information on the spacing of values in an isotropic spectrum.
 

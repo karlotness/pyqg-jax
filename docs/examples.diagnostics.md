@@ -162,3 +162,48 @@ plt.xlabel("Time (yr)")
 plt.ylabel("CFL Condition")
 plt.grid()
 ```
+
+## Kinetic Energy Spectrum
+
+The function {func}`pyqg_jax.diagnostics.ke_spec_vals` produces an
+array per time step which can be averaged over a trajectory and
+processed into an isotropic spectrum with
+{func}`pyqg_jax.diagnostics.calc_ispec`. The code below demonstrates
+this processing.
+
+```{code-cell} ipython3
+def compute_ke_spec_vals(state, model):
+    full_state = model.get_full_state(state)
+    ke_spec_vals = pyqg_jax.diagnostics.ke_spec_vals(
+        full_state=full_state,
+        grid=model.get_grid(),
+    )
+    return ke_spec_vals
+
+@jax.jit
+def vectorized_ke_spec(traj, model):
+    traj_ke_spec_vals = powerpax.chunked_vmap(
+        functools.partial(compute_ke_spec_vals, model=stepped_model.model),
+        chunk_size=100,
+    )(traj)
+    ke_spec_vals = jnp.mean(traj_ke_spec_vals, axis=0)
+    ispec = pyqg_jax.diagnostics.calc_ispec(ke_spec_vals, model.get_grid())
+    kr, keep = pyqg_jax.diagnostics.ispec_grid(model.get_grid())
+    return ispec, kr, keep
+
+traj_ke_spec, kr, keep = vectorized_ke_spec(traj, stepped_model.model)
+```
+
+Finally we plot the resulting spectrum, one spectrum for each layer.
+Note the use of the `keep` value to slice the spectrum values before
+plotting.
+
+```{code-cell} ipython3
+for layer, name in enumerate(["Upper", "Lower"]):
+    plt.loglog(kr[:keep], traj_ke_spec[layer, :keep], label=f"{name} Layer")
+plt.xlabel("Isotropic Wavenumber")
+plt.ylabel("Spectrum")
+plt.ylim(10**-4, 10**2.5)
+plt.legend()
+plt.grid()
+```
