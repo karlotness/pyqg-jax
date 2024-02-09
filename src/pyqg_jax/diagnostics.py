@@ -15,7 +15,13 @@ import jax.numpy as jnp
 from . import _spectral
 
 
-__all__ = ["total_ke", "cfl"]
+__all__ = [
+    "total_ke",
+    "cfl",
+    "ke_spec_vals",
+    "ispec_grid",
+    "calc_ispec",
+]
 
 
 def _getattr_shape_check(full_state, attr, grid):
