@@ -30,6 +30,7 @@ do so as well.
    install
    examples
    reference
+   changes
    license
 
 Indices
