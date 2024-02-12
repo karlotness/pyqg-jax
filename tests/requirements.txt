@@ -1,6 +1,5 @@
 jax[cpu]>=0.4.11
-# NOTE: need to install pyqg manually to work around Cython 3.0 incompatibility
-# pyqg
+pyqg @ git+https://github.com/karlotness/pyqg.git@8710e3cf9f93b9d57df7bdd9ef7bbcfc863d41e3
 pip
 pytest
 numpy
