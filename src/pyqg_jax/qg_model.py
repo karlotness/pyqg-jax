@@ -275,9 +275,12 @@ class QGModel(_model.Model):
             (-2, -1),
         ).reshape((-1, 2, 2))[1:]
         # Solve the system for the tail
-        ph_tail = jnp.linalg.solve(
-            inv_mat2, qh[1:].astype(f64_model._dtype_complex)
-        ).astype(self._dtype_complex)
+        ph_tail = jnp.squeeze(
+            jnp.linalg.solve(
+                inv_mat2, jnp.expand_dims(qh[1:].astype(f64_model._dtype_complex), -1)
+            ).astype(self._dtype_complex),
+            -1,
+        )
         # Fill zeros for the head
         ph_head = jnp.expand_dims(jnp.zeros_like(qh[0]), 0)
         # Combine and return
