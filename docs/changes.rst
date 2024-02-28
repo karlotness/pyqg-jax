@@ -6,6 +6,11 @@ version of `pyqg-jax`. More information and release builds are also
 available on the `GitHub releases page
 <https://github.com/karlotness/pyqg-jax/releases>`__.
 
+v0.8.1
+------
+* Resolve deprecation warnings from :func:`jax.numpy.linalg.solve`
+  added in JAX v0.4.25
+
 v0.8.0
 ------
 * Add :class:`~pyqg_jax.steppers.EulerStepper`
