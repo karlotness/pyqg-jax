@@ -132,22 +132,10 @@ class Model(_kernel.PseudoSpectralKernel):
         )
 
     @property
-    def _il(self):
-        return 1j * self.ll
-
-    @property
-    def _k2l2(self):
-        return (jnp.expand_dims(self.kk, 0) ** 2) + (jnp.expand_dims(self.ll, -1) ** 2)
-
-    @property
     def kk(self):
         return jnp.fft.rfftfreq(
             self.nx, d=(self.L / (2 * jnp.pi * self.nx)), dtype=self._dtype_real
         )
-
-    @property
-    def _ik(self):
-        return 1j * self.kk
 
     @property
     def k(self):

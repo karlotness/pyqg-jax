@@ -159,29 +159,32 @@ class PseudoSpectralKernel(abc.ABC):
         return self.get_grid().nk
 
     @property
-    def kk(self):
-        return jnp.zeros((self.nk,), dtype=self._dtype_real)
+    @abc.abstractmethod
+    def kk(self) -> jax.Array:
+        pass
 
     @property
     def _ik(self):
-        return jnp.zeros((self.nk,), dtype=self._dtype_complex)
+        return 1j * self.kk
 
     @property
-    def ll(self):
-        return jnp.zeros((self.nl,), dtype=self._dtype_real)
+    @abc.abstractmethod
+    def ll(self) -> jax.Array:
+        pass
 
     @property
     def _il(self):
-        return jnp.zeros((self.nl,), dtype=self._dtype_complex)
+        return 1j * self.ll
 
     @property
-    def _k2l2(self):
-        return jnp.zeros((self.nl, self.nk), dtype=self._dtype_real)
+    def _k2l2(self) -> jax.Array:
+        return (jnp.expand_dims(self.kk, 0) ** 2) + (jnp.expand_dims(self.ll, -1) ** 2)
 
     # Friction
     @property
-    def Ubg(self):
-        return jnp.zeros((self.nk,), dtype=self._dtype_real)
+    @abc.abstractmethod
+    def Ubg(self) -> jax.Array:
+        pass
 
     @property
     @abc.abstractmethod
