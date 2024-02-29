@@ -254,8 +254,9 @@ class PseudoSpectralKernel(abc.ABC):
             state,
         )
 
-    def _apply_a_ph(self, state):
-        return jnp.zeros_like(state.ph)
+    @abc.abstractmethod
+    def _apply_a_ph(self, state: _state.FullPseudoSpectralState) -> jax.Array:
+        pass
 
     def __repr__(self):
         return _utils.auto_repr(self)
