@@ -2,6 +2,8 @@
 # SPDX-License-Identifier: MIT
 
 
+import abc
+import jax
 import jax.numpy as jnp
 from . import _kernel, _utils, state
 
@@ -73,6 +75,26 @@ class Model(_kernel.PseudoSpectralKernel):
         full_state = self._do_external_forcing(full_state)
         return full_state
 
+    def get_grid(self) -> state.Grid:
+        """Retrieve information on the model grid.
+
+        .. versionadded:: 0.8.0
+
+        Returns
+        -------
+        Grid
+            A grid instance with attributes giving information on the
+            spatial and spectral model grids.
+        """
+        return state.Grid(
+            nz=self.nz,
+            ny=self.ny,
+            nx=self.nx,
+            L=self.L,
+            W=self.W,
+            Hi=self.Hi,
+        )
+
     def _do_external_forcing(
         self, state: state.FullPseudoSpectralState
     ) -> state.FullPseudoSpectralState:
@@ -104,6 +126,11 @@ class Model(_kernel.PseudoSpectralKernel):
     @property
     def M(self):
         return self.nx * self.ny
+
+    @property
+    @abc.abstractmethod
+    def Hi(self) -> jax.Array:
+        pass
 
     @property
     def x(self):
