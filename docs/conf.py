@@ -90,6 +90,7 @@ def linkcode_resolve(domain, info):
         obj = obj.fget
     if obj is None:
         return None
+    obj = inspect.unwrap(obj)
     try:
         source_file = inspect.getsourcefile(obj)
         if source_file is None:
