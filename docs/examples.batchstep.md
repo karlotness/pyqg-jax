@@ -107,12 +107,11 @@ We can plot each of their final steps:
 ```{code-cell} ipython3
 final_q = final_steps.state.q
 
-for i in range(3):
-    data = final_q[i, 0]
-    vmax = jnp.abs(data).max()
-    plt.subplot(1, 3, i + 1)
-    plt.title(f"Trajectory {i}")
-    plt.imshow(data, cmap=cmo.balance, vmin=-vmax, vmax=vmax)
+vmax = jnp.abs(final_q[:, 0]).max()
+fig, axs = plt.subplots(1, final_q.shape[0], layout="constrained")
+for i, (single_q, ax) in enumerate(zip(final_q, axs)):
+    ax.set_title(f"Trajectory {i}")
+    ax.imshow(single_q[0], cmap=cmo.balance, vmin=-vmax, vmax=vmax)
 ```
 
 Notice that each trajectory has evolved separately and produced a
@@ -175,12 +174,11 @@ set up our code to roll these out, each with a separate model.
 
 Both initial states are identical:
 ```{code-cell} ipython3
-for i in range(2):
-    data = batch_state.state.q[i, 0]
-    vmax = jnp.abs(data).max()
-    plt.subplot(1, 2, i + 1)
-    plt.title(f"Trajectory {i}")
-    plt.imshow(data, cmap=cmo.balance, vmin=-vmax, vmax=vmax)
+vmax = jnp.abs(batch_state.state.q[:, 0]).max()
+fig, axs = plt.subplots(1, batch_state.state.q.shape[0], layout="constrained")
+for i, (single_q, ax) in enumerate(zip(batch_state.state.q, axs)):
+    ax.set_title(f"Trajectory {i}")
+    ax.imshow(single_q[0], cmap=cmo.balance, vmin=-vmax, vmax=vmax)
 ```
 
 We now rework our `roll_out_state` function to accept the models as an
@@ -215,10 +213,9 @@ that has not yet finished warmup.
 ```{code-cell} ipython3
 final_q = batch_model_final.state.q
 
-for i in range(2):
-    data = final_q[i, 0]
-    vmax = jnp.abs(data).max()
-    plt.subplot(1, 2, i + 1)
-    plt.title(f"Trajectory {i}")
-    plt.imshow(data, cmap=cmo.balance, vmin=-vmax, vmax=vmax)
+vmax = jnp.abs(batch_model_final.state.q[:, 0]).max()
+fig, axs = plt.subplots(1, batch_model_final.state.q.shape[0], layout="constrained")
+for i, (single_q, ax) in enumerate(zip(batch_model_final.state.q, axs)):
+    ax.set_title(f"Trajectory {i}")
+    ax.imshow(single_q[0], cmap=cmo.balance, vmin=-vmax, vmax=vmax)
 ```

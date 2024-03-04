@@ -125,12 +125,12 @@ a sample of a more typical state produced after several time steps.
 
 ```{code-cell} ipython3
 inner_state = init_state.state.model_state
-for layer in range(2):
+fig, axs = plt.subplots(1, 2, layout="constrained")
+for layer, ax in enumerate(axs):
     data = inner_state.q[layer]
     vmax = jnp.abs(data).max()
-    plt.subplot(1, 2, layer + 1)
-    plt.title(f"Layer {layer}")
-    plt.imshow(data, cmap=cmo.balance, vmin=-vmax, vmax=vmax)
+    ax.set_title(f"Layer {layer}")
+    ax.imshow(data, cmap=cmo.balance, vmin=-vmax, vmax=vmax)
 ```
 
 This state can now be stepped forward in time to produce a trajectory.
@@ -235,11 +235,11 @@ We can use this approach to visualize the final state:
 final_state = jax.tree_util.tree_map(operator.itemgetter(-1), traj)
 final_q = final_state.state.model_state.q
 
-for layer in range(2):
+fig, axs = plt.subplots(1, 2, layout="constrained")
+for layer, ax in enumerate(axs):
     # final_q is now a plain JAX array, we can slice it directly
     data = final_q[layer]
     vmax = jnp.abs(data).max()
-    plt.subplot(1, 2, layer + 1)
-    plt.title(f"Layer {layer}")
-    plt.imshow(data, cmap=cmo.balance, vmin=-vmax, vmax=vmax)
+    ax.set_title(f"Layer {layer}")
+    ax.imshow(data, cmap=cmo.balance, vmin=-vmax, vmax=vmax)
 ```

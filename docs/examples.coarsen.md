@@ -214,7 +214,7 @@ the original high-resolution state.
 q_vmax = max(jnp.abs(s.q[0]).max() for s in [big_state, op1_state, op2_state])
 f_vmax = max(jnp.abs(f[0]).max() for f in [op1_forcing, op2_forcing])
 
-fig = plt.figure(tight_layout=True)
+fig = plt.figure(layout="tight")
 gs = gridspec.GridSpec(2, 3)
 
 # Plot large image
