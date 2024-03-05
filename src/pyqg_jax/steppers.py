@@ -94,8 +94,12 @@ class StepperState(typing.Generic[P]):
             A copy of this object with the specified values replaced.
         """
         # Check that only valid updates are applied
-        if not kwargs.keys() <= {"state", "t", "tc"}:
-            raise ValueError("invalid state updates, can only update state, t, and tc")
+        if extra_attrs := (kwargs.keys() - {"state", "t", "tc"}):
+            extra_attr_str = ", ".join(extra_attrs)
+            raise ValueError(
+                "invalid state updates, can only update state, t, and tc "
+                f"(not {extra_attr_str})"
+            )
         # Perform the update
         return dataclasses.replace(self, **kwargs)
 

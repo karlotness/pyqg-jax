@@ -2,6 +2,8 @@
 # SPDX-License-Identifier: MIT
 
 
+import dataclasses
+import re
 import pytest
 import jax.numpy as jnp
 import pyqg_jax
@@ -36,7 +38,7 @@ def test_full_state_forwards_update_to_partial(full_state, name):
 
 
 def test_full_state_update_rejects_state(full_state):
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="state"):
         _ = full_state.update(state=full_state.state)
 
 
@@ -45,15 +47,19 @@ def test_full_state_update(full_state, name):
     new_val = jnp.ones_like(getattr(full_state, name))
     new_state = full_state.update(**{name: new_val})
     assert jnp.allclose(getattr(new_state, name), 1)
-    if name not in {"p", "uh", "vh", "uqh", "vqh", "dqdt"}:
+    if name in {f.name for f in dataclasses.fields(full_state)}:
         assert getattr(new_state, name) is new_val
 
 
 @pytest.mark.parametrize("name", ["ph", "p", "u", "v", "dqhdt", "dqdt", "uh", "vh"])
 def test_full_state_update_rejects_wrong_shape(full_state, name):
     new_val = jnp.ones_like(getattr(full_state, name)[..., 1:])
-    with pytest.raises(ValueError, match="shape"):
+    with pytest.raises(ValueError, match="shape") as exc_info:
         _ = full_state.update(**{name: new_val})
+    msg = exc_info.value.args[0]
+    assert re.search(rf"\b{name}\b", msg)
+    assert f"{getattr(full_state, name).shape}" in msg
+    assert f"{new_val.shape}" in msg
 
 
 @pytest.mark.parametrize("name", ["ph", "p", "u", "v", "dqhdt", "dqdt", "uh", "vh"])
@@ -63,8 +69,12 @@ def test_full_state_update_rejects_wrong_dtype(full_state, name):
     else:
         dtype = jnp.complex64
     new_val = jnp.ones_like(getattr(full_state, name), dtype=dtype)
-    with pytest.raises(TypeError, match="dtype"):
+    with pytest.raises(TypeError, match="dtype") as exc_info:
         _ = full_state.update(**{name: new_val})
+    msg = exc_info.value.args[0]
+    assert re.search(rf"\b{name}\b", msg)
+    assert f"{getattr(full_state, name).dtype}" in msg
+    assert f"{new_val.dtype}" in msg
 
 
 @pytest.mark.parametrize("name", ["p", "u", "v", "dqdt"])
@@ -77,5 +87,7 @@ def test_full_state_update_rejects_duplicate_updates(full_state, name):
         name: getattr(full_state, name),
         spectral_name: getattr(full_state, spectral_name),
     }
-    with pytest.raises(ValueError, match="duplicate"):
+    with pytest.raises(ValueError, match="duplicate") as exc_info:
         _ = full_state.update(**new_vals)
+    msg = exc_info.value.args[0]
+    assert re.search(rf"\b(?:{name}|{spectral_name})\b", msg)

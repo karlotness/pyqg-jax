@@ -120,6 +120,9 @@ class PseudoSpectralState:
     @typing.overload
     def update(self, *, qh: jnp.ndarray) -> "PseudoSpectralState": ...
 
+    @typing.overload
+    def update(self) -> "PseudoSpectralState": ...
+
     def update(self, **kwargs) -> "PseudoSpectralState":
         """Replace the value stored in this state.
 
@@ -154,17 +157,31 @@ class PseudoSpectralState:
         TypeError
             If the dtype of the replacement does not match the existing type.
         """
+        if not kwargs:
+            # Copy the class with no changes
+            return dataclasses.replace(self)
+        if extra_attrs := (kwargs.keys() - {"q", "qh"}):
+            extra_attr_str = ", ".join(extra_attrs)
+            pl_suf = "s" if len(extra_attrs) > 1 else ""
+            raise ValueError(
+                f"tried to update unknown state attribute{pl_suf} {extra_attr_str}"
+            )
         if len(kwargs) > 1:
-            raise ValueError("duplicate updates for q (specified q and qh)")
-        if "q" in kwargs:
-            new_qh = _generic_rfftn(kwargs["q"])
-        else:
-            new_qh = kwargs["qh"]
-        # Check that shape and dtypes match
-        if self.qh.shape != new_qh.shape:
-            raise ValueError("found mismatched shapes for q")
-        if self.qh.dtype != new_qh.dtype:
-            raise TypeError("found mismatched dtypes for q")
+            raise ValueError("duplicate updates for q (specified both q and qh)")
+        # Exactly one attribute specified
+        attr, update = next(iter(kwargs.items()))
+        current_sd = jax.eval_shape(_utils.AttrGetter(attr), self)
+        if current_sd.shape != update.shape:
+            raise ValueError(
+                f"found mismatched shapes for {attr} "
+                f"(existing is {current_sd.shape} while update is {update.shape})"
+            )
+        if current_sd.dtype != update.dtype:
+            raise TypeError(
+                f"found mismatched dtypes for {attr} "
+                f"(existing is {current_sd.dtype} while update is {update.dtype})"
+            )
+        new_qh = update if attr == "qh" else _generic_rfftn(update)
         return dataclasses.replace(self, qh=new_qh)
 
     def __repr__(self):
@@ -329,15 +346,22 @@ class FullPseudoSpectralState:
         new_values = {}
         if "state" in kwargs:
             raise ValueError(
-                "do not update attribute 'state' directly, update individual fields"
+                "do not update attribute 'state' directly, update individual fields "
+                "(for example q or qh)"
             )
         for name, new_val in kwargs.items():
             # Check that shapes and dtypes match
             current_sd = jax.eval_shape(_utils.AttrGetter(name), self)
-            if getattr(current_sd, "shape", None) != getattr(new_val, "shape", None):
-                raise ValueError(f"found mismatched shapes for {name}")
-            if getattr(current_sd, "dtype", None) != getattr(new_val, "dtype", None):
-                raise TypeError(f"found mismatched dtypes for {name}")
+            if current_sd.shape != new_val.shape:
+                raise ValueError(
+                    f"found mismatched shapes for {name} "
+                    f"(existing is {current_sd.shape} while update is {new_val.shape})"
+                )
+            if current_sd.dtype != new_val.dtype:
+                raise TypeError(
+                    f"found mismatched dtypes for {name} "
+                    f"(existing is {current_sd.dtype} while update is {new_val.dtype})"
+                )
             if name in {"q", "qh"}:
                 # Special handling for q and qh, make spectral and assign to state
                 new_val = self.state.update(**{name: new_val})
