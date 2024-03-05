@@ -30,7 +30,7 @@ class PseudoSpectralKernel(abc.ABC):
         self.rek = rek
         self.precision = precision
         if not isinstance(self.precision, _state.Precision):
-            raise ValueError(f"invalid choice for precision {precision}")
+            raise ValueError(f"invalid choice for precision {self.precision}")
 
     def get_full_state(
         self, state: _state.PseudoSpectralState
