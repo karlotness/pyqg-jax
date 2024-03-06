@@ -1,13 +1,14 @@
 import warnings
 import math
+import pytest
 import numpy as np
 import jax
 import jax.numpy as jnp
-import pyqg
 import pyqg_jax
 
 
 def test_match_final_step():
+    pyqg = pytest.importorskip("pyqg")
     jax_model = pyqg_jax.parameterizations.smagorinsky.apply_parameterization(
         pyqg_jax.qg_model.QGModel(nx=64, precision=pyqg_jax.state.Precision.DOUBLE),
         constant=0.08,

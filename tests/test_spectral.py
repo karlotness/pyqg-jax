@@ -4,8 +4,6 @@ import pytest
 import jax
 import jax.numpy as jnp
 import numpy as np
-import pyqg
-import pyqg.diagnostic_tools
 import pyqg_jax
 import pyqg_jax._spectral
 
@@ -14,6 +12,8 @@ import pyqg_jax._spectral
 @pytest.mark.parametrize("L,W", [(1e6, 1e6), (1e5, 1e6), (1e6, 1e5)])
 @pytest.mark.parametrize("truncate", [True, False])
 def test_get_plot_kr(nx, ny, L, W, truncate):
+    pyqg = pytest.importorskip("pyqg")
+    pyqg_diagnostic_tools = pytest.importorskip("pyqg.diagnostic_tools")
     jax_model = pyqg_jax.qg_model.QGModel(
         nx=nx, ny=ny, L=L, W=W, precision=pyqg_jax.state.Precision.DOUBLE
     )
@@ -30,7 +30,7 @@ def test_get_plot_kr(nx, ny, L, W, truncate):
         lambda s: jnp.abs(jax_model.create_initial_state(s).qh), jax.random.key(0)
     )
     test_val = jnp.zeros(test_sd.shape[1:], dtype=test_sd.dtype)
-    kr, _ = pyqg.diagnostic_tools.calc_ispec(
+    kr, _ = pyqg_diagnostic_tools.calc_ispec(
         orig_model, np.asarray(test_val), truncate=truncate
     )
     assert jax_kr.shape == kr.shape
@@ -42,6 +42,8 @@ def test_get_plot_kr(nx, ny, L, W, truncate):
 @pytest.mark.parametrize("averaging", [True, False])
 @pytest.mark.parametrize("truncate", [True, False])
 def test_calc_ispec(nx, ny, L, W, averaging, truncate):
+    pyqg = pytest.importorskip("pyqg")
+    pyqg_diagnostic_tools = pytest.importorskip("pyqg.diagnostic_tools")
     jax_model = pyqg_jax.qg_model.QGModel(
         nx=nx, ny=ny, L=L, W=W, precision=pyqg_jax.state.Precision.DOUBLE
     )
@@ -67,7 +69,7 @@ def test_calc_ispec(nx, ny, L, W, averaging, truncate):
     )
     jax_ispec = jnp.squeeze(jax_raw_ispec[:, :jax_keep], axis=0)
     # Compute PyQG baselines
-    _, orig_spec = pyqg.diagnostic_tools.calc_ispec(
+    _, orig_spec = pyqg_diagnostic_tools.calc_ispec(
         orig_model, np.asarray(test_val[0]), averaging=averaging, truncate=truncate
     )
     relerr = jnp.abs(jax_ispec - orig_spec) / orig_spec

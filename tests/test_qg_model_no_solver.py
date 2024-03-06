@@ -1,9 +1,9 @@
 import warnings
 import math
+import pytest
 import numpy as np
 import jax
 import jax.numpy as jnp
-import pyqg
 import pyqg_jax
 
 
@@ -42,6 +42,7 @@ class QGModelNoSolver(pyqg_jax.qg_model.QGModel):
 
 
 def test_compute_inversion_matrix():
+    pyqg = pytest.importorskip("pyqg")
     jax_model = QGModelNoSolver(precision=pyqg_jax.state.Precision.DOUBLE)
     with warnings.catch_warnings():
         warnings.simplefilter("ignore", category=DeprecationWarning)
@@ -53,6 +54,7 @@ def test_compute_inversion_matrix():
 
 
 def test_final_step_matches():
+    pyqg = pytest.importorskip("pyqg")
     jax_model = QGModelNoSolver(precision=pyqg_jax.state.Precision.DOUBLE, **EDDY_ARGS)
     start_jax_state = jax_model.create_initial_state(jax.random.key(0))
     dt = 3600

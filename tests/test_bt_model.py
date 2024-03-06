@@ -1,7 +1,6 @@
 import math
 import warnings
 import pytest
-import pyqg
 import jax
 import jax.numpy as jnp
 import numpy as np
@@ -70,6 +69,7 @@ BT_PARAMS = {
     ],
 )
 def test_default_parameters_match(param):
+    pyqg = pytest.importorskip("pyqg")
     jax_model = pyqg_jax.bt_model.BTModel(precision=pyqg_jax.state.Precision.DOUBLE)
     with warnings.catch_warnings():
         warnings.simplefilter("ignore", category=DeprecationWarning)
@@ -104,6 +104,7 @@ def test_default_parameters_match(param):
     "precision", [pyqg_jax.state.Precision.SINGLE, pyqg_jax.state.Precision.DOUBLE]
 )
 def test_match_final_step(precision):
+    pyqg = pytest.importorskip("pyqg")
     jax_model = pyqg_jax.bt_model.BTModel(precision=precision, **BT_PARAMS)
     start_jax_state = jax_model.create_initial_state(jax.random.key(0))
     dt = 0.0025
