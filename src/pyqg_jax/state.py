@@ -510,7 +510,7 @@ class Grid:
 
     @property
     def H(self) -> jax.Array:
-        return self.Hi.sum()
+        return jnp.sum(self.Hi, axis=-1)
 
     @property
     def nl(self) -> int:
