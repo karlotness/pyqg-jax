@@ -5,7 +5,7 @@
 import dataclasses
 import jax
 import jax.numpy as jnp
-from . import state
+from . import state, _utils
 
 
 @dataclasses.dataclass
@@ -16,6 +16,12 @@ class KrElems:
 
 
 def get_kr_elems(grid: state.Grid, *, truncate: bool = True) -> KrElems:
+    for name in ["L", "W", "dk", "dl"]:
+        # Each of these attributes should be a 0-dim scalar
+        if (dims := jnp.ndim(jax.eval_shape(_utils.AttrGetter(name), grid))) != 0:
+            raise ValueError(
+                f"grid.{name} has {dims} dimensions, but should have 0 (use jax.vmap)"
+            )
     max_buckets = max(grid.nx // 2, grid.ny // 2)
     ll_max = (2 * jnp.pi / grid.L) * (grid.nx // 2)
     kk_max = (2 * jnp.pi / grid.W) * (grid.ny // 2)

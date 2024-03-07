@@ -43,6 +43,35 @@ def _getattr_shape_check(full_state, attr, grid):
     return arr
 
 
+def _grid_shape_check(grid, attr):
+    val = getattr(grid, attr)
+    if attr in {
+        "nz",
+        "ny",
+        "nx",
+        "nl",
+        "nk",
+        "real_state_shape",
+        "spectral_state_shape",
+    }:
+        # Static attributes couldn't be JAX-transformed
+        return val
+    shape = jnp.shape(val)
+    if attr == "Hi":
+        if shape != (grid.nz,):
+            # Check Hi shape
+            raise ValueError(
+                f"grid.Hi should be a 1D sequence of length {grid.nz} "
+                f"but had shape {shape}"
+            )
+    elif len(shape) != 0:
+        # Everything else must be a scalar
+        raise ValueError(
+            f"grid.{attr} has {len(shape)} dimensions, but should have 0 (use jax.vmap)"
+        )
+    return val
+
+
 def total_ke(full_state, grid):
     """Compute the total kinetic energy in a single snapshot.
 
@@ -76,7 +105,9 @@ def total_ke(full_state, grid):
     u = _getattr_shape_check(full_state, "u", grid)
     v = _getattr_shape_check(full_state, "v", grid)
     ke = (u**2 + v**2) / 2
-    h_weights = jnp.expand_dims(grid.Hi / grid.H, axis=(-1, -2))
+    H = _grid_shape_check(grid, "H")
+    Hi = _grid_shape_check(grid, "Hi")
+    h_weights = jnp.expand_dims(Hi / H, axis=(-1, -2))
     return jnp.mean(jnp.sum(ke * h_weights, axis=-3), axis=(-1, -2))
 
 
@@ -123,14 +154,13 @@ def cfl(full_state, grid, ubg, dt):
         may optionally be aggregated with :func:`jnp.max
         <jax.numpy.max>`.
     """
-    u = (
-        jnp.abs(
-            _getattr_shape_check(full_state, "u", grid)
-            + jnp.expand_dims(ubg, axis=(-1, -2))
-        )
-        / grid.dy
+    u = jnp.abs(
+        _getattr_shape_check(full_state, "u", grid)
+        + jnp.expand_dims(ubg, axis=(-1, -2))
+    ) / _grid_shape_check(grid, "dy")
+    v = jnp.abs(_getattr_shape_check(full_state, "v", grid)) / _grid_shape_check(
+        grid, "dx"
     )
-    v = jnp.abs(_getattr_shape_check(full_state, "v", grid)) / grid.dx
     return dt * (u + v)
 
 
@@ -169,9 +199,15 @@ def ke_spec_vals(full_state, grid):
     :func:`calc_ispec`.
     """
     ph = _getattr_shape_check(full_state, "ph", grid)
-    M = grid.nx * grid.ny
+    M = _grid_shape_check(grid, "nx") * _grid_shape_check(grid, "ny")
     abs_ph = jnp.abs(ph)
-    return grid.get_kappa(abs_ph.dtype) ** 2 * abs_ph**2 / M**2
+    kappa = grid.get_kappa(abs_ph.dtype)
+    if kappa.shape != grid.spectral_state_shape[1:]:
+        raise ValueError(
+            f"grid kappa array has unexpected shape {kappa.shape}, "
+            f"should be {grid.spectral_state_shape[1:]}"
+        )
+    return kappa**2 * abs_ph**2 / M**2
 
 
 def ispec_grid(grid):
