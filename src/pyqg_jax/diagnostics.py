@@ -6,8 +6,8 @@
 
 The functions in this module can be used to compute diagnostic
 quantities such as kinetic energy or various spectra. See
-:doc:`examples.diagnostics` for examples of how to use them and plot
-the results.
+:doc:`examples.diagnostics` for examples of how to use them and how to
+plot the results.
 """
 
 
@@ -117,7 +117,7 @@ def cfl(full_state, grid, ubg, dt):
     This computes the `CFL
     <https://en.wikipedia.org/wiki/Courant%E2%80%93Friedrichs%E2%80%93Lewy_condition>`__
     condition value at each grid point in a given state. To report the
-    worst value across the full state, aggregate them using
+    worst value across the full state, aggregate the values using
     :func:`jnp.max <jax.numpy.max>`.
 
     .. versionadded:: 0.8.0
@@ -144,7 +144,7 @@ def cfl(full_state, grid, ubg, dt):
 
     dt : float
         The time step size. This should be retrieved from the relevant
-        time stepper, for example form
+        time stepper, for example from
         :attr:`~pyqg_jax.steppers.AB3Stepper.dt`.
 
     Returns
@@ -213,13 +213,13 @@ def ke_spec_vals(full_state, grid):
 def ispec_grid(grid):
     """Information on the spacing of values in an isotropic spectrum.
 
-    This function produces to results: `iso_k` and `keep`. The values
+    This function produces two results: `iso_k` and `keep`. The values
     `iso_k` are the isotropic wavenumbers for each entry in the result
     of `calc_ispec`. The result `keep` is an integer which should be
     used to slice the result of `calc_ispec`. Only the first `keep`
     entries should be interpreted.
 
-    These values from this function are useful when plotting the
+    The values computed by this function are useful when plotting the
     result of :func:`calc_ispec`.
 
     .. versionadded:: 0.8.0
