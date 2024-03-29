@@ -152,9 +152,7 @@ class QGModel(_model.Model):
             * jax.random.uniform(rng_b, shape=(1, self.nx), dtype=self._dtype_real)
         )
         q2 = jnp.zeros_like(self.x, dtype=self._dtype_real)
-        state = state.update(
-            q=jnp.vstack([jnp.expand_dims(q1, axis=0), jnp.expand_dims(q2, axis=0)])
-        )
+        state = state.update(q=jnp.stack([q1, q2], axis=-3))
         return state
 
     @property
@@ -203,9 +201,7 @@ class QGModel(_model.Model):
 
     @property
     def ikQy(self):
-        return jnp.vstack(
-            [jnp.expand_dims(self.ikQy1, axis=0), jnp.expand_dims(self.ikQy2, axis=0)]
-        )
+        return jnp.stack([self.ikQy1, self.ikQy2], axis=-3)
 
     @property
     def ilQx(self):
