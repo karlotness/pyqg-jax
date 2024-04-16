@@ -6,6 +6,6 @@ packaging
 myst-nb
 matplotlib
 cmocean
-equinox
+equinox>=0.11.4
 optax
 powerpax

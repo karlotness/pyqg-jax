@@ -38,10 +38,11 @@ import pyqg_jax
 In our example we will use a small convolutional network. The network
 here is randomly initialized, but in real use it would likely use
 trained weights loaded from a file. Also, the architecture here has a
-padding size configured to keep the state sizes constant. This pads
-with zeros, but because system states are periodic it may be desirable
-to use periodic padding for real applications (see the `"wrap"` mode
-of {func}`jax.numpy.pad`).
+padding size configured to keep the state sizes constant. Because
+system states are periodic, this example uses circular padding (see
+the `padding_mode` parameter of {class}`equinox.nn.Conv`). Periodic
+padding can also be added using the `"wrap"` mode of
+{func}`jax.numpy.pad`.
 
 ```{code-cell} ipython3
 def param_to_single(param):
@@ -62,9 +63,23 @@ class NNParam(eqx.Module):
         key1, key2 = jax.random.split(key, 2)
         self.ops = eqx.nn.Sequential(
             [
-                eqx.nn.Conv2d(2, 5, kernel_size=3, padding=1, key=key1),
+                eqx.nn.Conv2d(
+                    in_channels=2,
+                    out_channels=5,
+                    kernel_size=3,
+                    padding="SAME",
+                    key=key1,
+                    padding_mode="CIRCULAR",
+                ),
                 eqx.nn.Lambda(jax.nn.relu),
-                eqx.nn.Conv2d(5, 2, kernel_size=3, padding=1, key=key2),
+                eqx.nn.Conv2d(
+                    in_channels=5,
+                    out_channels=2,
+                    kernel_size=3,
+                    padding="SAME",
+                    key=key2,
+                    padding_mode="CIRCULAR",
+                ),
             ]
         )
 

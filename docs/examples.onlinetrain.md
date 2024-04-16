@@ -151,9 +151,23 @@ class NNParam(eqx.Module):
         key1, key2 = jax.random.split(key, 2)
         self.ops = eqx.nn.Sequential(
             [
-                eqx.nn.Conv2d(2, 5, kernel_size=3, padding=1, key=key1),
+                eqx.nn.Conv2d(
+                    in_channels=2,
+                    out_channels=5,
+                    kernel_size=3,
+                    padding="SAME",
+                    key=key1,
+                    padding_mode="CIRCULAR",
+                ),
                 eqx.nn.Lambda(jax.nn.relu),
-                eqx.nn.Conv2d(5, 2, kernel_size=3, padding=1, key=key2),
+                eqx.nn.Conv2d(
+                    in_channels=5,
+                    out_channels=2,
+                    kernel_size=3,
+                    padding="SAME",
+                    key=key2,
+                    padding_mode="CIRCULAR",
+                ),
             ]
         )
 
@@ -172,7 +186,7 @@ state of the optimizer that must be updated as a part of training.
 
 ```{code-cell} ipython3
 DT = 3600.0
-LEARNING_RATE = 1e-4
+LEARNING_RATE = 5e-4
 
 big_model = pyqg_jax.steppers.SteppedModel(
     model=pyqg_jax.qg_model.QGModel(
@@ -333,7 +347,7 @@ assert BATCH_STEPS >= 2
 
 np_rng = np.random.default_rng(seed=456)
 losses = []
-for batch_i in range(25):
+for batch_i in range(30):
     # Rudimentary shuffling in lieu of real data loader
     batch = np.stack(
         [
@@ -345,7 +359,7 @@ for batch_i in range(25):
     )
     loss, net, optim_state = train_batch(batch, net, optim_state)
     losses.append(loss)
-    print(f"Step {batch_i + 1:02}: loss={loss.item():.6f}")
+    print(f"Step {batch_i + 1:02}: loss={loss.item():.4E}")
 ```
 
 ```{code-cell} ipython3
