@@ -150,7 +150,7 @@ def roll_out_state(state, stepped_model, num_steps):
     def loop_fn(carry, _x):
         current_state = carry
         next_state = stepped_model.step_model(current_state)
-        return next_state, next_state
+        return next_state, current_state
 
     _final_state, traj = jax.lax.scan(
         loop_fn, state, None, length=num_steps

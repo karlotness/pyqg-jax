@@ -192,7 +192,9 @@ def roll_out_state(state, num_steps):
     def loop_fn(carry, _x):
         current_state = carry
         next_state = stepped_model.step_model(current_state)
-        return next_state, next_state
+        # Note: we output the current state for ys
+        # This includes the starting step in the trajectory
+        return next_state, current_state
 
     _final_carry, traj_steps = jax.lax.scan(
         loop_fn, state, None, length=num_steps
