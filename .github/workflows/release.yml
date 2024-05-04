@@ -102,10 +102,34 @@ jobs:
         path: dist/
     - name: Check artifacts
       run: python -m twine check --strict dist/*.tar.gz dist/*.whl
+  attest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: wheel
+    permissions:
+      id-token: write
+      attestations: write
+    steps:
+    - name: Download artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: build
+        path: dist/
+    - name: Generate attestation
+      uses: actions/attest-build-provenance@v1
+      id: gen-attest
+      with:
+        subject-path: 'dist/*'
+    - name: Store attestation
+      uses: actions/upload-artifact@v4
+      with:
+        name: attestation
+        path: ${{ steps.gen-attest.outputs.bundle-path }}
+        if-no-files-found: error
   draft-release:
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    needs: check-artifacts
+    needs: [check-artifacts, attest]
     permissions:
       contents: write
     steps:
@@ -114,6 +138,11 @@ jobs:
       with:
         name: build
         path: dist/
+    - name: Download attestation
+      uses: actions/download-artifact@v4
+      with:
+        name: attestation
+        path: attest/
     - name: Draft release body
       run: |
         {
@@ -125,7 +154,7 @@ jobs:
           printf '```\n\n</details>\n'
         } > release_body.md
     - name: Create release
-      run: gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --target "$GITHUB_SHA" --draft --notes-file 'release_body.md' --repo "$GITHUB_REPOSITORY" dist/*.tar.gz dist/*.whl
+      run: gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --target "$GITHUB_SHA" --draft --notes-file 'release_body.md' --repo "$GITHUB_REPOSITORY" dist/*.tar.gz dist/*.whl attest/*
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Prepare step summary
