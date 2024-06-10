@@ -51,7 +51,6 @@ addopts = [
 ]
 
 [tool.ruff]
-target-version = "py39"
 extend-exclude = ["docs/_build/"]
 src = ["src"]
 line-length = 88
