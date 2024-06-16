@@ -1,4 +1,4 @@
 jax[cpu]>=0.4.11
-pyqg @ git+https://github.com/karlotness/pyqg.git@33d93107fcd695e1bcd451f4c268aabd9bf8cee8
+pyqg @ git+https://github.com/karlotness/pyqg.git@e225c327ae1de9e8abc1cb3c8ad8b89fa93f8965
 pytest
 numpy
