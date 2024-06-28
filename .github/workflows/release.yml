@@ -39,12 +39,10 @@ jobs:
         restore-keys: |
           pip-releasecheck-${{ runner.os }}-${{ runner.arch }}-${{ steps.setup-python.outputs.python-version }}-
           pip-test-${{ runner.os }}-${{ runner.arch }}-${{ steps.setup-python.outputs.python-version }}-
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        python -m pip install --upgrade tox
     - name: Run tox tests
-      run: python -m tox run -e py
+      run: pipx run --python "$WORKFLOW_PYTHON" tox run -e py
+      env:
+        WORKFLOW_PYTHON: '${{ steps.setup-python.outputs.python-path }}'
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -56,14 +54,13 @@ jobs:
         persist-credentials: false
     - name: Setup Python
       uses: actions/setup-python@v5
+      id: setup-python
       with:
         python-version: '3.12'
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        python -m pip install --upgrade build
     - name: Build package
-      run: python -m build
+      run: pipx run --python "$WORKFLOW_PYTHON" build
+      env:
+        WORKFLOW_PYTHON: '${{ steps.setup-python.outputs.python-path }}'
     - name: Store artifacts
       uses: actions/upload-artifact@v4
       with:
@@ -91,17 +88,15 @@ jobs:
           pip-releasecheckartifacts-${{ runner.os }}-${{ runner.arch }}-${{ steps.setup-python.outputs.python-version }}-
           pip-releasecheck-${{ runner.os }}-${{ runner.arch }}-${{ steps.setup-python.outputs.python-version }}-
           pip-test-${{ runner.os }}-${{ runner.arch }}-${{ steps.setup-python.outputs.python-version }}-
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        python -m pip install --upgrade twine
     - name: Download artifacts
       uses: actions/download-artifact@v4
       with:
         name: build
         path: dist/
     - name: Check artifacts
-      run: python -m twine check --strict dist/*.tar.gz dist/*.whl
+      run: pipx run --python "$WORKFLOW_PYTHON" twine check --strict dist/*.tar.gz dist/*.whl
+      env:
+        WORKFLOW_PYTHON: '${{ steps.setup-python.outputs.python-path }}'
   attest:
     runs-on: ubuntu-latest
     timeout-minutes: 20

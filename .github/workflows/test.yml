@@ -26,12 +26,10 @@ jobs:
         path: ~/.cache/pip
         key: pip-lint-${{ runner.os }}-${{ runner.arch }}-${{ steps.setup-python.outputs.python-version }}-${{ github.run_id }}
         restore-keys: pip-lint-${{ runner.os }}-${{ runner.arch }}-${{ steps.setup-python.outputs.python-version }}-
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        python -m pip install --upgrade tox
     - name: Run linters
-      run: python -m tox run -e lint
+      run: pipx run --python "$WORKFLOW_PYTHON" tox run -e lint
+      env:
+        WORKFLOW_PYTHON: '${{ steps.setup-python.outputs.python-path }}'
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -54,9 +52,7 @@ jobs:
         path: ~/.cache/pip
         key: pip-test-${{ runner.os }}-${{ runner.arch }}-${{ steps.setup-python.outputs.python-version }}-${{ github.run_id }}
         restore-keys: pip-test-${{ runner.os }}-${{ runner.arch }}-${{ steps.setup-python.outputs.python-version }}-
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        python -m pip install --upgrade tox
     - name: Run tests
-      run: python -m tox run -e py
+      run: pipx run --python "$WORKFLOW_PYTHON" tox run -e py
+      env:
+        WORKFLOW_PYTHON: '${{ steps.setup-python.outputs.python-path }}'
