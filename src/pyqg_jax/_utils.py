@@ -149,11 +149,13 @@ def register_pytree_class_attrs(children, static_attrs):
 
         def unflatten(aux_data, children):
             obj = cls.__new__(cls)
-            if aux_data is None:
-                aux_data = ()
             for name, val in itertools.chain(
-                zip(cls_child_fields, children),
-                zip(cls_static_fields, aux_data),
+                zip(cls_child_fields, children, strict=True),
+                zip(
+                    cls_static_fields,
+                    aux_data if aux_data is not None else (),
+                    strict=True,
+                ),
             ):
                 setattr(obj, name, val)
             return obj
@@ -191,12 +193,15 @@ def register_pytree_dataclass(cls):
         return [c for _, c in flatkeys], aux
 
     def unflatten(aux_data, flat_contents):
-        if aux_data is None:
-            aux_data = ()
         return cls(
             **dict(
                 itertools.chain(
-                    zip(fields, flat_contents), zip(static_fields, aux_data)
+                    zip(fields, flat_contents, strict=True),
+                    zip(
+                        static_fields,
+                        aux_data if aux_data is not None else (),
+                        strict=True,
+                    ),
                 )
             )
         )
