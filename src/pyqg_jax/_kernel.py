@@ -136,19 +136,23 @@ class PseudoSpectralKernel(abc.ABC):
 
     @property
     def _dtype_real(self):
-        if self.precision == _state.Precision.SINGLE:
-            return jnp.float32
-        elif self.precision == _state.Precision.DOUBLE:
-            return jnp.float64
-        raise ValueError(f"invalid choice for precision {self.precision}")
+        match self.precision:
+            case _state.Precision.SINGLE:
+                return jnp.float32
+            case _state.Precision.DOUBLE:
+                return jnp.float64
+            case _:
+                raise ValueError(f"invalid choice for precision {self.precision}")
 
     @property
     def _dtype_complex(self):
-        if self.precision == _state.Precision.SINGLE:
-            return jnp.complex64
-        elif self.precision == _state.Precision.DOUBLE:
-            return jnp.complex128
-        raise ValueError(f"invalid choice for precision {self.precision}")
+        match self.precision:
+            case _state.Precision.SINGLE:
+                return jnp.complex64
+            case _state.Precision.DOUBLE:
+                return jnp.complex128
+            case _:
+                raise ValueError(f"invalid choice for precision {self.precision}")
 
     @property
     def nl(self):

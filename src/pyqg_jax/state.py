@@ -362,20 +362,21 @@ class FullPseudoSpectralState:
                     f"found mismatched dtypes for {name} "
                     f"(existing is {current_sd.dtype} while update is {new_val.dtype})"
                 )
-            if name in {"q", "qh"}:
-                # Special handling for q and qh, make spectral and assign to state
-                new_val = self.state.update(**{name: new_val})
-                name = "state"
-            elif name in {"uh", "vh"}:
-                # Handle other spectral names, store as non-spectral
-                new_val = _generic_irfftn(new_val, shape=self.state._q_shape)
-                name = name[:-1]
-            elif name == "p":
-                new_val = _generic_rfftn(new_val)
-                name = "ph"
-            elif name == "dqdt":
-                new_val = _generic_rfftn(new_val)
-                name = "dqhdt"
+            match name:
+                case "q" | "qh":
+                    # Special handling for q and qh, make spectral and assign to state
+                    new_val = self.state.update(**{name: new_val})
+                    name = "state"
+                case "uh" | "vh":
+                    # Handle other spectral names, store as non-spectral
+                    new_val = _generic_irfftn(new_val, shape=self.state._q_shape)
+                    name = name[:-1]
+                case "p":
+                    new_val = _generic_rfftn(new_val)
+                    name = "ph"
+                case "dqdt":
+                    new_val = _generic_rfftn(new_val)
+                    name = "dqhdt"
             # Check that we don't have duplicate destinations
             if name in new_values:
                 raise ValueError(f"duplicate updates for {name}")
@@ -392,12 +393,13 @@ def _precision_to_real_dtype(
     precision: typing.Union[Precision, jnp.dtype], /
 ) -> jnp.dtype:
     if isinstance(precision, Precision):
-        if precision == Precision.SINGLE:
-            return jnp.float32
-        elif precision == Precision.DOUBLE:
-            return jnp.float64
-        else:
-            raise ValueError(f"unsupported precision {precision}")
+        match precision:
+            case Precision.SINGLE:
+                return jnp.float32
+            case Precision.DOUBLE:
+                return jnp.float64
+            case _:
+                raise ValueError(f"unsupported precision {precision}")
     return precision
 
 
