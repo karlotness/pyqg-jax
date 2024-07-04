@@ -389,9 +389,7 @@ class FullPseudoSpectralState:
         return _utils.auto_repr(self)
 
 
-def _precision_to_real_dtype(
-    precision: typing.Union[Precision, jnp.dtype], /
-) -> jnp.dtype:
+def _precision_to_real_dtype(precision: Precision | jnp.dtype, /) -> jnp.dtype:
     if isinstance(precision, Precision):
         match precision:
             case Precision.SINGLE:

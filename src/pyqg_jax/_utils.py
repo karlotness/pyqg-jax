@@ -2,7 +2,6 @@
 # SPDX-License-Identifier: MIT
 
 
-import typing
 import functools
 import textwrap
 import types
@@ -20,7 +19,7 @@ def summarize_object(obj: object) -> str:
         return summarize_partial(obj)
     elif isinstance(obj, types.FunctionType):
         return summarize_function(obj)
-    elif isinstance(obj, (tuple, list, set)):
+    elif isinstance(obj, tuple | list | set):
         return summarize_sequence(obj)
     elif isinstance(obj, dict):
         return summarize_dict(obj)
@@ -74,9 +73,7 @@ class ReprDummy:
         return summarize_object(self.obj)
 
 
-def summarize_sequence(
-    seq: typing.Union[tuple[object], list[object], set[object]]
-) -> str:
+def summarize_sequence(seq: tuple[object] | list[object] | set[object]) -> str:
     return repr(type(seq)(ReprDummy(o) for o in seq))
 
 
