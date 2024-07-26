@@ -6,6 +6,14 @@ version of `pyqg-jax`. More information and release builds are also
 available on the `GitHub releases page
 <https://github.com/karlotness/pyqg-jax/releases>`__.
 
+v0.9.0 (Unreleased)
+-------------------
+
+* Add enstrophy spectrum calculation
+  :func:`~pyqg_jax.diagnostics.ens_spec_vals`
+* Improve some error messages (include additional details)
+* *Breaking:* Require Python 3.10 or later
+
 v0.8.1
 ------
 * Resolve deprecation warnings from :func:`jax.numpy.linalg.solve`
