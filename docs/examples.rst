@@ -15,3 +15,4 @@ complexity.
    examples.implparam
    examples.onlinetrain
    examples.diagnostics
+   examples.sqg
