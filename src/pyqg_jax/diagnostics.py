@@ -19,6 +19,7 @@ __all__ = [
     "total_ke",
     "cfl",
     "ke_spec_vals",
+    "ens_spec_vals",
     "ispec_grid",
     "calc_ispec",
 ]
@@ -208,6 +209,45 @@ def ke_spec_vals(full_state, grid):
             f"should be {grid.spectral_state_shape[1:]}"
         )
     return kappa**2 * abs_ph**2 / M**2
+
+
+def ens_spec_vals(full_state, grid):
+    """Calculate the enstrophy spectrum values for a snapshot.
+
+    The values produced by this function should be further processed
+    by :func:`calc_ispec` to produce the kinetic energy spectrum.
+
+    .. versionadded:: 0.9.0
+
+    Parameters
+    ----------
+    full_state : FullPseudoSpectralState
+        The state for which the enstropy spectrum values should be
+        computed. This argument should be retrieved from a model, for
+        example from :meth:`~pyqg_jax.qg_model.QGModel.get_full_state`.
+
+        This function only operates on a single time step. To apply it
+        to a trajectory use :func:`jax.vmap`.
+
+    grid : Grid
+        Information on the spatial grid for `full_state`. This should
+        be retrieved from a model, for example from
+        :meth:`~pyqg_jax.qg_model.QGModel.get_grid`.
+
+    Returns
+    -------
+    jax.Array
+        The enstropy spectrum values for the provided time step.
+
+    Note
+    ----
+    The returned array should be treated as opaque. Values should only
+    be averaged over any vmapped time dimensions, then passed to
+    :func:`calc_ispec`.
+    """
+    qh = _getattr_shape_check(full_state, "qh", grid)
+    M = _grid_shape_check(grid, "nx") * _grid_shape_check(grid, "ny")
+    return jnp.abs(qh) ** 2 / M**2
 
 
 def ispec_grid(grid):

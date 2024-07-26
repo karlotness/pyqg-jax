@@ -22,6 +22,8 @@ dimension, and then further processed with :func:`calc_ispec`.
 
 .. autofunction:: ke_spec_vals
 
+.. autofunction:: ens_spec_vals
+
 Computing Spectra
 -----------------
 
