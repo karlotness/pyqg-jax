@@ -28,7 +28,7 @@ stepped forward in time.
 """
 
 
-__version__ = "0.8.2.dev"
+__version__ = "0.9.0.dev"
 __all__ = [
     "state",
     "qg_model",
