@@ -16,3 +16,4 @@ complexity.
    examples.onlinetrain
    examples.diagnostics
    examples.sqg
+   examples.barotropic
