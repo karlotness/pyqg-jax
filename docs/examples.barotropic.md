@@ -307,18 +307,14 @@ def compute_ke_spec_vals(state, model):
 def chunked_ke_spec(traj, model, chunk_size):
     # If the trajectory is not evenly divisible by chunk_size
     # we need to remove trailing elements
+    chunk_size = operator.index(chunk_size)
+    if chunk_size < 1:
+        raise ValueError(f"chunk_size must be at least 1 (got {chunk_size})")
     traj_len = jax.tree.leaves(traj)[0].shape[0]
-    num_chunks, remainder = divmod(traj_len, chunk_size)
+    num_chunks = traj_len // chunk_size
+    # Remove any trailing steps to traj evenly splits into chunks
     traj = jax.tree.map(
-        operator.itemgetter(
-            slice(
-                None,
-                # If remainder == 0, use None for slice endpoint
-                # otherwise remove the last remainder-many steps
-                -remainder if remainder else None,
-                None,
-            ),
-        ),
+        operator.itemgetter(slice(None, num_chunks * chunk_size)),
         traj,
     )
     # Compute the ke_spec_vals over the trajectory as usual
