@@ -26,7 +26,6 @@ __all__ = [
 
 
 import typing
-import functools
 import dataclasses
 import abc
 import jax
@@ -294,19 +293,14 @@ class SteppedModel:
         return _utils.auto_repr(self)
 
 
-def _wrap_nostep_update(func):
-    @functools.wraps(func)
-    def wrapper(leaf, update, *args, **kwargs):
+def _nostep_tree_map(func, tree, *rest):
+    def wrap_nostep_update(leaf, update, *args, **kwargs):
         if isinstance(update, NoStepValue):
             return update
         return func(leaf, update, *args, **kwargs)
 
-    return wrapper
-
-
-def _nostep_tree_map(func, tree, *rest):
     return jax.tree_util.tree_map(
-        _wrap_nostep_update(func),
+        wrap_nostep_update,
         tree,
         *rest,
         is_leaf=(lambda l: isinstance(l, NoStepValue)),
