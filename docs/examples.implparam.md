@@ -54,7 +54,7 @@ def param_to_single(param):
     return param
 
 def module_to_single(module):
-    return jax.tree_util.tree_map(param_to_single, module)
+    return jax.tree.map(param_to_single, module)
 
 class NNParam(eqx.Module):
     ops: eqx.nn.Sequential

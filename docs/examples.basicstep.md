@@ -219,22 +219,22 @@ is the time dimension for each array. These are stored in
 [struct-of-arrays](https://en.wikipedia.org/wiki/AoS_and_SoA) format.
 
 To slice into these, the simplest approach is to use
-{func}`jax.tree_util.tree_map` to apply a slice to each element.
+{func}`jax.tree.map` to apply a slice to each element.
 
 ```{code-cell} ipython3
-jax.tree_util.tree_map(lambda leaf: leaf[-5:], traj)
+jax.tree.map(lambda leaf: leaf[-5:], traj)
 ```
 
 or equivalently we can use {func}`operator.itemgetter` and
 {class}`slice`.
 
 ```{code-cell} ipython3
-jax.tree_util.tree_map(operator.itemgetter(slice(-5, None)), traj)
+jax.tree.map(operator.itemgetter(slice(-5, None)), traj)
 ```
 
 We can use this approach to visualize the final state:
 ```{code-cell} ipython3
-final_state = jax.tree_util.tree_map(operator.itemgetter(-1), traj)
+final_state = jax.tree.map(operator.itemgetter(-1), traj)
 final_q = final_state.state.model_state.q
 
 fig, axs = plt.subplots(1, 2, layout="constrained")
