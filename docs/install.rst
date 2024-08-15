@@ -39,10 +39,10 @@ from the `conda-forge <https://conda-forge.org/>`__ channel::
   $ conda install -c conda-forge pyqg-jax
 
 For more information, consult the `conda-forge documentation
-<https://conda-forge.org/docs/user/introduction.html#how-can-i-install-packages-from-conda-forge>`__.
+<https://conda-forge.org/docs/user/introduction/>`__.
 Installing JAX, particularly with GPU support may require additional
 attention, consult the `JAX Conda install instructions
-<https://jax.readthedocs.io/en/latest/installation.html#conda>`__.
+<https://jax.readthedocs.io/en/latest/installation.html#conda-community-supported>`__.
 
 Source
 ------
