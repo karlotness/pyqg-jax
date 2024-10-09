@@ -46,13 +46,13 @@ and a sample `init_param_aux_func`::
 These two work together. The auxiliary state is an arbitrary object
 (must be a JAX PyTree). Simple choices are tuples of JAX values
 (:class:`arrays <jax.Array>`, :func:`key <jax.random.key>`,
-etc.) or immutable python objects (:class:`str <python:str>`,
-:class:`bool <python:bool>`, etc.). The auxiliary state can be
-:pycode:`None` if no values are necessary.
+etc.) or immutable python objects (:class:`str`,
+:class:`bool`, etc.). The auxiliary state can be
+:data:`None` if no values are necessary.
 
 Your `param_func` is responsible for updating the auxiliary state as
 needed. :class:`ParameterizedModel` will wrap the auxiliary state in a
-:class:`NoStepValue <pyqg_jax.steppers.NoStepValue>` so the
+:class:`~pyqg_jax.steppers.NoStepValue` so the
 time-steppers will not manipulate it.
 
 The additional state is provided to allow propagating extra
@@ -64,7 +64,7 @@ possibilities:
   randomness.
 * Stateful parameterizations could maintain a history of previous
   model states.
-* Stateless, deterministic parameterizations can use :pycode:`None` as
+* Stateless, deterministic parameterizations can use :data:`None` as
   their auxiliary state.
 
 Once you have implemented your parameterization, apply it to a base

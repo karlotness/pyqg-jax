@@ -67,7 +67,7 @@ class ParameterizedModel:
     init_param_aux_func : function, optional
         The function used to initialize the parameterization's
         auxiliary state. Defaults to a function initializing the state
-        to :pycode:`None`.
+        to :data:`None`.
 
     Attributes
     ----------
@@ -164,7 +164,7 @@ class ParameterizedModel:
         This function should be called once on each new state after
         each time step.
 
-        :class:`SteppedModel <pyqg_jax.steppers.SteppedModel>` handles
+        :class:`~pyqg_jax.steppers.SteppedModel` handles
         this internally.
 
         This function defers to :attr:`model` for the post-processing.
