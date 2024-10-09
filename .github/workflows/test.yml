@@ -19,7 +19,7 @@ jobs:
       uses: actions/setup-python@v5
       id: setup-python
       with:
-        python-version: '3.12'
+        python-version: '3.13'
     - name: Cache pip downloads
       uses: actions/cache@v4
       with:
@@ -35,7 +35,7 @@ jobs:
     timeout-minutes: 30
     strategy:
       matrix:
-        python: ['3.10', '3.11', '3.12']
+        python: ['3.10', '3.11', '3.12', '3.13']
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
