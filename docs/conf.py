@@ -103,10 +103,10 @@ def linkcode_resolve(domain, info):
     except (ValueError, TypeError):
         return None
     # Form the URL from the pieces
-    repo_url = "https://github.com/karlotness/pyqg-jax"
     ref = (
         "master" if packaging.version.Version(version).is_devrelease else f"v{version}"
     )
     return (
-        f"{repo_url}/blob/{ref}/src/pyqg_jax/{source_file!s}#L{line_start}-L{line_end}"
+        f"https://github.com/karlotness/pyqg-jax/blob/{ref}/src/pyqg_jax/"
+        f"{source_file!s}#L{line_start}-L{line_end}"
     )
