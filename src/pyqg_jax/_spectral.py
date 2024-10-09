@@ -34,7 +34,7 @@ def get_kr_elems(grid: state.Grid, *, truncate: bool = True) -> KrElems:
     )
     dkr = jnp.sqrt(grid.dk**2 + grid.dl**2)
     kr = jnp.arange(max_buckets) * dkr
-    keep_num = (kr < kmax).sum().astype(jnp.uint32)
+    keep_num = jnp.clip(jnp.ceil(kmax / dkr), 0, max_buckets).astype(jnp.uint32)
     return KrElems(
         dkr=dkr,
         keep_num=keep_num,
