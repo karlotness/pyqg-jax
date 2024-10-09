@@ -1,7 +1,16 @@
+import warnings
 import pytest
+import numpy as np
 import jax
 import jax.numpy as jnp
 import pyqg_jax
+
+
+EDDY_ARGS = {
+    "rek": 5.787e-7,
+    "delta": 0.25,
+    "beta": 1.5e-11,
+}
 
 
 @pytest.mark.parametrize(
@@ -48,3 +57,69 @@ def test_basic_use(precision, nx, ny):
     assert kr.shape == ispec.shape[-1:]
     assert ispec.shape == expected_shape
     assert ispec.dtype == expected_type
+
+
+def test_match_orig():
+    pyqg = pytest.importorskip("pyqg")
+    pyqg_diagnostic_tools = pytest.importorskip("pyqg.diagnostic_tools")
+    dt = 3600 * 5
+    num_steps = 10
+    jax_model = pyqg_jax.qg_model.QGModel(
+        precision=pyqg_jax.state.Precision.DOUBLE,
+        **EDDY_ARGS,
+    )
+
+    @jax.jit
+    def compute_jax_ens_vals(raw_qs):
+        ens_spec_vals = jax.vmap(
+            lambda rq: pyqg_jax.diagnostics.ens_spec_vals(
+                jax_model.get_full_state(
+                    jax_model.create_initial_state(jax.random.key(0)).update(q=rq)
+                ),
+                jax_model.get_grid(),
+            )
+        )(raw_qs)
+        return jnp.mean(ens_spec_vals, axis=0)
+
+    @jax.jit
+    def compute_jax_ens_spec(raw_qs):
+        ispec = pyqg_jax.diagnostics.calc_ispec(
+            compute_jax_ens_vals(raw_qs), jax_model.get_grid()
+        )
+        iso_k, keep = pyqg_jax.diagnostics.ispec_grid(jax_model.get_grid())
+        return ispec, iso_k, keep
+
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", category=DeprecationWarning)
+        orig_model = pyqg.QGModel(
+            log_level=0,
+            dt=dt,
+            tmax=dt * num_steps,
+            twrite=1,
+            tavestart=dt,
+            taveint=dt,
+            **EDDY_ARGS,
+        )
+    orig_model.q = np.asarray(
+        jax_model.create_initial_state(jax.random.key(123)).q
+    ).astype(np.float64)
+    orig_states = []
+    for _ in range(num_steps):
+        orig_model._step_forward()
+        orig_states.append(orig_model.q.copy())
+    orig_states = np.asarray(orig_states)[:-1]
+    jax_ens_vals = compute_jax_ens_vals(orig_states)
+    jax_ensspec, jax_kr, keep = compute_jax_ens_spec(orig_states)
+    jax_kr = jax_kr[:keep]
+    jax_ensspec = jax_ensspec[:, :keep]
+    orig_ens_vals = orig_model.get_diagnostic("Ensspec")
+    assert jax_ens_vals.shape == orig_ens_vals.shape
+    assert np.allclose(jax_ens_vals, orig_ens_vals)
+    for level in range(jax_model.nz):
+        orig_kr, orig_ensspec = pyqg_diagnostic_tools.calc_ispec(
+            orig_model, orig_ens_vals[level]
+        )
+        assert jax_kr.shape == orig_kr.shape
+        assert np.allclose(orig_kr, jax_kr)
+        assert orig_ensspec.shape == jax_ensspec.shape[1:]
+        assert np.allclose(jax_ensspec[level], orig_ensspec)
