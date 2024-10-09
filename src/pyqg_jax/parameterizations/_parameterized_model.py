@@ -12,7 +12,7 @@ from .. import state as _state, _utils, steppers as _steppers
 
 
 @_utils.register_pytree_dataclass
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass(frozen=True, kw_only=True)
 class ParameterizedModelState:
     """Wrapped model state for parameterized models.
 

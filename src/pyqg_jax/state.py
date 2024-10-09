@@ -78,7 +78,7 @@ def _generic_irfftn(a, shape):
 
 
 @_utils.register_pytree_dataclass
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass(frozen=True, kw_only=True)
 class PseudoSpectralState:
     """Core state evolved by a model instance.
 
@@ -190,7 +190,7 @@ class PseudoSpectralState:
 
 
 @_utils.register_pytree_dataclass
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass(frozen=True, kw_only=True)
 class FullPseudoSpectralState:
     """Full state including calculated values expanded by a model.
 

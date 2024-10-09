@@ -37,7 +37,7 @@ P = typing.TypeVar("P")
 
 
 @_utils.register_pytree_dataclass
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass(frozen=True, kw_only=True)
 class StepperState(typing.Generic[P]):
     """Model state wrapped for time-stepping
 
@@ -388,7 +388,7 @@ class EulerStepper(Stepper):
 
 
 @_utils.register_pytree_dataclass
-@dataclasses.dataclass(frozen=True, repr=False)
+@dataclasses.dataclass(frozen=True, repr=False, kw_only=True)
 class AB3State(StepperState[P]):
     _ablevel: jnp.uint8
     _updates: tuple[P, P]

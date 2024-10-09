@@ -14,6 +14,17 @@ v0.9.0 (Unreleased)
 * Improve some error messages (include additional details)
 * *Breaking:* Require Python 3.10 or later
 
+.. note::
+   In this release, state class :pycode:`__init__` parameters are now
+   :term:`keyword-only <python:parameter>`. If you are obtaining these
+   from model classes as recommended this should require no changes.
+   However if you construct these classes manually, make sure all
+   arguments are passed as *keyword* arguments. This affects
+   :class:`~pyqg_jax.state.PseudoSpectralState`,
+   :class:`~pyqg_jax.state.FullPseudoSpectralState`,
+   :class:`~pyqg_jax.parameterizations.ParameterizedModelState` and
+   :class:`~pyqg_jax.steppers.StepperState`.
+
 v0.8.1
 ------
 * Resolve deprecation warnings from :func:`jax.numpy.linalg.solve`
