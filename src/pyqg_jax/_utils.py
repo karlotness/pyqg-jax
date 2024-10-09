@@ -169,6 +169,8 @@ def register_pytree_dataclass(cls):
     cls_fields = []
     cls_static_fields = []
     for field in dataclasses.fields(cls):
+        if not field.init:
+            continue
         if field.metadata.get("pyqg_jax", {}).get("static", False):
             cls_static_fields.append(field.name)
         else:
