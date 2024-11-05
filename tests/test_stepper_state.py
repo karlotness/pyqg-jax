@@ -45,7 +45,7 @@ def test_update_extra_args(extra_args):
     replace_args = {}
     for attr in extra_args:
         replace_args[attr] = 1
-    with pytest.raises(ValueError) as exc_info:
+    with pytest.raises(ValueError, match="invalid state updates") as exc_info:
         _ = base_state.update(tc=3, **replace_args)
     msg = exc_info.value.args[0]
     for attr in extra_args:
