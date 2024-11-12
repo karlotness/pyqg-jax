@@ -1,3 +1,7 @@
+# Copyright 2024 Karl Otness
+# SPDX-License-Identifier: MIT
+
+
 import math
 import warnings
 import pytest

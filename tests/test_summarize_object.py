@@ -1,3 +1,7 @@
+# Copyright 2023 Karl Otness
+# SPDX-License-Identifier: MIT
+
+
 import warnings
 import functools
 import numpy as np

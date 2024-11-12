@@ -1,3 +1,6 @@
+# Copyright 2023 Karl Otness
+# SPDX-License-Identifier: MIT
+
 import inspect
 import pkgutil
 import pathlib
@@ -6,7 +9,7 @@ import pyqg_jax
 
 # Project information
 project = "pyqg-jax"
-copyright = "Karl Otness"
+copyright = "2023 Karl Otness"
 author = "Karl Otness"
 version = pyqg_jax.__version__
 release = version

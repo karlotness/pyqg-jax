@@ -1,3 +1,7 @@
+# Copyright 2024 Karl Otness
+# SPDX-License-Identifier: MIT
+
+
 import pytest
 import jax
 import jax.numpy as jnp
