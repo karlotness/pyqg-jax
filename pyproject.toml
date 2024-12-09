@@ -59,7 +59,7 @@ fix = false
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "B", "RUF", "UP", "C4", "YTT", "T10", "T20", "ICN", "SIM", "NPY", "PT"]
-ignore = ["E741", "E743", "UP015", "SIM108"]
+ignore = ["E741", "E743", "UP015", "SIM108", "RUF022"]
 
 [tool.ruff.lint.flake8-import-conventions]
 [tool.ruff.lint.flake8-import-conventions.extend-aliases]
