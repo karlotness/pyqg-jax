@@ -31,14 +31,6 @@ jobs:
       id: setup-python
       with:
         python-version: '3.13'
-    - name: Cache pip downloads
-      uses: actions/cache@v4
-      with:
-        path: ~/.cache/pip
-        key: pip-releasecheck-${{ runner.os }}-${{ runner.arch }}-${{ steps.setup-python.outputs.python-version }}-${{ github.run_id }}
-        restore-keys: |
-          pip-releasecheck-${{ runner.os }}-${{ runner.arch }}-${{ steps.setup-python.outputs.python-version }}-
-          pip-test-${{ runner.os }}-${{ runner.arch }}-${{ steps.setup-python.outputs.python-version }}-
     - name: Run tox tests
       run: pipx run --python "$WORKFLOW_PYTHON" tox run -e py
       env:
@@ -79,15 +71,6 @@ jobs:
       id: setup-python
       with:
         python-version: '3.13'
-    - name: Cache pip downloads
-      uses: actions/cache@v4
-      with:
-        path: ~/.cache/pip
-        key: pip-releasecheckartifacts-${{ runner.os }}-${{ runner.arch }}-${{ steps.setup-python.outputs.python-version }}-${{ github.run_id }}
-        restore-keys: |
-          pip-releasecheckartifacts-${{ runner.os }}-${{ runner.arch }}-${{ steps.setup-python.outputs.python-version }}-
-          pip-releasecheck-${{ runner.os }}-${{ runner.arch }}-${{ steps.setup-python.outputs.python-version }}-
-          pip-test-${{ runner.os }}-${{ runner.arch }}-${{ steps.setup-python.outputs.python-version }}-
     - name: Download artifacts
       uses: actions/download-artifact@v4
       with:
