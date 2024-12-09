@@ -94,7 +94,7 @@ jobs:
         name: build
         path: dist/
     - name: Generate attestation
-      uses: actions/attest-build-provenance@v1
+      uses: actions/attest-build-provenance@v2
       id: gen-attest
       with:
         subject-path: 'dist/*'
