@@ -374,7 +374,7 @@ class EulerStepper(Stepper):
         state.
         """
         new_state = _nostep_tree_map(
-            (lambda v, u: v + (self.dt * u)),
+            (lambda v, u: v + (jnp.astype(self.dt, _utils.array_real_dtype(v)) * u)),
             stepper_state.state,
             updates,
         )
