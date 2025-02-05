@@ -347,7 +347,7 @@ assert BATCH_STEPS >= 2
 
 np_rng = np.random.default_rng(seed=456)
 losses = []
-for batch_i in range(30):
+for batch_i in range(50):
     # Rudimentary shuffling in lieu of real data loader
     batch = np.stack(
         [
@@ -359,7 +359,8 @@ for batch_i in range(30):
     )
     loss, net, optim_state = train_batch(batch, net, optim_state)
     losses.append(loss)
-    print(f"Step {batch_i + 1:02}: loss={loss.item():.4E}")
+    if (batch_i + 1) % 5 == 0:
+        print(f"Step {batch_i + 1:02}: loss={loss.item():.4E}")
 ```
 
 ```{code-cell} ipython3
