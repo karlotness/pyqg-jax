@@ -13,6 +13,9 @@ v0.9.0 (Unreleased)
   :func:`~pyqg_jax.diagnostics.ens_spec_vals`
 * Improve some error messages (include additional details)
 * *Breaking:* Require Python 3.10 or later
+* Internal changes to :class:`~pyqg_jax.steppers.AB3Stepper` reducing
+  use of JAX control flow. This may slightly affect calculations due
+  to different JIT behavior.
 
 .. note::
    In this release, state class :pycode:`__init__` parameters are now

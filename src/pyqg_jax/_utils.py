@@ -10,6 +10,7 @@ import dataclasses
 import inspect
 import weakref
 import jax
+import jax.numpy as jnp
 
 
 def summarize_object(obj: object) -> str:
@@ -207,3 +208,7 @@ def register_pytree_dataclass(cls):
 
     jax.tree_util.register_pytree_with_keys(cls, flatten_with_keys, unflatten, flatten)
     return cls
+
+
+def array_real_dtype(arr):
+    return jax.eval_shape(jnp.real, arr).dtype
