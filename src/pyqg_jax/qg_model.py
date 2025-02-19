@@ -2,8 +2,7 @@
 # SPDX-License-Identifier: MIT
 
 
-"""An implementation of :class:`pyqg.QGModel`.
-"""
+"""An implementation of :class:`pyqg.QGModel`."""
 
 
 __all__ = ["QGModel"]
