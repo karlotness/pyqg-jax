@@ -1,5 +1,5 @@
 [build-system]
-requires = ["flit_core >=3.9,<4"]
+requires = ["flit_core >=3.11,<4"]
 build-backend = "flit_core.buildapi"
 
 [project]
@@ -7,7 +7,8 @@ name = "pyqg-jax"
 description = "Quasigeostrophic model in JAX (port of PyQG)"
 readme = "README.md"
 requires-python = ">=3.10"
-license = {text = "MIT"}
+license = "MIT"
+license-files = ["LICENSE.txt"]
 authors = [
   {name = "Karl Otness"},
 ]
@@ -16,7 +17,6 @@ dependencies = [
 ]
 classifiers = [
   "Development Status :: 2 - Pre-Alpha",
-  "License :: OSI Approved :: MIT License",
   "Operating System :: OS Independent",
   "Intended Audience :: Science/Research",
   "Topic :: Scientific/Engineering",
@@ -40,7 +40,7 @@ Documentation = "https://pyqg-jax.readthedocs.io"
 "Bug Tracker" = "https://github.com/karlotness/pyqg-jax/issues"
 
 [tool.flit.sdist]
-include = ["tests/", "LICENSE.txt"]
+include = ["tests/"]
 exclude = ["**/*~"]
 
 [tool.pytest.ini_options]
