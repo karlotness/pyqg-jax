@@ -4,6 +4,7 @@
 
 import math
 import warnings
+import itertools
 import pytest
 import jax
 import jax.numpy as jnp
@@ -177,3 +178,49 @@ def test_tree_flatten_roundtrip():
     leaves, treedef = jax.tree_util.tree_flatten(model)
     restored_model = jax.tree_util.tree_unflatten(treedef, leaves)
     assert vars(restored_model) == vars(model)
+
+
+@pytest.mark.skipif(
+    not jax.config.jax_enable_x64, reason="need float64 enabled to test dtype conflict"
+)
+def test_steps_with_non_weak_dtype_dt():
+    jax_model = pyqg_jax.qg_model.QGModel(
+        precision=pyqg_jax.state.Precision.SINGLE, **EDDY_ARGS
+    )
+    start_jax_state = jax_model.create_initial_state(jax.random.key(0))
+    dt = 3600
+    num_steps = 1000
+
+    def make_stepper(dt):
+        @jax.jit
+        def do_jax_steps(init_state):
+            stepper = pyqg_jax.steppers.AB3Stepper(dt=dt)
+            stepped_model = pyqg_jax.steppers.SteppedModel(
+                model=jax_model, stepper=stepper
+            )
+            final_state, _ = jax.lax.scan(
+                lambda carry, _: (
+                    stepped_model.step_model(carry),
+                    None,
+                ),
+                stepped_model.initialize_stepper_state(init_state),
+                None,
+                length=num_steps,
+            )
+            return final_state
+
+        return do_jax_steps
+
+    final_steps = [
+        make_stepper(dtv)(start_jax_state)
+        for dtv in (dt, float(dt), jnp.float32(dt), jnp.float64(dt))
+    ]
+    assert final_steps[0].state.q.dtype == jnp.dtype(jnp.float32)
+    for state_a, state_b in itertools.pairwise(final_steps):
+        assert state_a.tc == state_b.tc
+        assert math.isclose(state_a.t, state_b.t)
+        assert state_a.state.q.dtype == state_b.state.q.dtype
+        assert jnp.allclose(state_a.state.q, state_b.state.q)
+        abserr = jnp.abs(state_a.state.q - state_b.state.q)
+        relerr = abserr / jnp.abs(state_a.state.q)
+        assert jnp.all(relerr < 1e-5)
