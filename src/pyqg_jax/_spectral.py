@@ -18,7 +18,7 @@ class KrElems:
 def get_kr_elems(grid: state.Grid, *, truncate: bool = True) -> KrElems:
     for name in ["L", "W", "dk", "dl"]:
         # Each of these attributes should be a 0-dim scalar
-        if (dims := jnp.ndim(jax.eval_shape(_utils.AttrGetter(name), grid))) != 0:
+        if (dims := jax.eval_shape(_utils.AttrGetter(name), grid)).ndim != 0:
             raise ValueError(
                 f"grid.{name} has {dims} dimensions, but should have 0 (use jax.vmap)"
             )
