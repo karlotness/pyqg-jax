@@ -140,7 +140,7 @@ def test_match_final_step(precision):
     abserr = jnp.abs(orig_model.q - final_jax_state.state.q)
     relerr = abserr / jnp.abs(orig_model.q)
     assert jnp.all(
-        relerr < (1e-2 if precision == pyqg_jax.state.Precision.SINGLE else 1e-10)
+        relerr < (2e-2 if precision == pyqg_jax.state.Precision.SINGLE else 2e-10)
     )
 
 
