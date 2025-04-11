@@ -13,10 +13,6 @@ v0.9.0 (Unreleased)
   :func:`~pyqg_jax.diagnostics.ens_spec_vals`
 * Improve some error messages (include additional details)
 * *Breaking:* Require Python 3.10 or later
-* Internal changes to :class:`~pyqg_jax.steppers.AB3Stepper` and
-  :class:`~pyqg_jax.steppers.EulerStepper` ensuring consistent behavior
-  regardless of the :pycode:`dt` parameter's precision. This may
-  affect calculations due to different JIT behavior.
 
 .. note::
    In this release, state class :pycode:`__init__` parameters are now
@@ -28,6 +24,17 @@ v0.9.0 (Unreleased)
    :class:`~pyqg_jax.state.FullPseudoSpectralState`,
    :class:`~pyqg_jax.parameterizations.ParameterizedModelState` and
    :class:`~pyqg_jax.steppers.StepperState`.
+
+.. note::
+  This release includes internal changes in
+  :class:`~pyqg_jax.steppers.AB3Stepper` and
+  :class:`~pyqg_jax.steppers.EulerStepper` which ensure consistent
+  behavior regardless of the :pycode:`dt` parameter's precision and
+  preventing errors where it does not have :term:`weak type <jax:weak
+  type>` (i.e. when it is not a Python :class:`float`). This may
+  affect calculations and exact trajectories due to minor numeric
+  changes and possible differences in JIT behavior, but should not
+  cause other breakage.
 
 v0.8.1
 ------
