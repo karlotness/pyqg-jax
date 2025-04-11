@@ -119,7 +119,7 @@ def test_update_rejects_extra_args(extra_args):
         qh=jnp.zeros((2, 16, 9), dtype=jnp.complex64),
         _q_shape=(16, 16),
     )
-    update_args = {arg: state.qh for arg in extra_args}
+    update_args = dict.fromkeys(extra_args, state.qh)
     with pytest.raises(ValueError, match="unknown") as exc_info:
         _ = state.update(**update_args)
     msg = exc_info.value.args[0]
