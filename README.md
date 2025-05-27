@@ -28,7 +28,7 @@ $ conda install -c conda-forge pyqg-jax
 ```
 This should install required dependencies, but JAX itself may require
 special attention, particularly for GPU support.
-Follow the [JAX installation instructions](https://jax.readthedocs.io/en/latest/installation.html).
+Follow the [JAX installation instructions](https://docs.jax.dev/en/latest/installation.html).
 
 ## Usage
 [Documentation][docs] is a work in progress. The parameters `QGModel`
@@ -52,7 +52,7 @@ JAX-compatible:
 The `QGModel` uses double precision (`float64`) values for part of its
 computation regardless of the precision setting. Make sure JAX is set
 to enable 64-bit. [See the
-documentation](https://jax.readthedocs.io/en/latest/notebooks/Common_Gotchas_in_JAX.html#double-64bit-precision)
+documentation](https://docs.jax.dev/en/latest/notebooks/Common_Gotchas_in_JAX.html#double-64bit-precision)
 for details. One option is to set the following environment variable:
 ```bash
 export JAX_ENABLE_X64=True
@@ -89,7 +89,7 @@ the documentation).
 >>> final_q = next_model_state.q
 ```
 For repeated time-stepping combine `step_model` with
-[`jax.lax.scan`](https://jax.readthedocs.io/en/latest/_autosummary/jax.lax.scan.html).
+[`jax.lax.scan`](https://docs.jax.dev/en/latest/_autosummary/jax.lax.scan.html).
 
 ## License
 This software is distributed under the MIT license. See LICENSE.txt

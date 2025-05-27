@@ -61,7 +61,7 @@ class Precision(enum.Enum):
         Models will use :class:`jax.numpy.float64` and :class:`jax.numpy.complex128`.
 
         Ensure that JAX has `64-bit precision enabled
-        <https://jax.readthedocs.io/en/latest/notebooks/Common_Gotchas_in_JAX.html#double-64bit-precision>`__.
+        <https://docs.jax.dev/en/latest/notebooks/Common_Gotchas_in_JAX.html#double-64bit-precision>`__.
     """
 
     SINGLE = enum.auto()

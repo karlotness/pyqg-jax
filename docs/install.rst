@@ -6,7 +6,7 @@ Installation
 This package depends on `JAX <https://github.com/google/jax>`__ which
 requires special attention to enable support for GPUs, etc. Before
 installing this package, follow the `JAX installation instructions
-<https://jax.readthedocs.io/en/latest/installation.html>`__.
+<https://docs.jax.dev/en/latest/installation.html>`__.
 
 
 PyPI
@@ -42,7 +42,7 @@ For more information, consult the `conda-forge documentation
 <https://conda-forge.org/docs/user/introduction/>`__.
 Installing JAX, particularly with GPU support may require additional
 attention, consult the `JAX Conda install instructions
-<https://jax.readthedocs.io/en/latest/installation.html#conda-community-supported>`__.
+<https://docs.jax.dev/en/latest/installation.html#conda-community-supported>`__.
 
 Source
 ------

@@ -82,7 +82,7 @@ class QGModel(_model.Model):
     <pyqg_jax.state.Precision>`.
 
     Make sure that JAX has `64-bit precision enabled
-    <https://jax.readthedocs.io/en/latest/notebooks/Common_Gotchas_in_JAX.html#double-64bit-precision>`__.
+    <https://docs.jax.dev/en/latest/notebooks/Common_Gotchas_in_JAX.html#double-64bit-precision>`__.
     """
 
     def __init__(

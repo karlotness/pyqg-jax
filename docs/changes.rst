@@ -67,7 +67,7 @@ v0.7.0
 * Add implementation of :class:`~pyqg_jax.sqg_model.SQGModel` from
   PyQG
 * Integrate with JAX pytree `key paths
-  <https://jax.readthedocs.io/en/latest/jax-101/05.1-pytrees.html#key-paths>`__
+  <https://docs.jax.dev/en/latest/working-with-pytrees.html#explicit-key-paths>`__
 * Improved summary formatting of built-in Python collections
 * *Breaking:* Drop support for Python 3.8
 * *Breaking:* Remove uq and vq attributes from

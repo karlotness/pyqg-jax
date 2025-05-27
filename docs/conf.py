@@ -71,7 +71,7 @@ intersphinx_mapping = {
     "python": ("https://docs.python.org/3/", None),
     "numpy": ("https://numpy.org/doc/stable/", None),
     "pyqg": ("https://pyqg.readthedocs.io/en/latest/", None),
-    "jax": ("https://jax.readthedocs.io/en/latest/", None),
+    "jax": ("https://docs.jax.dev/en/latest/", None),
     "powerpax": ("https://powerpax.readthedocs.io/en/latest/", None),
     "optax": ("https://optax.readthedocs.io/en/latest/", None),
     "equinox": ("https://docs.kidger.site/equinox/", None),

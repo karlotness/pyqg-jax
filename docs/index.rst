@@ -3,7 +3,7 @@ pyqg-jax: Quasigeostrophic Model in JAX
 
 This is the documentation for the `pyqg-jax` package, a port of `PyQG
 <https://pyqg.readthedocs.io/en/latest/>`__ to `JAX
-<https://jax.readthedocs.io/en/latest/>`__.
+<https://docs.jax.dev/en/latest/>`__.
 
 Porting the model to JAX makes it possible to run it on GPU, and apply
 JAX transformations including :func:`jax.jit` and :func:`jax.vmap`.
