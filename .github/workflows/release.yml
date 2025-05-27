@@ -83,7 +83,7 @@ jobs:
   attest:
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    needs: wheel
+    needs: build
     permissions:
       id-token: write
       attestations: write
