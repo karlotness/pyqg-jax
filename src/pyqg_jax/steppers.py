@@ -473,18 +473,18 @@ class AB3Stepper(Stepper):
         This method does not apply post-processing to the updated
         state.
         """
+        new_ablevel, dt1, dt2, dt3 = jax.lax.switch(
+            stepper_state._ablevel,
+            [
+                lambda: (jnp.uint8(1), 1.0, 0.0, 0.0),
+                lambda: (jnp.uint8(2), 1.5, -0.5, 0.0),
+                lambda: (jnp.uint8(2), (23 / 12), (-16 / 12), (5 / 12)),
+            ],
+        )
 
         def do_update(v, u, u_p, u_pp):
-            dts = jnp.array(
-                [
-                    [1.0 * self.dt, 0.0, 0.0],
-                    [1.5 * self.dt, -0.5 * self.dt, 0.0],
-                    [(23 / 12) * self.dt, (-16 / 12) * self.dt, (5 / 12) * self.dt],
-                ],
-                dtype=_utils.array_real_dtype(v),
-            )
-            dt1, dt2, dt3 = dts[stepper_state._ablevel]
-            return v + (dt1 * u) + (dt2 * u_p) + (dt3 * u_pp)
+            dt = jnp.astype(self.dt, _utils.array_real_dtype(v))
+            return v + ((dt1 * dt) * u) + ((dt2 * dt) * u_p) + ((dt3 * dt) * u_pp)
 
         updates_p, updates_pp = stepper_state._updates
         new_state = _nostep_tree_map(
@@ -496,7 +496,6 @@ class AB3Stepper(Stepper):
         )
         new_t = stepper_state.t + jnp.float32(self.dt)
         new_tc = stepper_state.tc + 1
-        new_ablevel = jnp.astype(jnp.clip(stepper_state._ablevel + 1, 0, 2), jnp.uint8)
         new_updates = (_map_state_remove_nostep(updates), updates_p)
         return AB3State(
             state=new_state,
