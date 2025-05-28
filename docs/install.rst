@@ -64,5 +64,5 @@ help confirm whether the routines are operating correctly. We use
 `pytest <https://pytest.org/>`__ as a test runner. Once the package is
 installed, navigate to the root directory of the repository and run::
 
-  $ python -m pip install -r tests/requirements.txt
+  $ python -m pip install --group test
   $ python -m pytest

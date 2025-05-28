@@ -39,9 +39,48 @@ Documentation = "https://pyqg-jax.readthedocs.io"
 "Source Code" = "https://github.com/karlotness/pyqg-jax"
 "Bug Tracker" = "https://github.com/karlotness/pyqg-jax/issues"
 
+[dependency-groups]
+test = [
+  "jax[cpu]>=0.4.11",
+  "pyqg @ git+https://github.com/karlotness/pyqg.git@fb4a598bf32912550ea030e3d61fdec317dde45e",
+  "pytest",
+  "numpy",
+]
+
 [tool.flit.sdist]
 include = ["tests/"]
 exclude = ["**/*~"]
+
+[tool.tox]
+envlist = ["py3", "lint"]
+
+[tool.tox.env_run_base]
+description = "Run tests"
+dependency_groups = ["test"]
+commands = [["pytest", {replace = "posargs", extend = true}]]
+setenv = {JAX_PLATFORMS = "cpu", JAX_ENABLE_X64 = "True"}
+
+[tool.tox.env.lint]
+description = "Check code for style and formatting"
+skip_install = true
+ignore_errors = true
+dependency_groups = []
+deps = [
+  "ruff>=0.1.5",
+  "black>=25.1.0,<26",
+]
+commands = [
+  ["ruff", "check", "--", "src{/}pyqg_jax", "tests", "docs"],
+  ["black", "--check", "--diff", "src{/}pyqg_jax", "tests", "docs"],
+]
+setenv = {}
+
+[tool.tox.env.docs]
+description = "Build documentation site"
+dependency_groups = []
+deps = ["-r docs{/}requirements.txt"]
+commands = [["sphinx-build", "-W", "-b", "html", "{tox_root}{/}docs", "{tox_root}{/}docs{/}_build{/}html"]]
+setenv = {PYDEVD_DISABLE_FILE_VALIDATION = "1"}
 
 [tool.pytest.ini_options]
 minversion = "6.0"
