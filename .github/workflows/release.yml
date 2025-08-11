@@ -72,7 +72,7 @@ jobs:
       with:
         python-version: '3.13'
     - name: Download artifacts
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v5
       with:
         name: build
         path: dist/
@@ -89,7 +89,7 @@ jobs:
       attestations: write
     steps:
     - name: Download artifacts
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v5
       with:
         name: build
         path: dist/
@@ -112,12 +112,12 @@ jobs:
       contents: write
     steps:
     - name: Download artifacts
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v5
       with:
         name: build
         path: dist/
     - name: Download attestation
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v5
       with:
         name: attestation
         path: attest/
@@ -174,7 +174,7 @@ jobs:
       id-token: write
     steps:
     - name: Download artifacts
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v5
       with:
         name: build
         path: dist/
