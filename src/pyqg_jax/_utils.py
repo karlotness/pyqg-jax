@@ -149,11 +149,7 @@ def register_pytree_class_attrs(children, static_attrs):
             obj = cls.__new__(cls)
             for name, val in itertools.chain(
                 zip(cls_child_fields, children, strict=True),
-                zip(
-                    cls_static_fields,
-                    aux_data if aux_data is not None else (),
-                    strict=True,
-                ),
+                zip(cls_static_fields, aux_data or (), strict=True),
             ):
                 setattr(obj, name, val)
             return obj
@@ -197,11 +193,7 @@ def register_pytree_dataclass(cls):
             **dict(
                 itertools.chain(
                     zip(fields, flat_contents, strict=True),
-                    zip(
-                        static_fields,
-                        aux_data if aux_data is not None else (),
-                        strict=True,
-                    ),
+                    zip(static_fields, aux_data or (), strict=True),
                 )
             )
         )
