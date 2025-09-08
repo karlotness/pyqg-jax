@@ -16,7 +16,7 @@ jobs:
       with:
         persist-credentials: false
     - name: Setup Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v6
       id: setup-python
       with:
         python-version: '3.13'
@@ -42,7 +42,7 @@ jobs:
       with:
         persist-credentials: false
     - name: Setup Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v6
       id: setup-python
       with:
         python-version: ${{ matrix.python }}
