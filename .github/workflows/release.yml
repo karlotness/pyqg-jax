@@ -30,7 +30,7 @@ jobs:
       uses: actions/setup-python@v6
       id: setup-python
       with:
-        python-version: '3.13'
+        python-version: '3.14'
     - name: Run tox tests
       run: pipx run --python "$WORKFLOW_PYTHON" tox run -e py
       env:
@@ -48,7 +48,7 @@ jobs:
       uses: actions/setup-python@v6
       id: setup-python
       with:
-        python-version: '3.13'
+        python-version: '3.14'
     - name: Build package
       run: pipx run --python "$WORKFLOW_PYTHON" build
       env:
@@ -70,7 +70,7 @@ jobs:
       uses: actions/setup-python@v6
       id: setup-python
       with:
-        python-version: '3.13'
+        python-version: '3.14'
     - name: Download artifacts
       uses: actions/download-artifact@v5
       with:
