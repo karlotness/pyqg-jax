@@ -5,23 +5,28 @@
 import dataclasses
 import re
 import pytest
+import jax
 import jax.numpy as jnp
 import pyqg_jax
 
 
 @pytest.fixture
 def full_state():
-    model = pyqg_jax.qg_model.QGModel(
-        nx=16,
-        ny=16,
-        rek=0,
-        precision=pyqg_jax.state.Precision.SINGLE,
+
+    def make_full_state():
+        model = pyqg_jax.qg_model.QGModel(
+            nx=16,
+            ny=16,
+            rek=0,
+            precision=pyqg_jax.state.Precision.SINGLE,
+        )
+        small_state = model.create_initial_state(key=jax.random.key(0))
+        return model.get_full_state(small_state)
+
+    return jax.tree_util.tree_map(
+        lambda sd: jnp.zeros(sd.shape, dtype=sd.dtype),
+        jax.eval_shape(make_full_state),
     )
-    small_state = pyqg_jax.state.PseudoSpectralState(
-        qh=jnp.zeros((2, 16, 9), dtype=jnp.complex64),
-        _q_shape=(16, 16),
-    )
-    return model.get_full_state(small_state)
 
 
 def test_full_state_forwards_to_partial(full_state):
