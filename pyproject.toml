@@ -98,8 +98,8 @@ respect-gitignore = true
 fix = false
 
 [tool.ruff.lint]
-select = ["E", "F", "W", "B", "RUF", "UP", "C4", "YTT", "T10", "T20", "ICN", "SIM", "NPY", "PT"]
-ignore = ["E741", "E743", "UP015", "SIM108", "RUF022"]
+select = ["E", "F", "W", "B", "N", "RUF", "UP", "C4", "YTT", "T10", "T20", "ICN", "SIM", "NPY", "PT", "PIE", "FURB", "TRY", "FBT"]
+ignore = ["E741", "E743", "N802", "N803", "N806", "UP015", "SIM108", "RUF022", "TRY003"]
 
 [tool.ruff.lint.flake8-import-conventions]
 [tool.ruff.lint.flake8-import-conventions.extend-aliases]
