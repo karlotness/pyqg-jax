@@ -30,7 +30,10 @@ class PseudoSpectralKernel(abc.ABC):
         self.rek = rek
         self.precision = precision
         if not isinstance(self.precision, _state.Precision):
-            raise ValueError(f"invalid choice for precision {self.precision}")
+            raise TypeError(
+                "precision must come from the pyqg_jax.state.Precision enum"
+                f" (got {self.precision!r})"
+            )
 
     def get_full_state(
         self, state: _state.PseudoSpectralState
