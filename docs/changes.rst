@@ -12,6 +12,9 @@ v0.9.0 (Unreleased)
 * Add enstrophy spectrum calculation
   :func:`~pyqg_jax.diagnostics.ens_spec_vals`
 * Improve some error messages (include additional details)
+* :class:`~pyqg_jax.state.Precision` enum members now have attributes
+  :pycode:`dtype_real` and :pycode:`dtype_complex` storing the dtypes
+  used at each precision level.
 * *Breaking:* Require Python 3.10 or later
 
 .. note::

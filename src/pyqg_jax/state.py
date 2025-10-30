@@ -48,6 +48,10 @@ class Precision(enum.Enum):
 
     Double precision may be significantly slower, for example on GPUs.
 
+    Members of this enum have attributes :pycode:`dtype_real` and
+    :pycode:`dtype_complex` providing the :class:`~jax.numpy.dtype`
+    objects used at each precision level.
+
     Attributes
     ----------
     SINGLE
@@ -64,8 +68,17 @@ class Precision(enum.Enum):
         <https://docs.jax.dev/en/latest/notebooks/Common_Gotchas_in_JAX.html#double-64bit-precision>`__.
     """
 
-    SINGLE = enum.auto()
-    DOUBLE = enum.auto()
+    def __new__(cls, value, _dtype_real, _dtype_complex):
+        obj = object.__new__(cls)
+        obj._value_ = value
+        return obj
+
+    def __init__(self, _value: int, dtype_real: jnp.dtype, dtype_complex: jnp.dtype):
+        self.dtype_real = dtype_real
+        self.dtype_complex = dtype_complex
+
+    SINGLE = 1, jnp.dtype(jnp.float32), jnp.dtype(jnp.complex64)
+    DOUBLE = 2, jnp.dtype(jnp.float64), jnp.dtype(jnp.complex128)
 
 
 def _generic_rfftn(a):
