@@ -139,7 +139,7 @@ class Model(_kernel.PseudoSpectralKernel):
             ny=self.ny,
             L=self.L,
             W=self.W,
-            dtype_real=self._dtype_real,
+            dtype_real=self.precision.dtype_real,
         )[0]
 
     @property
@@ -149,19 +149,23 @@ class Model(_kernel.PseudoSpectralKernel):
             ny=self.ny,
             L=self.L,
             W=self.W,
-            dtype_real=self._dtype_real,
+            dtype_real=self.precision.dtype_real,
         )[1]
 
     @property
     def ll(self):
         return jnp.fft.fftfreq(
-            self.ny, d=(self.W / (2 * jnp.pi * self.ny)), dtype=self._dtype_real
+            self.ny,
+            d=(self.W / (2 * jnp.pi * self.ny)),
+            dtype=self.precision.dtype_real,
         )
 
     @property
     def kk(self):
         return jnp.fft.rfftfreq(
-            self.nx, d=(self.L / (2 * jnp.pi * self.nx)), dtype=self._dtype_real
+            self.nx,
+            d=(self.L / (2 * jnp.pi * self.nx)),
+            dtype=self.precision.dtype_real,
         )
 
     @property

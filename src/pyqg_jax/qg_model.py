@@ -145,12 +145,14 @@ class QGModel(_model.Model):
         # initial conditions (pv anomalies)
         rng_a, rng_b = jax.random.split(key, num=2)
         q1 = 1e-7 * jax.random.uniform(
-            rng_a, shape=(self.ny, self.nx), dtype=self._dtype_real
+            rng_a, shape=(self.ny, self.nx), dtype=self.precision.dtype_real
         ) + 1e-6 * (
-            jnp.ones((self.ny, 1), dtype=self._dtype_real)
-            * jax.random.uniform(rng_b, shape=(1, self.nx), dtype=self._dtype_real)
+            jnp.ones((self.ny, 1), dtype=self.precision.dtype_real)
+            * jax.random.uniform(
+                rng_b, shape=(1, self.nx), dtype=self.precision.dtype_real
+            )
         )
-        q2 = jnp.zeros_like(self.x, dtype=self._dtype_real)
+        q2 = jnp.zeros_like(self.x, dtype=self.precision.dtype_real)
         state = state.update(q=jnp.stack([q1, q2], axis=-3))
         return state
 
@@ -160,7 +162,9 @@ class QGModel(_model.Model):
 
     @property
     def Hi(self):
-        return jnp.array([self.H1, self.H1 / self.delta], dtype=self._dtype_real)
+        return jnp.array(
+            [self.H1, self.H1 / self.delta], dtype=self.precision.dtype_real
+        )
 
     @property
     def H(self):
@@ -168,7 +172,7 @@ class QGModel(_model.Model):
 
     @property
     def Ubg(self):
-        return jnp.array([self.U1, self.U2], dtype=self._dtype_real)
+        return jnp.array([self.U1, self.U2], dtype=self.precision.dtype_real)
 
     @property
     def F1(self):
@@ -188,7 +192,7 @@ class QGModel(_model.Model):
 
     @property
     def Qy(self):
-        return jnp.array([self.Qy1, self.Qy2], dtype=self._dtype_real)
+        return jnp.array([self.Qy1, self.Qy2], dtype=self.precision.dtype_real)
 
     @property
     def ikQy1(self):
@@ -251,8 +255,9 @@ class QGModel(_model.Model):
         # Solve the system for the tail
         ph_tail = jnp.squeeze(
             jnp.linalg.solve(
-                inv_mat2, jnp.expand_dims(qh[1:].astype(f64_model._dtype_complex), -1)
-            ).astype(self._dtype_complex),
+                inv_mat2,
+                jnp.expand_dims(qh[1:].astype(f64_model.precision.dtype_complex), -1),
+            ).astype(self.precision.dtype_complex),
             -1,
         )
         # Fill zeros for the head

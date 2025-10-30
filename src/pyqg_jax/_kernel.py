@@ -39,11 +39,13 @@ class PseudoSpectralKernel(abc.ABC):
         self, state: _state.PseudoSpectralState
     ) -> _state.FullPseudoSpectralState:
         def _empty_real():
-            return jnp.zeros(self.get_grid().real_state_shape, dtype=self._dtype_real)
+            return jnp.zeros(
+                self.get_grid().real_state_shape, dtype=self.precision.dtype_real
+            )
 
         def _empty_com():
             return jnp.zeros(
-                self.get_grid().spectral_state_shape, dtype=self._dtype_complex
+                self.get_grid().spectral_state_shape, dtype=self.precision.dtype_complex
             )
 
         self._state_shape_check(state)
@@ -114,7 +116,7 @@ class PseudoSpectralKernel(abc.ABC):
     def create_initial_state(self, key=None) -> _state.PseudoSpectralState:
         return _state.PseudoSpectralState(
             qh=jnp.zeros(
-                self.get_grid().spectral_state_shape, dtype=self._dtype_complex
+                self.get_grid().spectral_state_shape, dtype=self.precision.dtype_complex
             ),
             _q_shape=self.get_grid().real_state_shape[-2:],
         )
@@ -136,26 +138,6 @@ class PseudoSpectralKernel(abc.ABC):
             raise ValueError(
                 f"state.qh has wrong shape {state.qh.shape}, should be {corr_shape}"
             )
-
-    @property
-    def _dtype_real(self):
-        match self.precision:
-            case _state.Precision.SINGLE:
-                return jnp.float32
-            case _state.Precision.DOUBLE:
-                return jnp.float64
-            case _:
-                raise ValueError(f"invalid choice for precision {self.precision}")
-
-    @property
-    def _dtype_complex(self):
-        match self.precision:
-            case _state.Precision.SINGLE:
-                return jnp.complex64
-            case _state.Precision.DOUBLE:
-                return jnp.complex128
-            case _:
-                raise ValueError(f"invalid choice for precision {self.precision}")
 
     @property
     def nl(self):

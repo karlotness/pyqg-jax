@@ -132,18 +132,22 @@ class SQGModel(_model.Model):
             .update(
                 q=1e-3
                 * jax.random.uniform(
-                    key, shape=(self.nz, self.ny, self.nx), dtype=self._dtype_real
+                    key,
+                    shape=(self.nz, self.ny, self.nx),
+                    dtype=self.precision.dtype_real,
                 ),
             )
         )
 
     @property
     def Hi(self):
-        return jnp.full(shape=(1,), fill_value=self.H, dtype=self._dtype_real)
+        return jnp.full(shape=(1,), fill_value=self.H, dtype=self.precision.dtype_real)
 
     @property
     def Qy(self):
-        return jnp.full(shape=(1,), fill_value=self.beta, dtype=self._dtype_real)
+        return jnp.full(
+            shape=(1,), fill_value=self.beta, dtype=self.precision.dtype_real
+        )
 
     @property
     def ikQy(self):
@@ -155,7 +159,7 @@ class SQGModel(_model.Model):
 
     @property
     def Ubg(self):
-        return jnp.full(shape=(1,), fill_value=self.U, dtype=self._dtype_real)
+        return jnp.full(shape=(1,), fill_value=self.U, dtype=self.precision.dtype_real)
 
     def _apply_a_ph(self, state):
         return (self.f_0 / self.Nb) * jnp.sqrt(self.wv2i) * state.qh

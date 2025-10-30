@@ -59,7 +59,7 @@ def test_step_qh(precision):
     final_state = do_jax_steps(model, model.create_initial_state(jax.random.key(0)))
     assert final_state.tc == num_steps
     assert math.isclose(final_state.t.item(), num_steps * dt)
-    assert final_state.state.qh.dtype == jnp.dtype(model.model._dtype_complex)
+    assert final_state.state.qh.dtype == jnp.dtype(model.model.precision.dtype_complex)
 
 
 @pytest.mark.skipif(

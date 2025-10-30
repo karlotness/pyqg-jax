@@ -37,7 +37,7 @@ class QGModelNoSolver(pyqg_jax.qg_model.QGModel):
                 ),
             ],
             axis=0,
-        ).astype(self._dtype_complex)
+        ).astype(self.precision.dtype_complex)
 
     def _apply_a_ph(self, state):
         # Return ph from a * qh

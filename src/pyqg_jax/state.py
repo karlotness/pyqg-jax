@@ -403,13 +403,7 @@ class FullPseudoSpectralState:
 
 def _precision_to_real_dtype(precision: Precision | jnp.dtype, /) -> jnp.dtype:
     if isinstance(precision, Precision):
-        match precision:
-            case Precision.SINGLE:
-                return jnp.float32
-            case Precision.DOUBLE:
-                return jnp.float64
-            case _:
-                raise ValueError(f"unsupported precision {precision}")
+        return precision.dtype_real
     return precision
 
 

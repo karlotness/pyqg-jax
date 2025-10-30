@@ -112,7 +112,7 @@ class BTModel(_model.Model):
     @property
     def kd2(self):
         exp = jnp.where(self.rd != 0, -2, 1)
-        return jnp.asarray(self.rd, dtype=self._dtype_real) ** exp
+        return jnp.asarray(self.rd, dtype=self.precision.dtype_real) ** exp
 
     def create_initial_state(self, key):
         """Create a new initial state with random initialization.
@@ -130,21 +130,23 @@ class BTModel(_model.Model):
         state = super().create_initial_state()
         # initial conditions (pv anomalies)
         q = 1e-3 * jax.random.uniform(
-            key, shape=(self.nz, self.ny, self.nx), dtype=self._dtype_real
+            key, shape=(self.nz, self.ny, self.nx), dtype=self.precision.dtype_real
         )
         return state.update(q=q)
 
     @property
     def Hi(self):
-        return jnp.full(shape=(1,), fill_value=self.H, dtype=self._dtype_real)
+        return jnp.full(shape=(1,), fill_value=self.H, dtype=self.precision.dtype_real)
 
     @property
     def Ubg(self):
-        return jnp.full(shape=(1,), fill_value=self.U, dtype=self._dtype_real)
+        return jnp.full(shape=(1,), fill_value=self.U, dtype=self.precision.dtype_real)
 
     @property
     def Qy(self):
-        return jnp.full(shape=(1,), fill_value=self.beta, dtype=self._dtype_real)
+        return jnp.full(
+            shape=(1,), fill_value=self.beta, dtype=self.precision.dtype_real
+        )
 
     @property
     def ikQy(self):
