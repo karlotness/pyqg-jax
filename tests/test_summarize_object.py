@@ -7,6 +7,7 @@ import functools
 import numpy as np
 import re
 import ast
+import dataclasses
 import jax
 import jax.numpy as jnp
 import pytest
@@ -46,6 +47,14 @@ def test_summarize_shape_dtype_struct():
     arr = jnp.zeros((1, 2, 3), dtype=jnp.float32)
     sd_arr = jax.eval_shape(jnp.zeros_like, arr)
     assert summarize_object(arr) == summarize_object(sd_arr) == "f32[1,2,3]"
+
+
+@pytest.mark.parametrize("replace_field", ["shape", "dtype"])
+def test_risky_array_detection(replace_field):
+    cls = dataclasses.make_dataclass("NotAnArray", ["shape", "dtype"])
+    both_ok = cls(shape=(1, 2), dtype=jnp.dtype(jnp.float32))
+    bad = dataclasses.replace(both_ok, **{replace_field: None})
+    assert summarize_object(bad) == repr(bad)
 
 
 @pytest.mark.parametrize("cls", [functools.partial, jax.tree_util.Partial])

@@ -14,18 +14,22 @@ import jax.numpy as jnp
 
 
 def summarize_object(obj: object) -> str:
-    if isinstance(obj, jax.Array) or (hasattr(obj, "shape") and hasattr(obj, "dtype")):
-        return summarize_array(obj)
-    elif isinstance(obj, functools.partial):
-        return summarize_partial(obj)
-    elif isinstance(obj, types.FunctionType):
-        return summarize_function(obj)
-    elif isinstance(obj, tuple | list | set):
-        return summarize_sequence(obj)
-    elif isinstance(obj, dict):
-        return summarize_dict(obj)
-    else:
-        return repr(obj)
+    try:
+        if isinstance(obj, jax.Array) or (
+            hasattr(obj, "shape") and hasattr(obj, "dtype")
+        ):
+            return summarize_array(obj)
+        elif isinstance(obj, functools.partial):
+            return summarize_partial(obj)
+        elif isinstance(obj, types.FunctionType):
+            return summarize_function(obj)
+        elif isinstance(obj, tuple | list | set):
+            return summarize_sequence(obj)
+        elif isinstance(obj, dict):
+            return summarize_dict(obj)
+    except Exception:
+        pass
+    return repr(obj)
 
 
 def summarize_function(func: types.FunctionType) -> str:
