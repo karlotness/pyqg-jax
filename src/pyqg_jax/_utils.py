@@ -23,7 +23,7 @@ def summarize_object(obj: object) -> str:
             return summarize_partial(obj)
         elif isinstance(obj, types.FunctionType):
             return summarize_function(obj)
-        elif isinstance(obj, tuple | list | set):
+        elif isinstance(obj, (tuple, list, set)):
             return summarize_sequence(obj)
         elif isinstance(obj, dict):
             return summarize_dict(obj)
