@@ -42,6 +42,12 @@ def test_summarize_array(dtype, jax_dtype_key, np_dtype_key, shape):
     assert np_summary == f"{np_dtype_key}[{shape_str}]"
 
 
+def test_summarize_shape_dtype_struct():
+    arr = jnp.zeros((1, 2, 3), dtype=jnp.float32)
+    sd_arr = jax.eval_shape(jnp.zeros_like, arr)
+    assert summarize_object(arr) == summarize_object(sd_arr) == "f32[1,2,3]"
+
+
 @pytest.mark.parametrize("cls", [functools.partial, jax.tree_util.Partial])
 def test_partial(cls):
     def test_function_name():
