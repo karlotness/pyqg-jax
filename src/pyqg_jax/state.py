@@ -361,6 +361,15 @@ class FullPseudoSpectralState:
                 "do not update attribute 'state' directly, update individual fields "
                 "(for example q or qh)"
             )
+        if extra_attrs := (
+            kwargs.keys()
+            - {"q", "qh", "p", "ph", "u", "uh", "v", "vh", "dqhdt", "dqdt"}
+        ):
+            extra_attr_str = ", ".join(extra_attrs)
+            pl_suf = "s" if len(extra_attrs) > 1 else ""
+            raise ValueError(
+                f"tried to update unknown state attribute{pl_suf} {extra_attr_str}"
+            )
         for name, new_val in kwargs.items():
             # Check that shapes and dtypes match
             current_sd = jax.eval_shape(_utils.AttrGetter(name), self)

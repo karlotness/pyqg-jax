@@ -12,7 +12,6 @@ import pyqg_jax
 
 @pytest.fixture
 def full_state():
-
     def make_full_state():
         model = pyqg_jax.qg_model.QGModel(
             nx=16,
@@ -96,3 +95,14 @@ def test_full_state_update_rejects_duplicate_updates(full_state, name):
         _ = full_state.update(**new_vals)
     msg = exc_info.value.args[0]
     assert re.search(rf"\b(?:{name}|{spectral_name})\b", msg)
+
+
+@pytest.mark.parametrize("extra_args", [("argx",), ("argx", "argy")])
+def test_update_rejects_extra_args(full_state, extra_args):
+    update_args = dict.fromkeys(extra_args, full_state.qh)
+    with pytest.raises(ValueError, match="unknown") as exc_info:
+        _ = full_state.update(**update_args)
+    msg = exc_info.value.args[0]
+    for arg in extra_args:
+        assert arg in msg
+    assert re.search(r"attributes\b" if len(extra_args) > 1 else r"attribute\b", msg)
