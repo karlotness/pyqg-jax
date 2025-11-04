@@ -53,9 +53,7 @@ def test_basic_use(precision, nx, ny):
         return ispec, kr, keep
 
     ispec, kr, keep = do_jax_steps(init_state)
-    expected_type = jnp.dtype(
-        jnp.float32 if precision == pyqg_jax.state.Precision.SINGLE else jnp.float64
-    )
+    expected_type = precision.dtype_real
     expected_shape = (stepped_model.model.nz, max(nx // 2, ny // 2))
     assert keep < ispec.shape[-1]
     assert kr.shape == ispec.shape[-1:]

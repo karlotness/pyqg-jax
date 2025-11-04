@@ -52,9 +52,7 @@ def test_basic_use(precision, shape):
         return traj_ke
 
     traj_ke = do_jax_steps(init_state)
-    expected_type = jnp.dtype(
-        jnp.float32 if precision == pyqg_jax.state.Precision.SINGLE else jnp.float64
-    )
+    expected_type = precision.dtype_real
     assert traj_ke.ndim == 1
     assert traj_ke.shape[0] == num_steps
     assert traj_ke.dtype == expected_type

@@ -4,7 +4,6 @@
 
 import pytest
 import jax
-import jax.numpy as jnp
 import pyqg_jax
 
 
@@ -46,9 +45,7 @@ def test_basic_use(precision, shape):
         return traj_cfl
 
     traj_cfl = do_jax_steps(init_state)
-    expected_type = jnp.dtype(
-        jnp.float32 if precision == pyqg_jax.state.Precision.SINGLE else jnp.float64
-    )
+    expected_type = precision.dtype_real
     expected_shape = (num_steps, *stepped_model.model.get_grid().real_state_shape)
     assert traj_cfl.shape == expected_shape
     assert traj_cfl.dtype == expected_type

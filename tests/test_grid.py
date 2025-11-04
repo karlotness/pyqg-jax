@@ -39,11 +39,7 @@ def test_kappa_shape_dtype(precision):
     )
     kappa = grid.get_kappa(dtype=precision)
     assert kappa.shape == grid.spectral_state_shape[1:]
-    assert kappa.dtype == (
-        jnp.dtype(jnp.float64)
-        if precision == pyqg_jax.state.Precision.DOUBLE
-        else jnp.dtype(jnp.float32)
-    )
+    assert kappa.dtype == precision.dtype_real
 
 
 @pytest.mark.parametrize("precision", [jnp.float32, jnp.float64])
