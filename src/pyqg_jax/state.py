@@ -66,6 +66,12 @@ class Precision(enum.Enum):
 
         Ensure that JAX has `64-bit precision enabled
         <https://docs.jax.dev/en/latest/notebooks/Common_Gotchas_in_JAX.html#double-64bit-precision>`__.
+
+    Notes
+    -----
+    .. versionchanged:: 0.9.0
+       Added :pycode:`dtype_real` and :pycode:`dtype_complex`
+       attributes.
     """
 
     def __new__(cls, value, _dtype_real, _dtype_complex):
