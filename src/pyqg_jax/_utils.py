@@ -9,27 +9,38 @@ import itertools
 import dataclasses
 import inspect
 import weakref
+import importlib
+import typing
 import jax
 import jax.numpy as jnp
 
 
-def summarize_object(obj: object) -> str:
+def find_array_like_types() -> tuple[type, ...]:
+    array_like_types = [jax.Array, jax.ShapeDtypeStruct]
     try:
-        if isinstance(obj, jax.Array) or (
-            hasattr(obj, "shape") and hasattr(obj, "dtype")
-        ):
-            return summarize_array(obj)
-        elif isinstance(obj, functools.partial):
-            return summarize_partial(obj)
-        elif isinstance(obj, types.FunctionType):
-            return summarize_function(obj)
-        elif isinstance(obj, (tuple, list, set)):
-            return summarize_sequence(obj)
-        elif isinstance(obj, dict):
-            return summarize_dict(obj)
+        np_mod = importlib.import_module("numpy")
+        array_like_types.append(np_mod.ndarray)
     except Exception:
         pass
-    return repr(obj)
+    return tuple(array_like_types)
+
+
+array_like_types: typing.Final[tuple[type, ...]] = find_array_like_types()
+
+
+def summarize_object(obj: object) -> str:
+    if isinstance(obj, array_like_types):
+        return summarize_array(obj)
+    elif isinstance(obj, functools.partial):
+        return summarize_partial(obj)
+    elif isinstance(obj, types.FunctionType):
+        return summarize_function(obj)
+    elif isinstance(obj, (tuple, list, set)):
+        return summarize_sequence(obj)
+    elif isinstance(obj, dict):
+        return summarize_dict(obj)
+    else:
+        return repr(obj)
 
 
 def summarize_function(func: types.FunctionType) -> str:
