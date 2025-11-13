@@ -2,7 +2,6 @@
 # SPDX-License-Identifier: MIT
 
 
-import operator
 import abc
 import jax
 import jax.numpy as jnp
@@ -223,14 +222,12 @@ class PseudoSpectralKernel(abc.ABC):
         # Apply Beckman friction to lower layer tendency
 
         def compute_friction(state):
-            k = operator.index(self.nz - 1)
             dqhdt = jnp.concatenate(
                 [
-                    state.dqhdt[:k],
+                    state.dqhdt[:-1],
                     jnp.expand_dims(
-                        state.dqhdt[k] + (self.rek * self._k2l2 * state.ph[k]), 0
+                        state.dqhdt[-1] + (self.rek * self._k2l2 * state.ph[-1]), 0
                     ),
-                    state.dqhdt[(k + 1) :],
                 ],
                 axis=0,
             )
