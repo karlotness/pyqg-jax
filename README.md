@@ -99,4 +99,4 @@ for the license text.
 [condaforge]: https://anaconda.org/conda-forge/pyqg-jax
 [docs]: https://pyqg-jax.readthedocs.io/en/latest/
 [tests]: https://github.com/karlotness/pyqg-jax/actions
-[zenodo]: https://zenodo.org/badge/latestdoi/523137021
+[zenodo]: https://doi.org/10.5281/zenodo.7779364
