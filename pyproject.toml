@@ -43,7 +43,7 @@ Documentation = "https://pyqg-jax.readthedocs.io"
 [dependency-groups]
 test = [
   "jax[cpu]>=0.4.11",
-  "pyqg @ git+https://github.com/karlotness/pyqg.git@b50e8b946c17dd888138c70714ed933b0a59ede8",
+  "pyqg[] @ git+https://github.com/karlotness/pyqg.git@57d1cf7d830e308ae59332f8efb3d9854786c9fc",
   "pytest",
   "numpy",
 ]
