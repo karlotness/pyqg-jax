@@ -54,7 +54,7 @@ jobs:
       env:
         WORKFLOW_PYTHON: '${{ steps.setup-python.outputs.python-path }}'
     - name: Store artifacts
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v6
       with:
         name: build
         if-no-files-found: error
@@ -72,7 +72,7 @@ jobs:
       with:
         python-version: '3.14'
     - name: Download artifacts
-      uses: actions/download-artifact@v6
+      uses: actions/download-artifact@v7
       with:
         name: build
         path: dist/
@@ -89,7 +89,7 @@ jobs:
       attestations: write
     steps:
     - name: Download artifacts
-      uses: actions/download-artifact@v6
+      uses: actions/download-artifact@v7
       with:
         name: build
         path: dist/
@@ -99,7 +99,7 @@ jobs:
       with:
         subject-path: 'dist/*'
     - name: Store attestation
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v6
       with:
         name: attestation
         path: ${{ steps.gen-attest.outputs.bundle-path }}
@@ -112,12 +112,12 @@ jobs:
       contents: write
     steps:
     - name: Download artifacts
-      uses: actions/download-artifact@v6
+      uses: actions/download-artifact@v7
       with:
         name: build
         path: dist/
     - name: Download attestation
-      uses: actions/download-artifact@v6
+      uses: actions/download-artifact@v7
       with:
         name: attestation
         path: attest/
@@ -174,7 +174,7 @@ jobs:
       id-token: write
     steps:
     - name: Download artifacts
-      uses: actions/download-artifact@v6
+      uses: actions/download-artifact@v7
       with:
         name: build
         path: dist/
