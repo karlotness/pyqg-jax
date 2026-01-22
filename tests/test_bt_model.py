@@ -10,7 +10,6 @@ import jax.numpy as jnp
 import numpy as np
 import pyqg_jax
 
-
 BT_PARAMS = {
     "L": 2 * np.pi,
     "nx": 64,

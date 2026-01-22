@@ -4,7 +4,6 @@
 
 """An implementation of :class:`pyqg.BTModel`."""
 
-
 __all__ = ["BTModel"]
 
 

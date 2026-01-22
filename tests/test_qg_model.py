@@ -11,7 +11,6 @@ import jax.numpy as jnp
 import numpy as np
 import pyqg_jax
 
-
 EDDY_ARGS = {
     "rek": 5.787e-7,
     "delta": 0.25,

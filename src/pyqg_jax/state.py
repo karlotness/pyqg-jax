@@ -26,7 +26,6 @@ To access these variables, the states can be expanded into a
    of :func:`operator.itemgetter` and :class:`slice`.
 """
 
-
 __all__ = ["Precision", "PseudoSpectralState", "FullPseudoSpectralState", "Grid"]
 
 

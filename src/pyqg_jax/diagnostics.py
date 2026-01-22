@@ -10,10 +10,8 @@ quantities such as kinetic energy or various spectra. See
 plot the results.
 """
 
-
 import jax.numpy as jnp
 from . import _spectral
-
 
 __all__ = [
     "total_ke",

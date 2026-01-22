@@ -14,7 +14,6 @@ Available time-steppers included in this package are:
 * :class:`EulerStepper` Forward Euler first-order method
 """
 
-
 __all__ = [
     "SteppedModel",
     "AB3Stepper",
@@ -31,7 +30,6 @@ import abc
 import jax
 import jax.numpy as jnp
 from . import _utils
-
 
 P = typing.TypeVar("P")
 

@@ -16,7 +16,6 @@ If you don't *need* a parameterization or the wrapping, just skip
 applying a parameterization and use the inner model directly.
 """
 
-
 __all__ = [
     "apply_parameterization",
     "param_func",

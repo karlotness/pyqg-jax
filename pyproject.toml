@@ -68,7 +68,7 @@ ignore_errors = true
 dependency_groups = []
 deps = [
   "ruff>=0.1.5",
-  "black>=25.1.0,<26",
+  "black>=26.1.0,<27",
 ]
 commands = [
   ["ruff", "check", "--", "src{/}pyqg_jax", "tests", "docs"],

@@ -9,7 +9,6 @@ from PyQG as well as utilities for defining custom parameterizations
 and applying them to a model.
 """
 
-
 __all__ = [
     "ParameterizedModelState",
     "ParameterizedModel",

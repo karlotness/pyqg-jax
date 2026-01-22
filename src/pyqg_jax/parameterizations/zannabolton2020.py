@@ -4,7 +4,6 @@
 
 """Parameterization as in `Zanna and Bolton (2020) <https://doi.org/10.1029/2020GL088376>`__."""
 
-
 __all__ = [
     "apply_parameterization",
     "param_func",

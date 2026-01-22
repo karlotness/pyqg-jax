@@ -8,7 +8,6 @@ and
 `Jansen et al. (2015) <https://doi.org/10.1016/j.ocemod.2015.05.007>`__.
 """
 
-
 __all__ = [
     "apply_parameterization",
     "param_func",
