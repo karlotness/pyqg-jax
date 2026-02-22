@@ -53,7 +53,7 @@ def test_compute_inversion_matrix():
     np_jax_a = np.asarray(jax_model._compute_nosolver_inversion_matrix())
     assert orig_model.a.shape == np_jax_a.shape
     assert orig_model.a.dtype == np_jax_a.dtype
-    assert np.allclose(orig_model.a, np_jax_a)
+    assert np.allclose(np_jax_a, orig_model.a)
 
 
 def test_final_step_matches():
@@ -92,6 +92,4 @@ def test_final_step_matches():
     orig_model.run()
     assert orig_model.tc == final_jax_state.tc
     assert math.isclose(orig_model.t, final_jax_state.t)
-    abserr = jnp.abs(orig_model.q - final_jax_state.state.q)
-    relerr = abserr / jnp.abs(orig_model.q)
-    assert jnp.all(relerr < 1e-10)
+    assert jnp.allclose(final_jax_state.state.q, orig_model.q, atol=0, rtol=1e-10)

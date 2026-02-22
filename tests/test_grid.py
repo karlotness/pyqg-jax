@@ -79,4 +79,4 @@ def test_grid_vmap():
         computed = getattr(grid, attr)
         assert correct.shape == computed.shape
         assert correct.dtype == computed.dtype
-        assert jnp.allclose(correct, computed)
+        assert jnp.allclose(computed, correct)

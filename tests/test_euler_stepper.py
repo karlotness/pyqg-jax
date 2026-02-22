@@ -107,7 +107,4 @@ def test_steps_with_non_weak_dtype_dt():
         assert state_a.tc == state_b.tc
         assert math.isclose(state_a.t, state_b.t)
         assert state_a.state.q.dtype == state_b.state.q.dtype
-        assert jnp.allclose(state_a.state.q, state_b.state.q)
-        abserr = jnp.abs(state_a.state.q - state_b.state.q)
-        relerr = abserr / jnp.abs(state_a.state.q)
-        assert jnp.all(relerr < 1e-5)
+        assert jnp.allclose(state_b.state.q, state_a.state.q, atol=0, rtol=1e-5)

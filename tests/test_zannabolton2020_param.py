@@ -50,7 +50,6 @@ def test_match_final_step():
     orig_model.run()
     assert orig_model.tc == final_jax_state.tc
     assert math.isclose(orig_model.t, final_jax_state.t)
-    assert jnp.allclose(orig_model.q, final_jax_state.state.model_state.q)
-    abserr = jnp.abs(orig_model.q - final_jax_state.state.model_state.q)
-    relerr = abserr / jnp.abs(orig_model.q)
-    assert jnp.all(relerr < 1e-10)
+    assert jnp.allclose(
+        final_jax_state.state.model_state.q, orig_model.q, atol=0, rtol=1e-10
+    )

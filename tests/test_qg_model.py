@@ -136,11 +136,11 @@ def test_match_final_step(precision):
     orig_model.run()
     assert orig_model.tc == final_jax_state.tc
     assert math.isclose(orig_model.t, final_jax_state.t)
-    assert jnp.allclose(orig_model.q, final_jax_state.state.q)
-    abserr = jnp.abs(orig_model.q - final_jax_state.state.q)
-    relerr = abserr / jnp.abs(orig_model.q)
-    assert jnp.all(
-        relerr < (2e-2 if precision == pyqg_jax.state.Precision.SINGLE else 2e-10)
+    assert jnp.allclose(
+        final_jax_state.state.q,
+        orig_model.q,
+        atol=0,
+        rtol=(2e-2 if precision == pyqg_jax.state.Precision.SINGLE else 2e-10),
     )
 
 
@@ -276,7 +276,4 @@ def test_steps_with_non_weak_dtype_dt():
         assert state_a.tc == state_b.tc
         assert math.isclose(state_a.t, state_b.t)
         assert state_a.state.q.dtype == state_b.state.q.dtype
-        assert jnp.allclose(state_a.state.q, state_b.state.q)
-        abserr = jnp.abs(state_a.state.q - state_b.state.q)
-        relerr = abserr / jnp.abs(state_a.state.q)
-        assert jnp.all(relerr < 1e-5)
+        assert jnp.allclose(state_b.state.q, state_a.state.q, atol=0, rtol=1e-5)
