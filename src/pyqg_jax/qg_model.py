@@ -227,40 +227,34 @@ class QGModel(_model.Model):
                 | {"precision": _state.Precision.DOUBLE}
             )
         )
-        qh = jnp.moveaxis(state.qh, 0, -1)
-        qh_orig_shape = qh.shape
-        qh = qh.reshape((-1, 2))
-        # Compute inversion matrix
-        inv_mat2 = jnp.moveaxis(
-            jnp.array(
-                [
-                    [
-                        # 0, 0
-                        -(f64_model.wv2 + f64_model.F1),
-                        # 0, 1
-                        jnp.full_like(f64_model.wv2, f64_model.F1),
-                    ],
-                    [
-                        # 1, 0
-                        jnp.full_like(f64_model.wv2, f64_model.F2),
-                        # 1, 1
-                        -(f64_model.wv2 + f64_model.F2),
-                    ],
-                ]
+        det = jnp.expand_dims(
+            jnp.expand_dims(
+                f64_model.wv2 * (f64_model.wv2 + f64_model.F1 + f64_model.F2), 0
             ),
-            (0, 1),
-            (-2, -1),
-        ).reshape((-1, 2, 2))[1:]
-        # Solve the system for the tail
-        ph_tail = jnp.squeeze(
-            jnp.linalg.solve(
-                inv_mat2,
-                jnp.expand_dims(qh[1:].astype(f64_model.precision.dtype_complex), -1),
-            ).astype(self.precision.dtype_complex),
-            -1,
+            0,
         )
-        # Fill zeros for the head
-        ph_head = jnp.expand_dims(jnp.zeros_like(qh[0]), 0)
-        # Combine and return
-        ph = jnp.concatenate([ph_head, ph_tail], axis=0).reshape(qh_orig_shape)
-        return jnp.moveaxis(ph, -1, 0)
+        inv_mat_blocks = [
+            [
+                -f64_model.wv2 - f64_model.F2,
+                jnp.full_like(f64_model.wv2, -f64_model.F1),
+            ],
+            [
+                jnp.full_like(f64_model.wv2, -f64_model.F2),
+                -f64_model.wv2 - f64_model.F1,
+            ],
+        ]
+        inv_mat = jnp.stack(
+            [
+                jnp.stack(inv_mat_blocks[0], axis=0),
+                jnp.stack(inv_mat_blocks[1], axis=0),
+            ],
+            axis=0,
+        )
+        mat_a = jnp.where(det == 0, 0, inv_mat / det)
+        return jax.vmap(
+            jax.vmap(jnp.matmul, in_axes=-1, out_axes=-1),
+            in_axes=-1,
+            out_axes=-1,
+        )(mat_a, state.qh.astype(f64_model.precision.dtype_complex)).astype(
+            self.precision.dtype_complex
+        )
