@@ -582,6 +582,7 @@ class Grid:
             jnp.fft.fftfreq(
                 self.ny, d=(self.W / (2 * jnp.pi * self.ny)), dtype=real_dtype
             ),
+            sparse=True,
         )
         return jnp.sqrt(k**2 + l**2)
 
