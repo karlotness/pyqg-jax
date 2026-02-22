@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: MIT
 
 
+import operator
 import math
 import warnings
 import itertools
@@ -140,6 +141,62 @@ def test_match_final_step(precision):
     relerr = abserr / jnp.abs(orig_model.q)
     assert jnp.all(
         relerr < (2e-2 if precision == pyqg_jax.state.Precision.SINGLE else 2e-10)
+    )
+
+
+@pytest.mark.parametrize(
+    "precision", [pyqg_jax.state.Precision.SINGLE, pyqg_jax.state.Precision.DOUBLE]
+)
+def test_batched_vs_single_trajs(precision):
+    jax_model = pyqg_jax.qg_model.QGModel(precision=precision, **EDDY_ARGS)
+    dt = 3600
+    num_steps = 1000
+
+    @jax.jit
+    @jax.vmap
+    def do_jax_steps(init_state):
+        stepper = pyqg_jax.steppers.AB3Stepper(dt=dt)
+        stepped_model = pyqg_jax.steppers.SteppedModel(model=jax_model, stepper=stepper)
+        final_state, _ = jax.lax.scan(
+            lambda carry, _: (
+                stepped_model.step_model(carry),
+                None,
+            ),
+            stepped_model.initialize_stepper_state(init_state),
+            None,
+            length=num_steps,
+        )
+        return final_state
+
+    # Compute batched results
+    start_states = jax.vmap(jax_model.create_initial_state)(
+        jnp.stack(jax.random.split(jax.random.key(0), 5))
+    )
+    # Compute unbatched results
+    unbatched_results = []
+    for i in range(start_states.qh.shape[0]):
+        unbatched_results.append(
+            do_jax_steps(
+                jax.tree_util.tree_map(
+                    operator.itemgetter((jnp.newaxis, i)), start_states
+                )
+            )
+        )
+    unbatched_result = jax.tree_util.tree_map(
+        lambda *args: jnp.concatenate(args), *unbatched_results
+    )
+    # Produce batched results
+    batched_result = do_jax_steps(start_states)
+    assert jax.tree_util.tree_structure(
+        unbatched_result
+    ) == jax.tree_util.tree_structure(batched_result)
+    assert jnp.array_equal(unbatched_result.tc, batched_result.tc)
+    assert jnp.allclose(unbatched_result.t, batched_result.t)
+    assert jnp.allclose(
+        unbatched_result.state.q,
+        batched_result.state.q,
+        atol=0,
+        rtol=(2e-2 if precision == pyqg_jax.state.Precision.SINGLE else 2e-10),
     )
 
 
