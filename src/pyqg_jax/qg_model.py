@@ -7,7 +7,6 @@
 __all__ = ["QGModel"]
 
 
-import inspect
 import jax
 import jax.numpy as jnp
 from . import _model, _utils, state as _state
@@ -218,43 +217,20 @@ class QGModel(_model.Model):
         return (self.delta + 1) ** -1
 
     def _apply_a_ph(self, state):
-        f64_model = QGModel(
-            **(
-                {
-                    arg: getattr(self, arg)
-                    for arg in inspect.signature(QGModel).parameters
-                }
-                | {"precision": _state.Precision.DOUBLE}
-            )
-        )
-        det = jnp.expand_dims(
-            jnp.expand_dims(
-                f64_model.wv2 * (f64_model.wv2 + f64_model.F1 + f64_model.F2), 0
-            ),
+        f64_wv2 = self.wv2.astype(jnp.float64)
+        f64_f1 = jnp.float64(self.F1)
+        f64_f2 = jnp.float64(self.F2)
+        det = f64_wv2 * (f64_wv2 + f64_f1 + f64_f2)
+        det1 = jnp.where(det == 0, 1, det)
+        qh = state.qh.astype(jnp.complex128)
+        ph = jnp.where(
+            det == 0,
             0,
+            jnp.stack(
+                [
+                    (-(f64_wv2 + f64_f2) * qh[0] - f64_f1 * qh[1]) / det1,
+                    (-f64_f2 * qh[0] - (f64_wv2 + f64_f1) * qh[1]) / det1,
+                ]
+            ),
         )
-        inv_mat_blocks = [
-            [
-                -f64_model.wv2 - f64_model.F2,
-                jnp.full_like(f64_model.wv2, -f64_model.F1),
-            ],
-            [
-                jnp.full_like(f64_model.wv2, -f64_model.F2),
-                -f64_model.wv2 - f64_model.F1,
-            ],
-        ]
-        inv_mat = jnp.stack(
-            [
-                jnp.stack(inv_mat_blocks[0], axis=0),
-                jnp.stack(inv_mat_blocks[1], axis=0),
-            ],
-            axis=0,
-        )
-        mat_a = jnp.where(det == 0, 0, inv_mat / det)
-        return jax.vmap(
-            jax.vmap(jnp.matmul, in_axes=-1, out_axes=-1),
-            in_axes=-1,
-            out_axes=-1,
-        )(mat_a, state.qh.astype(f64_model.precision.dtype_complex)).astype(
-            self.precision.dtype_complex
-        )
+        return ph.astype(self.precision.dtype_complex)
