@@ -15,6 +15,11 @@ v0.9.0 (Unreleased)
 * :class:`~pyqg_jax.state.Precision` enum members now have attributes
   :pycode:`dtype_real` and :pycode:`dtype_complex` storing the dtypes
   used at each precision level.
+* Update :class:`~pyqg_jax.steppers.AB3Stepper` and
+  :class:`~pyqg_jax.steppers.EulerStepper` to ensure consistent
+  behavior regardless of the :pycode:`dt` parameter's precision and
+  preventing errors when it does not have :term:`weak type <jax:weak
+  type>` (i.e. when it is not a Python :class:`float`).
 * *Breaking:* Require Python 3.10 or later
 
 .. note::
@@ -29,15 +34,10 @@ v0.9.0 (Unreleased)
    :class:`~pyqg_jax.steppers.StepperState`.
 
 .. note::
-  This release includes internal changes in
-  :class:`~pyqg_jax.steppers.AB3Stepper` and
-  :class:`~pyqg_jax.steppers.EulerStepper` which ensure consistent
-  behavior regardless of the :pycode:`dt` parameter's precision and
-  preventing errors where it does not have :term:`weak type <jax:weak
-  type>` (i.e. when it is not a Python :class:`float`). This may
-  affect calculations and exact trajectories due to minor numeric
-  changes and possible differences in JIT behavior, but should not
-  cause other breakage.
+   Some of the internal changes in this release (to :doc:`steppers
+   <reference.steppers>` and :class:`~pyqg_jax.qg_model.QGModel`) may
+   affect calculations and exact trajectories due to minor numeric
+   changes and possible differences in JIT behavior.
 
 v0.8.1
 ------
