@@ -136,7 +136,7 @@ def test_match_final_step(precision):
     orig_model.run()
     assert orig_model.tc == final_jax_state.tc
     assert math.isclose(orig_model.t, final_jax_state.t)
-    assert jnp.allclose(
+    assert np.allclose(
         final_jax_state.state.q,
         orig_model.q,
         atol=0,
@@ -190,9 +190,9 @@ def test_batched_vs_single_trajs(precision):
     assert jax.tree_util.tree_structure(
         unbatched_result
     ) == jax.tree_util.tree_structure(batched_result)
-    assert jnp.array_equal(unbatched_result.tc, batched_result.tc)
-    assert jnp.allclose(unbatched_result.t, batched_result.t)
-    assert jnp.allclose(
+    assert np.array_equal(unbatched_result.tc, batched_result.tc)
+    assert np.allclose(unbatched_result.t, batched_result.t)
+    assert np.allclose(
         unbatched_result.state.q,
         batched_result.state.q,
         atol=0,
@@ -226,7 +226,7 @@ def test_rectangular_stepping(nx, ny):
         return final_state.state.q
 
     final_state = do_jax_steps(init_state)
-    assert jnp.all(jnp.isfinite(final_state))
+    assert np.all(np.isfinite(final_state))
 
 
 def test_tree_flatten_roundtrip():
@@ -276,4 +276,4 @@ def test_steps_with_non_weak_dtype_dt():
         assert state_a.tc == state_b.tc
         assert math.isclose(state_a.t, state_b.t)
         assert state_a.state.q.dtype == state_b.state.q.dtype
-        assert jnp.allclose(state_b.state.q, state_a.state.q, atol=0, rtol=1e-5)
+        assert np.allclose(state_b.state.q, state_a.state.q, atol=0, rtol=1e-5)

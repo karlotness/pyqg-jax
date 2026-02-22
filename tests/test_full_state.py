@@ -5,6 +5,7 @@
 import dataclasses
 import re
 import pytest
+import numpy as np
 import jax
 import jax.numpy as jnp
 import pyqg_jax
@@ -30,15 +31,15 @@ def full_state():
 
 def test_full_state_forwards_to_partial(full_state):
     assert full_state.qh is full_state.state.qh
-    assert jnp.allclose(full_state.q, full_state.state.q)
+    assert np.allclose(full_state.q, full_state.state.q)
 
 
 @pytest.mark.parametrize("name", ["q", "qh"])
 def test_full_state_forwards_update_to_partial(full_state, name):
     new_state = full_state.update(**{name: jnp.ones_like(getattr(full_state, name))})
-    assert not jnp.allclose(full_state.qh, new_state.qh)
+    assert not np.allclose(full_state.qh, new_state.qh)
     assert new_state.qh is new_state.state.qh
-    assert jnp.allclose(new_state.q, new_state.state.q)
+    assert np.allclose(new_state.q, new_state.state.q)
 
 
 def test_full_state_update_rejects_state(full_state):
@@ -50,7 +51,7 @@ def test_full_state_update_rejects_state(full_state):
 def test_full_state_update(full_state, name):
     new_val = jnp.ones_like(getattr(full_state, name))
     new_state = full_state.update(**{name: new_val})
-    assert jnp.allclose(getattr(new_state, name), 1)
+    assert np.allclose(getattr(new_state, name), 1)
     if name in {f.name for f in dataclasses.fields(full_state)}:
         assert getattr(new_state, name) is new_val
 

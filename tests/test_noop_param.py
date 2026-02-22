@@ -2,8 +2,8 @@
 # SPDX-License-Identifier: MIT
 
 
+import numpy as np
 import jax
-import jax.numpy as jnp
 import pyqg_jax
 
 
@@ -34,4 +34,4 @@ def test_match_final_step():
 
     final_jax_state = do_jax_steps(jax_model, start_state)
     final_param_state = do_jax_steps(param_model, param_start_state)
-    assert jnp.all(final_jax_state.state.q == final_param_state.state.model_state.q)
+    assert np.all(final_jax_state.state.q == final_param_state.state.model_state.q)

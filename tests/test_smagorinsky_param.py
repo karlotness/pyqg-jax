@@ -7,7 +7,6 @@ import math
 import pytest
 import numpy as np
 import jax
-import jax.numpy as jnp
 import pyqg_jax
 
 
@@ -51,6 +50,6 @@ def test_match_final_step():
     orig_model.run()
     assert orig_model.tc == final_jax_state.tc
     assert math.isclose(orig_model.t, final_jax_state.t)
-    assert jnp.allclose(
+    assert np.allclose(
         final_jax_state.state.model_state.q, orig_model.q, atol=0, rtol=1e-10
     )

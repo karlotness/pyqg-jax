@@ -77,4 +77,4 @@ def test_calc_ispec(nx, ny, L, W, averaging, truncate):
         orig_model, np.asarray(test_val[0]), averaging=averaging, truncate=truncate
     )
     assert jax_ispec.shape == orig_spec.shape
-    assert jnp.allclose(jax_ispec, orig_spec, atol=0, rtol=1 / 3)
+    assert np.allclose(jax_ispec, orig_spec, atol=0, rtol=1 / 3)

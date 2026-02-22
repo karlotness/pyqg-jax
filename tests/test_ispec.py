@@ -3,10 +3,10 @@
 
 
 import pytest
+import numpy as np
 import jax
 import jax.numpy as jnp
 import pyqg_jax
-import pyqg_jax._spectral
 
 
 @pytest.mark.parametrize("nx,ny", [(32, 32), (16, 16), (16, 32), (15, 13)])
@@ -24,4 +24,4 @@ def test_ispec_zero():
     )
     test_val = jnp.zeros(test_sd.shape, dtype=test_sd.dtype)
     result = jax.jit(pyqg_jax.diagnostics.calc_ispec)(test_val, jax_model.get_grid())
-    assert jnp.allclose(result, 0)
+    assert np.allclose(result, 0)

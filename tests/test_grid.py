@@ -3,6 +3,7 @@
 
 
 import pytest
+import numpy as np
 import jax
 import jax.numpy as jnp
 import pyqg_jax
@@ -79,4 +80,4 @@ def test_grid_vmap():
         computed = getattr(grid, attr)
         assert correct.shape == computed.shape
         assert correct.dtype == computed.dtype
-        assert jnp.allclose(computed, correct)
+        assert np.allclose(computed, correct)

@@ -92,4 +92,4 @@ def test_final_step_matches():
     orig_model.run()
     assert orig_model.tc == final_jax_state.tc
     assert math.isclose(orig_model.t, final_jax_state.t)
-    assert jnp.allclose(final_jax_state.state.q, orig_model.q, atol=0, rtol=1e-10)
+    assert np.allclose(final_jax_state.state.q, orig_model.q, atol=0, rtol=1e-10)

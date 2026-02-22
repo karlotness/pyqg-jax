@@ -5,9 +5,8 @@
 import math
 import warnings
 import pytest
-import jax
-import jax.numpy as jnp
 import numpy as np
+import jax
 import pyqg_jax
 
 SQG_PARAMS = {
@@ -142,7 +141,7 @@ def test_match_final_step(precision):
     final_jax_state = do_jax_steps(start_jax_state)
     orig_model.run()
     assert orig_model.tc == final_jax_state.tc
-    assert jnp.allclose(
+    assert np.allclose(
         final_jax_state.state.q,
         orig_model.q,
         atol=0,
@@ -172,7 +171,7 @@ def test_rectangular_stepping(nx, ny):
         return final_state.state.q
 
     final_state = do_jax_steps(init_state)
-    assert jnp.all(jnp.isfinite(final_state))
+    assert np.all(np.isfinite(final_state))
 
 
 def test_tree_flatten_roundtrip():

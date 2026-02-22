@@ -4,6 +4,7 @@
 
 import re
 import pytest
+import numpy as np
 import jax
 import jax.numpy as jnp
 import pyqg_jax
@@ -36,7 +37,7 @@ def test_contains_spectral_leaf(partial_state):
 def test_converts_to_spatial(partial_state):
     assert partial_state.q.dtype == jnp.float32
     assert partial_state.q.shape == (2, 16, 16)
-    assert jnp.allclose(partial_state.q, 0)
+    assert np.allclose(partial_state.q, 0)
 
 
 def test_update_nothing(partial_state):
@@ -48,15 +49,15 @@ def test_update_nothing(partial_state):
 
 def test_update_qh(partial_state):
     new_state = partial_state.update(qh=jnp.ones((2, 16, 9), dtype=jnp.complex64))
-    assert jnp.allclose(partial_state.qh, 0)
-    assert jnp.allclose(new_state.qh, 1)
+    assert np.allclose(partial_state.qh, 0)
+    assert np.allclose(new_state.qh, 1)
 
 
 def test_update_q(partial_state):
     new_state = partial_state.update(q=jnp.ones((2, 16, 16), dtype=jnp.float32))
-    assert jnp.allclose(partial_state.qh, 0)
-    assert not jnp.allclose(new_state.qh, 0)
-    assert jnp.allclose(new_state.q, 1)
+    assert np.allclose(partial_state.qh, 0)
+    assert not np.allclose(new_state.qh, 0)
+    assert np.allclose(new_state.q, 1)
 
 
 def test_update_rejects_duplicate_updates(partial_state):
